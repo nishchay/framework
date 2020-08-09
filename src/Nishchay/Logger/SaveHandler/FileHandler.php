@@ -24,6 +24,12 @@ class FileHandler extends AbstractSaveHandler
     private $file;
 
     /**
+     * Flag for whether file exists or not.
+     * @var type 
+     */
+    private $isFileExists = false;
+
+    /**
      * Just returns false.
      * 
      * @return boolean
@@ -41,10 +47,24 @@ class FileHandler extends AbstractSaveHandler
     {
         $this->file = Nishchay::getSetting('logger.path') . DS .
                 $this->getName(Nishchay::getSetting('logger.duration')) . '.txt';
+    }
+
+    /**
+     * Creates file if does not exists.
+     * 
+     * @return boolean
+     */
+    public function initFile()
+    {
+        if ($this->isFileExists === true) {
+            return true;
+        }
         if (file_exists($this->file) === false) {
             $file = new SimpleFile($this->file, SimpleFile::END_READ_WRITE);
             $file->close();
         }
+
+        return $this->isFileExists = true;
     }
 
     /**
@@ -55,6 +75,7 @@ class FileHandler extends AbstractSaveHandler
      */
     public function write(string $type, string $logLine)
     {
+        $this->initFile();
         file_put_contents($this->file, '[' . strtoupper($type) . '] ' . $logLine . PHP_EOL, FILE_APPEND);
     }
 
