@@ -2,11 +2,13 @@
 
 namespace Nishchay\Handler;
 
+use Nishchay;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Handler\Annotation\HandlerClass;
 use Nishchay\Handler\Annotation\Handler;
 use Nishchay\Processor\Names;
+use Nishchay\Persistent\System;
 
 /**
  * Exception detail class.
@@ -29,6 +31,24 @@ class Collection extends AbstractCollection
         Names::TYPE_CONTEXT => [],
         Names::TYPE_GLOBAL => []
     ];
+
+    /**
+     * Fetches handlers from persistent if application is live.
+     */
+    public function __construct()
+    {
+        if (Nishchay::isApplicationStageLive() && System::isPersisted('handlers')) {
+            $this->collection = System::getPersistent('handlers');
+        }
+    }
+
+    /**
+     * Persists handlers
+     */
+    public function persist()
+    {
+        System::setPersistent('handlers', $this->collection);
+    }
 
     /**
      * 
