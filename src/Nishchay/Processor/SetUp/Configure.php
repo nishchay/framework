@@ -75,7 +75,7 @@ final class Configure
         define('CONFIG', SETTINGS . 'configuration' . DS);
 
         # Persistent folder path.
-        define('PERSISTED', ROOT . 'persisted' . DS);
+        defined('PERSISTED') || define('PERSISTED', ROOT . 'persisted' . DS);
 
         $this->registerCallbacks();
 
