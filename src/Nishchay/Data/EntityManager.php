@@ -667,13 +667,14 @@ class EntityManager extends AbstractEntityStore
                 # Derived properties are fetched as
                 # {selfPropertyName}_{propertyToFetch}
                 $selectPropertyName = $selfPropertyName . '_' . $propertyName;
-                if (isset($row->{$selectPropertyName})) {
+                if (property_exists($row, $selectPropertyName)) {
                     $propertyValue = $row->{$selectPropertyName};
                 }
-            } else if (isset($row->{$propertyName})) {
+            } else if (property_exists($row, $propertyName)) {
                 $propertyValue = $row->{$propertyName};
             }
-            if ($propertyValue) {
+
+            if ($propertyValue !== false) {
                 # Applying setter of relative.
                 $relativeClass = $joinTable->getPropertyClass($propertyName);
                 $derivedValue[$propertyName] = $this->entity($relativeClass)
