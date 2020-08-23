@@ -71,9 +71,16 @@ class EntityQuery extends AbstractEntityStore
     /**
      * Properties with value.
      * 
-     * @var type 
+     * @var array 
      */
     private $propertyWithValues = [];
+
+    /**
+     * Whether to fetch lazy properties.
+     * 
+     * @var bool
+     */
+    private $lazy = false;
 
     /**
      * 
@@ -580,6 +587,9 @@ class EntityQuery extends AbstractEntityStore
             throw new ApplicationException('Property to fetch is not set.', 1, null, 911082);
         }
         $manager = new EntityManager($this->mainEntity);
+        if ($this->getLazy()) {
+            $manager->enableLazy(true);
+        }
         $result = $manager->fetchByEntityQuery($this);
         $this->reset();
         return $result;
@@ -609,6 +619,29 @@ class EntityQuery extends AbstractEntityStore
         $this->returnableEntity = [];
         $this->derivingProperties = [];
         $this->propertyWithValues = [];
+    }
+
+    /**
+     * Returns true if lazy property needs to be fetched.
+     * 
+     * @return bool
+     */
+    public function getLazy(): bool
+    {
+        return $this->lazy;
+    }
+
+    /**
+     * Set true if lazy property need to fetched.
+     * Works only when properties mentioned in select clause are belongs to single entity. 
+     * 
+     * @param bool $lazy
+     * @return $this
+     */
+    public function setLazy(bool $lazy)
+    {
+        $this->lazy = $lazy;
+        return $this;
     }
 
 }
