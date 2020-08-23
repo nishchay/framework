@@ -511,17 +511,26 @@ class EntityManager extends AbstractEntityStore
      * Set or reset object property of record.
      * 
      */
-    public function setLazy()
+    public function setLazy($records = [])
     {
         # Setting derived property requries derived object 
         # flag to be true.So we first need to active it 
         # then we will revert it back to it's acutal flag.
         $actual = $this->isLazyEnabled;
         !$this->isLazyEnabled && $this->enableLazy(true);
-        $this->processLazyProperties([$this]);
+
+        if ($records instanceof DataIterator) {
+            $records = $records->getArrayCopy();
+        } else if (empty ($records)) {
+            $records = [$this];
+        }
+
+        $this->processLazyProperties($records);
 
         # Revert to actual.
         $this->enableLazy($actual);
+
+        return $records;
     }
 
     /**
@@ -625,6 +634,8 @@ class EntityManager extends AbstractEntityStore
 
         foreach ($this->getThisEntity()
                 ->getDerivedProperties() as $self => $toAssign) {
+
+            # Discarding property found in unfetchable
             if (array_key_exists($self, $this->unFetchAbleProperties)) {
                 continue;
             }
@@ -706,6 +717,7 @@ class EntityManager extends AbstractEntityStore
     {
         $records = $this->getSelectiveQuery($this->isDerivedEnabled)
                 ->get();
+
         if (empty($records)) {
             return $records;
         }
@@ -717,12 +729,14 @@ class EntityManager extends AbstractEntityStore
             $object->isEnityReturned = true;
             $iterator[] = $object;
         }
+        $dataIterator = new DataIterator($this->processLazyProperties($iterator));
+
         $this->flush();
-        return new DataIterator($this->processLazyProperties($iterator));
+        return $dataIterator;
     }
 
     /**
-     * Lazy properties means proeprty whose value requires separete query.
+     * Lazy properties means property whose value requires separate query.
      * 
      * @param   array   $records
      * @return  array
@@ -734,9 +748,14 @@ class EntityManager extends AbstractEntityStore
         }
 
         foreach ($this->getThisEntity()->getJoinTable() as $propertyName => $joinTable) {
-            # Properties to be fetcehd and assigned to $property_name. If this
+
+            if (array_key_exists($propertyName, $this->unFetchAbleProperties)) {
+                continue;
+            }
+
+            # Properties to be fetcehd and assigned to $propertyName. If this
             # is blank we will fetch all propertes from mentioned class and
-            # assign it to $property_name.
+            # assign it to $propertyName.
             $propertyNames = $this->getThisEntity()
                     ->getProperty($propertyName)
                     ->getDerived()
@@ -768,6 +787,11 @@ class EntityManager extends AbstractEntityStore
     {
         # Finding unique value from records.
         $values = $this->getUniqueRecords($records, $propertyName);
+
+        if (empty($values)) {
+            return;
+        }
+
         # Preparing query to fetch records for derived property. We will fetch
         # record for each row in $records all at once.
         $entityQuery = new EntityQuery($this->entityConnection);
@@ -1709,10 +1733,18 @@ class EntityManager extends AbstractEntityStore
      */
     public function getEntityQuery($properties = true, $withJoin = false)
     {
-        $builder = $this->getSelectiveQuery($withJoin, true);
+        $builder = $this->getSelectiveQuery(false, true);
         if ($properties === true) {
-            $properties = $this->getSelectiveColumn($this->getThisEntity(), $builder, $withJoin);
+            $properties = $this->getSelectiveColumn($this->getThisEntity(), $builder, false);
             $builder->setProperty(array_values($properties));
+            if ($withJoin) {
+                foreach ($this->getThisEntity()->getDerivedProperties() as $propertyName => $no) {
+                    $derived = $this->getThisEntity()->getProperty($propertyName)->getDerived();
+                    if ($derived->getHold() !== ResolvedJoin::HOLD_TYPE_ARRAY) {
+                        $builder->setDerivedProperty($propertyName);
+                    }
+                }
+            }
         } else if (is_array($properties)) {
             foreach ($properties as $name) {
                 if (strpos($name, '.') === false) {
@@ -1762,7 +1794,7 @@ class EntityManager extends AbstractEntityStore
             }
             $iterator[] = $value;
         }
-        return new DataIterator($iterator);
+        return new DataIterator($this->processLazyProperties($iterator));
     }
 
     /**
@@ -1790,7 +1822,6 @@ class EntityManager extends AbstractEntityStore
         }
 
         $updated = $query->update();
-
 
         $this->executeAfterChange(self::UPDATE);
 
