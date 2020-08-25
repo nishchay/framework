@@ -1089,7 +1089,7 @@ class EntityClass extends AbstractEntityStore
      * 
      * @param type $instance
      */
-    public function validateEntityRecord($instance, $fetchedInstance)
+    public function validateEntityRecord($instance, $fetchedInstance, $skipRelativeValidation = false)
     {
         $passed = [];
         foreach ($this->getProperties() as $name) {
@@ -1109,7 +1109,9 @@ class EntityClass extends AbstractEntityStore
 
             $property->validate($fetchedInstance, $value);
 
-            $property->getRelative() && $this->validateRelative($property, $value);
+            if ($skipRelativeValidation === false) {
+                $property->getRelative() && $this->validateRelative($property, $value);
+            }
 
             $value !== null && $passed[$name] = $value;
         }
@@ -1211,7 +1213,7 @@ class EntityClass extends AbstractEntityStore
                 ->getRelativeOf($parent->getClass())) !== false) {
             $relativePropertyName = $property->getPropertyName();
         }
-        
+
         if ($relativePropertyName !== false) {
             return $relativePropertyName;
         }

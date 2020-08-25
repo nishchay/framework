@@ -165,6 +165,13 @@ class EntityManager extends AbstractEntityStore
     private $tempData = [];
 
     /**
+     * Flag for skipping relative validation.
+     * 
+     * @var bool 
+     */
+    private $skipRelativeValidation = false;
+
+    /**
      * 
      * @param string|object $class
      */
@@ -521,7 +528,7 @@ class EntityManager extends AbstractEntityStore
 
         if ($records instanceof DataIterator) {
             $records = $records->getArrayCopy();
-        } else if (empty ($records)) {
+        } else if (empty($records)) {
             $records = [$this];
         }
 
@@ -867,6 +874,9 @@ class EntityManager extends AbstractEntityStore
         # stored as array. 
         foreach ($derived as $index => $values) {
             foreach ($values as $key => $entry) {
+                if ($entry === null) {
+                    continue;
+                }
                 $assigned = [];
                 foreach ($assignable as $name => $alias) {
                     $assigned[$name] = $entry instanceof \stdClass ?
@@ -1126,6 +1136,18 @@ class EntityManager extends AbstractEntityStore
     }
 
     /**
+     * Enable or disable skip relative value verification.
+     * 
+     * @param bool $flag
+     * @return $this
+     */
+    public function skipRelativeValidation(bool $flag = true)
+    {
+        $this->skipRelativeValidation = $flag;
+        return $this;
+    }
+
+    /**
      * Insets record into database table.
      * 
      * @return int|booean
@@ -1136,7 +1158,7 @@ class EntityManager extends AbstractEntityStore
         # for anything. Below method will return updated properties with its 
         # value. We will these property query builder for update.
         $passed = $this->getThisEntity()
-                ->validateEntityRecord($this->getInstance(), $this->getInstanceOfFetched());
+                ->validateEntityRecord($this->getInstance(), $this->getInstanceOfFetched(), $this->skipRelativeValidation);
 
         # Will not proceed if nothing has been updated.
         if (empty($passed)) {
@@ -1224,9 +1246,11 @@ class EntityManager extends AbstractEntityStore
 
             # If the property is relative to property  of another class, we
             # should verify that value belongs to that property.
-            $property->getRelative() &&
-                            $this->getThisEntity()
-                            ->validateRelative($property, $value);
+            if ($this->skipRelativeValidation === false) {
+                $property->getRelative() &&
+                                $this->getThisEntity()
+                                ->validateRelative($property, $value);
+            }
         }
     }
 
