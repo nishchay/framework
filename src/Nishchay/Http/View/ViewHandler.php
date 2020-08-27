@@ -48,12 +48,6 @@ class ViewHandler
     private $locator;
 
     /**
-     *
-     * @var TwigHandler
-     */
-    private $twigView;
-
-    /**
      * 
      * @param type $class
      * @param type $method
@@ -154,11 +148,7 @@ class ViewHandler
      */
     private function getTwigView(string $path, string $viewName)
     {
-        if ($this->twigView !== null) {
-            return $this->twigView;
-        }
-
-        return $this->twigView = new TwigView($this->getViewLocator(), $path, $viewName);
+        return new TwigView($this->getViewLocator(), $path, $viewName);
     }
 
 }
