@@ -253,14 +253,15 @@ class DataType extends BaseAnnotationDefinition
                         '::' . $this->propertyName . '] can not be'
                         . ' null or empty.', $this->class, null, 911005);
             }
+
+            # We still need to check if record was update or not.
+            $this->readonly && $this->checkReadonly($set);
+
             return true;
         }
 
         # Now we should check that property is readonly or not.
-        if ($this->readonly && $set) {
-            throw new ApplicationException('Property [' . $this->class . '::' .
-                    $this->propertyName . '] is readonly.', $this->class, null, 911006);
-        }
+        $this->readonly && $this->checkReadonly($set);
 
         $this->validatePredefined($value) || $this->validateUserDefined($value);
 
@@ -271,6 +272,20 @@ class DataType extends BaseAnnotationDefinition
         }
 
         return true;
+    }
+
+    /**
+     * This throws error if set is true.
+     * 
+     * @param bool $set
+     * @throws ApplicationException
+     */
+    private function checkReadonly(bool $set)
+    {
+        if ($set) {
+            throw new ApplicationException('Property [' . $this->class . '::' .
+                    $this->propertyName . '] is readonly.', $this->class, null, 911006);
+        }
     }
 
     /**
