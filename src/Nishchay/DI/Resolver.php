@@ -28,6 +28,13 @@ abstract class Resolver extends InstanceList
     protected $ignored = [];
 
     /**
+     * Properties added 
+     * 
+     * @var array 
+     */
+    protected $resolveList = [];
+
+    /**
      * Find value by it's name.
      * 
      * @param   string      $name
@@ -35,6 +42,39 @@ abstract class Resolver extends InstanceList
      * @throws  Exception
      */
     abstract protected function getValue($name, $type = 'parameter');
+
+    /**
+     * Adds dependency to resolve list.
+     * 
+     * @param   string      $name
+     * @param   string      $value
+     * @return  null
+     */
+    public function set($name, $value = null)
+    {
+        if (is_array($name)) {
+            foreach ($name as $propertyName => $propertyValue) {
+                $this->resolveList[$propertyName] = $propertyValue;
+            }
+            return $this;
+        }
+
+        $this->resolveList[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * Removes dependency from resolve list.
+     * 
+     * @param string $name
+     */
+    public function remove(string $name)
+    {
+        if (is_string($name) && array_key_exists($name, $this->resolveList)) {
+            unset($this->resolveList[$name]);
+        }
+        return $this;
+    }
 
     /**
      * Resolves parameter to its value.
@@ -49,7 +89,8 @@ abstract class Resolver extends InstanceList
             return $instance;
         }
 
-        $reflection = new ReflectionClass($class);
+        $instead = $params[$class] ?? $this->getValue($class, 'parameter', false);
+        $reflection = new ReflectionClass($instead ? $instead : $class);
         if (($constructor = $reflection->getConstructor()) !== null) {
             return $reflection->newInstanceArgs($this->getMethodParameter($constructor, $params));
         } else {

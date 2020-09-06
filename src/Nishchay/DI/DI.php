@@ -33,13 +33,6 @@ class DI extends Resolver
     private $object = null;
 
     /**
-     * Properties added 
-     * 
-     * @var array 
-     */
-    private $resolveList = [];
-
-    /**
      * Initialization
      * Creates reflection object from where this class get called
      * 
@@ -54,48 +47,23 @@ class DI extends Resolver
     }
 
     /**
-     * Gets value from either calling class property or global.
-     * 
-     * @param   string  $name
-     * @return  mixed
-     */
-    private function getFromOther($name, $type)
-    {
-        if ($this->reflection !== null && $this->reflection->hasProperty($name)) {
-            return $this->getObjectsProperty($name);
-        }
-        return $this->getGlobalValue($name, $type);
-    }
-
-    /**
-     * Returns value of given property from calling class.
-     * 
-     * @param   string      $name
-     * @return  mixed
-     * @throws  UnableToResolveException
-     */
-    private function getObjectsProperty($name)
-    {
-        if (($property = $this->reflection->getProperty($name)) !== FALSE) {
-            $property->setAccessible(TRUE);
-            return $property->getValue($this->object);
-        }
-    }
-
-    /**
      * Returns value added into global access. If not found then throws exception.
      * 
      * @param   string      $name
      * @return  mixed
      * @throws  UnableToResolveException
      */
-    private function getGlobalValue($name, $type)
+    private function getGlobalValue($name, $type, $exception = true)
     {
         if (DependencyList::exist($name)) {
             return DependencyList::get($name);
         }
 
-        throw new UnableToResolveException('Unable to resolve ' . $type . ' [' . $name . '].', null, null, 915001);
+        if ($exception) {
+            throw new UnableToResolveException('Unable to resolve ' . $type . ' [' . $name . '].', null, null, 915001);
+        }
+        
+        return null;
     }
 
     /**
@@ -108,42 +76,9 @@ class DI extends Resolver
      * @return  mixed
      * @throws  UnableToResolveException
      */
-    protected function getValue($name, $type = 'paramter')
+    protected function getValue($name, $type = 'paramter', $exception = true)
     {
-        return array_key_exists($name, $this->resolveList) ? $this->resolveList[$name] : $this->getFromOther($name, $type);
-    }
-
-    /**
-     * Adds dependency to resolve list.
-     * 
-     * @param   string      $name
-     * @param   string      $value
-     * @return  null
-     */
-    public function set($name, $value = null)
-    {
-        if (is_array($name)) {
-            foreach ($name as $propertyName => $propertyValue) {
-                $this->resolveList[$propertyName] = $propertyValue;
-            }
-            return $this;
-        }
-
-        $this->resolveList[$name] = $value;
-        return $this;
-    }
-
-    /**
-     * Removes dependency from resolve list.
-     * 
-     * @param string $name
-     */
-    public function remove(string $name)
-    {
-        if (is_string($name) && array_key_exists($name, $this->resolveList)) {
-            unset($this->resolveList[$name]);
-        }
-        return $this;
+        return array_key_exists($name, $this->resolveList) ? $this->resolveList[$name] : $this->getGlobalValue($name, $type, $exception);
     }
 
     /**
