@@ -48,7 +48,7 @@ class Collection extends AbstractCollection
      * 
      * @var boolean 
      */
-    private $sorted = FALSE;
+    private $sorted = false;
 
     /**
      * Initialization

@@ -19,6 +19,7 @@ use Nishchay\Event\Collection as EventCollection;
 use Nishchay\Mail\Collection as MailCollection;
 use Nishchay\Cache\Collection as CacheCollection;
 use Nishchay\Security\Encrypt\Collection as EncryptCollection;
+use Nishchay\Container\Collection as ContainerCollection;
 use Nishchay\Handler\Dispatcher;
 use Nishchay\Processor\Structure\StructureProcessor;
 use Nishchay\Persistent\System as SystemPersistent;
@@ -284,14 +285,9 @@ final class Application
         if (file_exists(SETTINGS . 'constants.php')) {
             require_once SETTINGS . 'constants.php';
         }
-        $this->register('exceptionHandler', new Dispatcher());
+
         $this->configurationLoader->deepRequired(SETTINGS . 'functions');
         $this->setApplicationInformation();
-        $this->register('routeCollection', new RouteCollection());
-        $this->register('controllerCollection', new ControllerCollection());
-        $this->register('entityCollection', new EntityCollection);
-        $this->register('handlerCollection', new HandlerCollection());
-        $this->register('eventCollection', new EventCollection());
     }
 
     /**
@@ -329,7 +325,7 @@ final class Application
      */
     public function getRouteCollection()
     {
-        return $this->registered['routeCollection'];
+        return $this->getInstance(RouteCollection::class);
     }
 
     /**
@@ -339,7 +335,7 @@ final class Application
      */
     public function getControllerCollection()
     {
-        return $this->registered['controllerCollection'];
+        return $this->getInstance(ControllerCollection::class);
     }
 
     /**
@@ -349,7 +345,7 @@ final class Application
      */
     public function getExceptionHandler()
     {
-        return $this->registered['exceptionHandler'];
+        return $this->getInstance(Dispatcher::class);
     }
 
     /**
@@ -359,7 +355,7 @@ final class Application
      */
     public function getEntityCollection()
     {
-        return $this->registered['entityCollection'];
+        return $this->getInstance(EntityCollection::class);
     }
 
     /**
@@ -369,7 +365,7 @@ final class Application
      */
     public function getHandlerCollection()
     {
-        return $this->registered['handlerCollection'];
+        return $this->getInstance(HandlerCollection::class);
     }
 
     /**
@@ -379,7 +375,7 @@ final class Application
      */
     public function getEventCollection()
     {
-        return $this->registered['eventCollection'];
+        return $this->getInstance(EventCollection::class);
     }
 
     /**
@@ -390,11 +386,50 @@ final class Application
      */
     public function getEnv($name)
     {
-        if (array_key_exists($name, $this->registered) == false) {
+        return $this->getInstance(EnvironmentVariables::class)->get($name);
+    }
 
-            $this->register('environmentVariable', EnvironmentVariables::getInstance());
+    /**
+     * Returns instance of container collection.
+     * 
+     * @return \Nishchay\Container\Collection
+     */
+    public function getContainerCollection()
+    {
+        return $this->getInstance(ContainerCollection::class);
+    }
+
+    /**
+     * Returns container.
+     * 
+     * @param string $class
+     * @return type
+     */
+    public function getContainer(string $class)
+    {
+        return $this->getContainerCollection()->get($class);
+    }
+
+    /**
+     * Returns instance of given class.
+     * 
+     * @param string $class
+     * @return type
+     */
+    private function getInstance(string $class)
+    {
+        if (array_key_exists($class, $this->registered) == false) {
+
+            if (method_exists($class, __FUNCTION__)) {
+                $instance = call_user_func([$class, __FUNCTION__]);
+            } else {
+                $instance = new $class;
+            }
+
+            $this->register($class, $instance);
         }
-        return $this->registered['environmentVariable']->get($name);
+
+        return $this->registered[$class];
     }
 
     /**
