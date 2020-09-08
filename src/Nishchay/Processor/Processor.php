@@ -305,8 +305,8 @@ class Processor
                 Request::redirect($response->getRoute());
             }
         } else {
-            new ResponseHandler($className, $methodName, $response);
             $this->eventManager->fireAfterEvent($this->currentClass, $this->currentMethod, $context, $scope);
+            new ResponseHandler($className, $methodName, $response);
         }
     }
 

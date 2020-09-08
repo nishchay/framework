@@ -33,14 +33,7 @@ class Collection extends AbstractSingleton
     private $collection = [];
 
     /**
-     * Flag for cache is enabled or not.
-     * 
-     * @var type 
-     */
-    private $enabled;
-
-    /**
-     * DEfault cache config.
+     * Default cache config.
      * 
      * @var type 
      */
@@ -84,13 +77,7 @@ class Collection extends AbstractSingleton
      */
     private function isOffline($config): bool
     {
-        if ($this->enabled !== null) {
-            return $this->enabled;
-        }
-
-        $this->enabled = Nishchay::getSetting('cache.enable');
-
-        if ($this->enabled === false) {
+        if (Nishchay::getSetting('cache.enable') === false) {
             return true;
         }
 

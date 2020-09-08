@@ -149,9 +149,6 @@ class EventManager
 
             $response = $this->di
                     ->invoke($this->getInstance($annotation->getClass()), $annotation->getMethod());
-            if ($response === null) {
-                throw new NotSupportedException('Event must not return null.', null, null, 916008);
-            }
             $annotation instanceof Method && $annotation->markFired();
             if ($response !== true) {
                 return $response;
