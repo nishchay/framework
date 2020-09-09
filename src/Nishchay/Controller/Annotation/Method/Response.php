@@ -18,6 +18,26 @@ class Response extends BaseAnnotationDefinition
 {
 
     /**
+     * Response type view.
+     */
+    const VIEW_RESPONSE = 'view';
+
+    /**
+     * Response type JSON.
+     */
+    const JSON_RESPONSE = 'json';
+
+    /**
+     * Response type XML.
+     */
+    const XML_RESPONSE = 'xml';
+
+    /**
+     * Response type null.
+     */
+    const NULL_RESPONSE = 'null';
+
+    /**
      * All parameter of this annotation.
      * 
      * @var array 
@@ -65,7 +85,7 @@ class Response extends BaseAnnotationDefinition
      */
     protected function setType($type)
     {
-        $supported = ['view', 'json', 'xml', null];
+        $supported = [self::VIEW_RESPONSE, self::JSON_RESPONSE, self::XML_RESPONSE, null];
 
         if (!in_array(strtolower($type), $supported)) {
 
@@ -73,7 +93,7 @@ class Response extends BaseAnnotationDefinition
                     ' not supported.', $this->class, $this->method, 914019);
         }
 
-        $this->type = ($type === null ? 'NULL' : $type);
+        $this->type = ($type === null ? self::NULL_RESPONSE : $type);
     }
 
 }

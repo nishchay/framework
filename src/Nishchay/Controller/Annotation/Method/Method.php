@@ -21,6 +21,7 @@ use Nishchay\Controller\Annotation\ExceptionHandler;
 use Nishchay\Event\Annotation\AfterEvent;
 use Nishchay\Event\Annotation\BeforeEvent;
 use Nishchay\Service\Annotation\Service;
+use Nishchay\Utility\MethodInvokerTrait;
 
 /**
  * Description of MethodAnnotation
@@ -32,6 +33,8 @@ use Nishchay\Service\Annotation\Service;
  */
 class Method extends BaseAnnotationDefinition
 {
+
+    use MethodInvokerTrait;
 
     /**
      * All annotation defined on method.
@@ -198,15 +201,14 @@ class Method extends BaseAnnotationDefinition
             $this->defaultAnnotation['service'] = [];
         }
 
-        foreach ($this->defaultAnnotation as $annotation => $default_parameter) {
+        foreach ($this->defaultAnnotation as $annotation => $defaultParameter) {
             if ($this->{$annotation} === false) {
-                $method = 'set' . ucfirst($annotation);
-                call_user_func([$this, $method], $default_parameter);
+                $this->invokeMethod([$this, 'set' . ucfirst($annotation)], [$defaultParameter]);
             }
         }
 
         if ($this->service !== false &&
-                in_array(strtolower($this->response->getType()), ['null', 'view'])) {
+                in_array(strtolower($this->response->getType()), [Response::NULL_RESPONSE, Response::VIEW_RESPONSE])) {
             throw new InvalidAnnotationExecption('Route ['
                     . $this->getRoute()->getPath() . '] is service which requires'
                     . ' its response type either JSON or XML.', $this->class, $this->method, 914013);
@@ -232,7 +234,7 @@ class Method extends BaseAnnotationDefinition
                         . ' ' . $key . '].', $this->class, $this->method, 914014);
             }
 
-            call_user_func([$this, $method], $value);
+            $this->invokeMethod([$this, $method], [$value]);
         }
     }
 
