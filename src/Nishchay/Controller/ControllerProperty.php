@@ -64,11 +64,11 @@ class ControllerProperty
             return false;
         }
         list($annotation, $value) = [key($annotations), current($annotations)];
-        $property->setAccessible(TRUE);
+        $property->setAccessible(true);
         $calling = new DI(new stdClass());
         switch ($annotation) {
             case 'bind':
-                $property->setValue($this->instance, $calling->create($value, TRUE));
+                $property->setValue($this->instance, $calling->create($value, true));
             case 'service':
                 $property->setValue($this->instance, new Service());
             default:

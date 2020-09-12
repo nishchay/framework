@@ -24,7 +24,7 @@ class Route extends BaseAnnotationDefinition
      * 
      * @var array 
      */
-    private static $requestMethods = ['GET', 'POST', 'PUT', 'DELETE',
+    const REQUEST_METHODS = ['GET', 'POST', 'PUT', 'DELETE',
         'OPTIONS', 'HEAD', 'TRACE', 'CONNECT'];
 
     /**
@@ -95,24 +95,42 @@ class Route extends BaseAnnotationDefinition
     private $type = false;
 
     /**
+     * Is route prepared from pattern.
+     * 
+     * @var bool
+     */
+    private $isPatterned = false;
+
+    /**
      * 
      * @param   string      $class
      * @param   string      $method
      * @param   array       $parameter
-     * @param   boolean     $special
+     * @param   boolean     $placeholderExists
      */
-    public function __construct($class, $method, $parameter, Controller $controller, $special)
+    public function __construct($class, $method, $parameter, Controller $controller, $placeholderExists, $isPatterned)
     {
         parent::__construct($class, $method);
         $this->parameter = ArrayUtility::customeKeySort($parameter, ['see', 'route']);
 
         # Special annotation defined on same method.
-        $this->placeholderAnnotation = $special;
+        $this->placeholderAnnotation = $placeholderExists;
+        $this->isPatterned = $isPatterned;
         $this->setter($this->parameter, 'parameter');
 
         # Now we should verify that defintion have set path.
         # We also have to preg quote the path.
         $this->verify($controller);
+    }
+
+    /**
+     * Returns true if route prepared from pattern.
+     * 
+     * @return bool
+     */
+    public function isPatterned(): bool
+    {
+        return $this->isPatterned;
     }
 
     /**
@@ -130,7 +148,7 @@ class Route extends BaseAnnotationDefinition
      * 
      * @return boolean
      */
-    public function getPrefix()
+    public function getPrefix(): bool
     {
         return $this->prefix;
     }
@@ -180,9 +198,9 @@ class Route extends BaseAnnotationDefinition
      * 
      * @param boolean $prefix
      */
-    protected function setPrefix($prefix)
+    protected function setPrefix(bool $prefix)
     {
-        $this->prefix = (bool) $prefix;
+        $this->prefix = $prefix;
     }
 
     /**
@@ -256,13 +274,8 @@ class Route extends BaseAnnotationDefinition
      * 
      * @param boolean $see
      */
-    protected function setSee($see)
+    protected function setSee(bool $see)
     {
-        if (!is_bool($see)) {
-            throw new InvalidAnnotationParameterException('Annotation [route]'
-                    . ' parameter name [see] must be boolean.', $this->class, $this->method, 926009);
-        }
-
         $this->see = $see;
 
         if ($see === true) {
@@ -275,7 +288,7 @@ class Route extends BaseAnnotationDefinition
      * 
      * @return type
      */
-    public function getIncoming()
+    public function getIncoming(): bool
     {
         return $this->incoming;
     }
@@ -285,7 +298,7 @@ class Route extends BaseAnnotationDefinition
      * 
      * @param boolean $incoming
      */
-    protected function setIncoming($incoming)
+    protected function setIncoming(bool $incoming)
     {
         $this->incoming = $incoming;
     }
@@ -295,7 +308,7 @@ class Route extends BaseAnnotationDefinition
      * 
      * @return array
      */
-    public function getSpecialValues()
+    public function getPlaceholderValues()
     {
         return $this->placeholder;
     }
@@ -322,7 +335,7 @@ class Route extends BaseAnnotationDefinition
      */
     public function getValidRequestMethods()
     {
-        return self::$requestMethods;
+        return self::REQUEST_METHODS;
     }
 
 }

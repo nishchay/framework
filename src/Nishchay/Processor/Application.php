@@ -19,6 +19,7 @@ use Nishchay\Event\Collection as EventCollection;
 use Nishchay\Mail\Collection as MailCollection;
 use Nishchay\Cache\Collection as CacheCollection;
 use Nishchay\Security\Encrypt\Collection as EncryptCollection;
+use Nishchay\Route\Pattern\Collection as PatternCollection;
 use Nishchay\Handler\Dispatcher;
 use Nishchay\Processor\Structure\StructureProcessor;
 use Nishchay\Persistent\System as SystemPersistent;
@@ -395,6 +396,21 @@ final class Application
             $this->register('environmentVariable', EnvironmentVariables::getInstance());
         }
         return $this->registered['environmentVariable']->get($name);
+    }
+
+    /**
+     * Returns instance  pattern collection.
+     * 
+     * @return PatternCollection
+     */
+    public function getRoutePatternCollection()
+    {
+        $name = 'patternCollection';
+        if (array_key_exists($name, $this->registered) !== false) {
+            return $this->registered[$name];
+        }
+
+        return $this->registered[$name] = new PatternCollection();
     }
 
     /**
