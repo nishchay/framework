@@ -85,6 +85,10 @@ class Response extends BaseAnnotationDefinition
      */
     protected function setType($type)
     {
+        if (is_string($type) && strlen($type) === 0) {
+            throw new InvalidAnnotationParameterException('Response type [' . $type . ']' .
+                    ' is not valid.', $this->class, $this->method, 914028);
+        }
         $supported = [self::VIEW_RESPONSE, self::JSON_RESPONSE, self::XML_RESPONSE, null];
 
         if (!in_array(strtolower($type), $supported)) {

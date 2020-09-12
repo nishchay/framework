@@ -4,6 +4,7 @@ namespace Nishchay\Route\Annotation;
 
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
+use Nishchay\Exception\InvalidAnnotationExecption;
 use Nishchay\Annotation\BaseAnnotationDefinition;
 
 /**
@@ -25,6 +26,13 @@ class Placeholder extends BaseAnnotationDefinition
     private $placeholder = [];
 
     /**
+     * Actual placeholder defined on annotation.
+     * 
+     * @var array
+     */
+    private $actualPlaceholder = [];
+
+    /**
      * Placeholder patterns.
      * 
      * @var array 
@@ -39,6 +47,7 @@ class Placeholder extends BaseAnnotationDefinition
     private $supported = [
         'string' => '([a-zA-Z0-9_-]+)',
         'number' => '([0-9]+)',
+        'int' => '([0-9]+)',
         'alphanum' => '([a-zA-Z0-9]+)'
     ];
 
@@ -60,6 +69,7 @@ class Placeholder extends BaseAnnotationDefinition
     {
         parent::__construct($class, $method);
         $this->route = $route;
+        $this->actualPlaceholder = $placeholder;
         $this->setPlaceholder($placeholder);
     }
 
@@ -73,6 +83,17 @@ class Placeholder extends BaseAnnotationDefinition
     }
 
     /**
+     * Returns placeholder type.
+     * 
+     * @param string $name
+     * @return type
+     */
+    public function getPlaceholderType(string $name)
+    {
+        return $this->actualPlaceholder[$name] ?? false;
+    }
+
+    /**
      * Sets placeholders.
      * 
      * @param array $placeholders
@@ -81,9 +102,13 @@ class Placeholder extends BaseAnnotationDefinition
      */
     protected function setPlaceholder($placeholders)
     {
-        # Checking if there is special value mismatch.
+        if (is_array($placeholders) === false || empty($placeholders)) {
+            throw new InvalidAnnotationExecption('Invalid annotation [placeholder].', $this->class, $this->method, 926012);
+        }
+
+        # Checking if there is placeholder value mismatch.
         $diff = array_diff(array_keys($placeholders),
-                $this->route->getSpecialValues());
+                $this->route->getPlaceholderValues());
         if (count($diff) > 0) {
             throw new ApplicationException('Route placeholder values  mismatch. ['
                     . implode(',', $diff) . '] does not exist in route path.',
