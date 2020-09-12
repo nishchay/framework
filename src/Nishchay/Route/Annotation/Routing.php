@@ -27,9 +27,15 @@ class Routing extends BaseAnnotationDefinition
     /**
      * Case for the route prefix.
      * 
-     * @var type 
+     * @var string
      */
     private $case;
+
+    /**
+     *
+     * @var string
+     */
+    private $pattern = false;
 
     /**
      * 
@@ -106,6 +112,26 @@ class Routing extends BaseAnnotationDefinition
     protected function setCase($case)
     {
         $this->case = $case;
+        return $this;
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public function getPattern()
+    {
+        return $this->pattern;
+    }
+
+    /**
+     * 
+     * @param string $pattern
+     * @return $this
+     */
+    protected function setPattern(string $pattern)
+    {
+        $this->pattern = $pattern;
         return $this;
     }
 

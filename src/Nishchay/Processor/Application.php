@@ -20,6 +20,7 @@ use Nishchay\Mail\Collection as MailCollection;
 use Nishchay\Cache\Collection as CacheCollection;
 use Nishchay\Security\Encrypt\Collection as EncryptCollection;
 use Nishchay\Container\Collection as ContainerCollection;
+use Nishchay\Route\Pattern\Collection as PatternCollection;
 use Nishchay\Handler\Dispatcher;
 use Nishchay\Processor\Structure\StructureProcessor;
 use Nishchay\Persistent\System as SystemPersistent;
@@ -430,6 +431,16 @@ final class Application
         }
 
         return $this->registered[$class];
+    }
+
+    /**
+     * Returns instance  pattern collection.
+     * 
+     * @return PatternCollection
+     */
+    public function getRoutePatternCollection()
+    {
+        return $this->getInstance(PatternCollection::class);
     }
 
     /**

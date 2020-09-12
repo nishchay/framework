@@ -43,7 +43,18 @@ class Loader
         }
 
         $config = require $file;
-        return $this->loaded[$name] = Coding::decodeJSON(Coding::encodeJSON($config));
+        return $this->loaded[$name] = $this->toObject($config);
+    }
+    
+    /**
+     * Returns array converted to object.
+     * 
+     * @param array $array
+     * @return \stdClass
+     */
+    public function toObject($array)
+    {
+        return is_array($array) ? (object) array_map(__METHOD__, $array) : $array;
     }
 
     /**
