@@ -45,7 +45,7 @@ class Message
      * List of thread.
      * 
      * @Route(path='{threadId}', type=GET)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=VIEW)
      */
     public function messageView($threadId = '@Segment(index=threadId)')
@@ -59,7 +59,7 @@ class Message
      * You may want to implement this for AJAX so response type is JSON.
      * 
      * @Route(path='{threadId}/member', type=POST)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
     public function addMember($threadId = '@Segment(index=threadId)')
@@ -77,7 +77,7 @@ class Message
      * You may want to implement this for AJAX so response type is JSON.
      * 
      * @Route(path='{threadId}/member', type=DELETE)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
     public function removeMember($threadId = '@Segment(index=threadId)')
@@ -95,7 +95,7 @@ class Message
      * You may want to implement this for AJAX so response type is JSON.
      * 
      * @Route(path='{threadId}/leave', type=DELETE)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
     public function leave($threadId = '@Segment(index=threadId)')
@@ -108,7 +108,7 @@ class Message
      * You may want to implement this for AJAX so response type is JSON.
      * 
      * @Route(path='{threadId}/send', type=POST)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
     public function send($threadId = '@Segment(index=threadId)')
@@ -125,7 +125,7 @@ class Message
      * Remove thread.
      * 
      * @Route(path='{threadId}', type=DELETE)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
     public function removeThread($threadId = '@Segment(index=threadId)')
@@ -137,7 +137,7 @@ class Message
      * Remove thread.
      * 
      * @Route(path='{threadId}/{messageId}', type=DELETE)
-     * @Special(threadId=number,messageId=number)
+     * @Placeholder(threadId=number,messageId=number)
      * @Response(type=JSON)
      */
     public function removeMessage($param)

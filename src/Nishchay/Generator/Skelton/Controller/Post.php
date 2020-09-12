@@ -41,7 +41,7 @@ class Post
      * Edit post.
      * 
      * @Route(path='{postId}')
-     * @Special(postId=number)
+     * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
     public function viewPost($postId = '@Segment(index=postId)')
@@ -53,7 +53,7 @@ class Post
      * Edit post.
      * 
      * @Route(path='{postId}/like')
-     * @Special(postId=number)
+     * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
     public function likePost($postId = '@Segment(index=postId)')
@@ -65,7 +65,7 @@ class Post
      * Edit post.
      * 
      * @Route(path='{postId}/edit')
-     * @Special(postId=number)
+     * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
     public function editPost($postId = '@Segment(index=postId)')
@@ -76,7 +76,7 @@ class Post
     /**
      * 
      * @Route(path='{postId}/remove')
-     * @Special(postId=number)
+     * @Placeholder(postId=number)
      * @Response(type=JSON)
      */
     public function removePost($postId = '@Segment(index=postId)')
@@ -88,7 +88,7 @@ class Post
      * View List of comment.
      * 
      * @Route(path='{postId}/comments')
-     * @Special(postId=number)
+     * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
     public function viewComments($postId = '@Segment(index=postId)')
@@ -100,7 +100,7 @@ class Post
      * Add comment.
      * 
      * @Route(path='{postId}/comment/add')
-     * @Special(postId=number)
+     * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
     public function addComment($postId = '@Segment(index=postId)')
@@ -112,7 +112,7 @@ class Post
      * Add comment.
      * 
      * @Route(path='{postId}/comment/{commentId}/like')
-     * @Special(postId=number,commentId=number)
+     * @Placeholder(postId=number,commentId=number)
      * @Response(type=VIEW)
      */
     public function likeComment($postId = '@Segment(index=postId)',
@@ -125,7 +125,7 @@ class Post
      * Add comment.
      * 
      * @Route(path='{postId}/comment/{commentId}/edit')
-     * @Special(postId=number,commentId=number)
+     * @Placeholder(postId=number,commentId=number)
      * @Response(type=VIEW)
      */
     public function editComment($postId = '@Segment(index=postId)',
@@ -138,7 +138,7 @@ class Post
      * Add comment.
      * 
      * @Route(path='{postId}/comment/{commentId}/remove')
-     * @Special(postId=number,commentId=number)
+     * @Placeholder(postId=number,commentId=number)
      * @Response(type=VIEW)
      */
     public function removeComment($postId = '@Segment(index=postId)',
