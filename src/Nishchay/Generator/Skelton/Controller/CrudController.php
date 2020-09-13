@@ -34,9 +34,8 @@ class CrudController
      * Used for inserting record.
      * 
      * @Route(path='/', type=POST)
-     * @Special(id='string')
      */
-    public function create($id = '@Segment(index=id)')
+    public function create()
     {
         // TODO: Insert record
     }
@@ -45,9 +44,9 @@ class CrudController
      * Used for viewing record.
      * 
      * @Route(path='{id}', type=GET)
-     * @Special(id='string')
+     * @Placeholder(id=number)
      */
-    public function fetch($id = '@Segment(index=id)')
+    public function fetch(int $id)
     {
         // TODO: Fetch record
     }
@@ -56,9 +55,9 @@ class CrudController
      * Used for updating record.
      * 
      * @Route(path='{id}', type=PUT)
-     * @Special(id='string')
+     * @Placeholder(id=number)
      */
-    public function update($id = '@Segment(index=id)')
+    public function update(int $id)
     {
         // TODO: Update record
     }
@@ -67,9 +66,9 @@ class CrudController
      * Used for deleting record.
      * 
      * @Route(path='{id}', type=DELETE)
-     * @Special(id='string')
+     * @Placeholder(id=number)
      */
-    public function delete($id = '@Segment(index=id)')
+    public function delete(int $id)
     {
         // TODO: Delete record
     }

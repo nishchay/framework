@@ -6,7 +6,7 @@ namespace Nishchay\Generator\Skelton\Entity\Message;
  * Thread member entity class.
  *
  * #ANN_START
- * @license     http:#Nishchay.io/license New BSD License
+ * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel
@@ -23,54 +23,62 @@ class ThreadMember
      * @Identity
      * @DataType(type=int, readonly=true)
      */
-    private $threadMemberId;
+    public $threadMemberId;
 
     /**
-     *
+     * Thread id to which member is belongs to.
+     * 
      * @DataType(type=int, required=true)
      */
-    private $threadId;
+    public $threadId;
 
     /**
-     *
+     * User id.
+     * 
      * @DataType(type=int, required=true)
      */
-    private $memberId;
+    public $userId;
 
     /**
-     *
+     * Last visit to this thread by user.
+     * 
      * @DataType(type=datetime)
      */
-    private $lastSeen;
+    public $lastSeen;
 
     /**
-     *
+     * Last message read by this user.
+     * 
      * @DataType(type=int)
      */
-    private $lastReadId;
+    public $lastReadId;
 
     /**
-     *
+     * Last message read at.
+     * 
      * @DataType(type=datetime)
      */
-    private $lastReadAt;
+    public $lastReadAt;
 
     /**
-     *
+     * Last message id which was sent by this user.
+     * 
      * @DataType(type=int)
      */
-    private $lastMessageId;
+    public $lastMessageId;
 
     /**
-     *
+     * Time when last message was sent by this user.
+     * 
      * @DataType(type=datetime)
      */
-    private $lastMessageAt;
+    public $lastMessageAt;
 
     /**
-     *
+     * Is this user admin of thread.
+     * 
      * @DataType(type=string)
      */
-    private $isAdmin;
+    public $isAdmin;
 
 }

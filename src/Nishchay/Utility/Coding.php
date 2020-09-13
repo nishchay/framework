@@ -10,7 +10,7 @@ use Nishchay\Utility\StringUtility;
 /**
  * Coding utility class.
  *
- * @license     http:#Nishchay.io/license New BSD License
+ * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel

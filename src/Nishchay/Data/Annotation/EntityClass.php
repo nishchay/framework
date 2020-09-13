@@ -724,7 +724,7 @@ class EntityClass extends AbstractEntityStore
      * Processes property.
      * 
      * @param   ReflectionProperty $propertyReflection
-     * @return  NULL
+     * @return  null
      */
     private function processProperty(ReflectionProperty $propertyReflection)
     {
@@ -746,6 +746,25 @@ class EntityClass extends AbstractEntityStore
         if ($dataProperty->isDerived() === false &&
                 $dataProperty->getDatatype() === false) {
             return;
+        }
+
+        # Let's reslove class name if from is class name or chain of class name and property.
+        if ($dataProperty->isDerived()) {
+            $derived = $dataProperty->getDerived();
+            if ($derived->isFrom() && $this->getProperty($derived->getFrom()) === false) {
+                $from = $derived->getFrom();
+                $fromArray = explode('.', $from);
+
+                foreach ($fromArray as $index => $from) {
+                    if ($this->isEntity($from) === false) {
+                        $from = $this->getReflectionClass()->getNamespaceName() . '\\' . $from;
+                        if ($this->isEntity($from)) {
+                            $fromArray[$index] = $from;
+                        }
+                    }
+                }
+                $derived->setFrom(implode('.', $fromArray));
+            }
         }
 
         $this->addProperty($dataProperty, $propertyReflection->name);

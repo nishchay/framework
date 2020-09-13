@@ -87,7 +87,7 @@ class AnnotationParser
      * @var array 
      */
     private $usable = [
-        'controller', 'service', 'entity', 'doc', 'event', 'secure',
+        'controller', 'service', 'doc', 'event', 'secure',
         'reflective', 'identity', 'handler', 'noservice'
     ];
 

@@ -34,21 +34,21 @@ class Message
      */
     public function create()
     {
-        // Here you can create thread along with add thread member.
-        // As this skeltonas have addMember route already. You can create thread
-        // here and then forward request to message/{threadId}/addMember.
-        // and then to send message, forward request again to
-        // message/{threadId}/send.
+        # Here you can create thread along with add thread member.
+        # As this skeltonas have addMember route already. You can create thread
+        # here and then forward request to message/{threadId}/addMember.
+        # and then to send message, forward request again to
+        # message/{threadId}/send.
     }
 
     /**
      * List of thread.
      * 
      * @Route(path='{threadId}', type=GET)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=VIEW)
      */
-    public function messageView($threadId = '@Segment(index=threadId)')
+    public function messageView(int $threadId)
     {
         $message = "Fetch message using {$threadId}";
         RequestStore::add('message', $message);
@@ -59,12 +59,12 @@ class Message
      * You may want to implement this for AJAX so response type is JSON.
      * 
      * @Route(path='{threadId}/member', type=POST)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
-    public function addMember($threadId = '@Segment(index=threadId)')
+    public function addMember(int $threadId)
     {
-        // Add Member to message thread
+        # Add Member to message thread
         # You might need following request parameter.
         /*
          * 1. thread_id 
@@ -77,12 +77,12 @@ class Message
      * You may want to implement this for AJAX so response type is JSON.
      * 
      * @Route(path='{threadId}/member', type=DELETE)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
-    public function removeMember($threadId = '@Segment(index=threadId)')
+    public function removeMember(int $threadId)
     {
-        // Remove member from message thread
+        # Remove member from message thread
         # You might need following request parameter.
         /*
          * 1. thread_id
@@ -95,29 +95,29 @@ class Message
      * You may want to implement this for AJAX so response type is JSON.
      * 
      * @Route(path='{threadId}/leave', type=DELETE)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
-    public function leave($threadId = '@Segment(index=threadId)')
+    public function leave(int $threadId)
     {
-        // To leave specified thread.
-        // This is for remove yourself from thread
+        # To leave specified thread.
+        # This is for remove yourself from thread
     }
 
     /**
      * You may want to implement this for AJAX so response type is JSON.
      * 
      * @Route(path='{threadId}/send', type=POST)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
-    public function send($threadId = '@Segment(index=threadId)')
+    public function send(int $threadId)
     {
-        // Send message to thread.
+        # Send message to thread.
         # You might need following request parameter.
         /*
-         * 1. message_content
-         * 2. message_type 
+         * 1. messageContent
+         * 2. messageType 
          */
     }
 
@@ -125,34 +125,34 @@ class Message
      * Remove thread.
      * 
      * @Route(path='{threadId}', type=DELETE)
-     * @Special(threadId=number)
+     * @Placeholder(threadId=number)
      * @Response(type=JSON)
      */
-    public function removeThread($threadId = '@Segment(index=threadId)')
+    public function removeThread(int $threadId)
     {
-        
+        # Remove thread
     }
 
     /**
      * Remove thread.
      * 
      * @Route(path='{threadId}/{messageId}', type=DELETE)
-     * @Special(threadId=number,messageId=number)
+     * @Placeholder(threadId=number,messageId=number)
      * @Response(type=JSON)
      */
-    public function removeMessage($param)
+    public function removeMessage(int $threadId, int $messageId)
     {
-        
+        # Remove message from thread
     }
 
     /**
      * @Route(path='{threadId}/{messageId}/read', type=PUT)
      * @Response(type=JSON)
      */
-    public function markRead()
+    public function markRead(int $threadId, int $messageId)
     {
-        // Implement message to mark as read.
-        // You can implement list of messge or thread to be marked as read.
+        # Implement message to mark as read.
+        # You can implement list of messge or thread to be marked as read.
     }
 
 }
