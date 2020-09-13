@@ -6,7 +6,7 @@ namespace Nishchay\Generator\Skelton\Controller\Hostel;
  * Hostel controller class.
  *
  * #ANN_START
- * @license     http:#Nishchay.io/license New BSD License
+ * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel
@@ -37,7 +37,7 @@ class Hostel
      * @Route(path='{hostelId}', type=GET)
      * @Placeholder(hostelId=number)
      */
-    public function view($hostelId = '@Segment(index=hostelId)')
+    public function view(int $hostelId)
     {
         # Display hostel detail
     }
@@ -47,7 +47,7 @@ class Hostel
      * 
      * @Route(path='/', type=POST)
      */
-    public function create($hostelId = '@Segment(index=hostelId)')
+    public function create()
     {
         # Create new hostel
     }
@@ -58,7 +58,7 @@ class Hostel
      * @Route(path='{hostelId}', type=PUT)
      * @Placeholder(hostelId=number)
      */
-    public function update($hostelId = '@Segment(index=hostelId)')
+    public function update(int $hostelId)
     {
         # Update hostel detail
     }
@@ -69,7 +69,7 @@ class Hostel
      * @Route(path='{hostelId}', type=DELETE)
      * @Placeholder(hostelId=number)
      */
-    public function remove($hostelId = '@Segment(index=hostelId)')
+    public function remove(int $hostelId)
     {
         # Remove hostel
     }

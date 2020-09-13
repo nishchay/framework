@@ -26,7 +26,7 @@ class Fees
      * @Route(path='{hostelId}/fees', type=GET)
      * @Placeholder(hostelId=number)
      */
-    public function viewHostelFeesList($hostelId = '@Segment(index=hostelId)')
+    public function viewHostelFeesList(int $hostelId)
     {
         # TODO: Display various hostel fees
     }
@@ -37,7 +37,7 @@ class Fees
      * @Route(path='{hostelId}/guests/{guestId}/fees', type=GET)
      * @Placeholder(hostelId=number,guestId=number)
      */
-    public function viewGuestFeesList($hostelId = '@Segment(index=hostelId)')
+    public function viewGuestFeesList(int $hostelId, int $guestId)
     {
         # TODO: Display fees paid by guest or can also display
         # fees pending to paid

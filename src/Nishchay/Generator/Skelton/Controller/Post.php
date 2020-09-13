@@ -29,7 +29,7 @@ class Post
     /**
      * Create post.
      * 
-     * @Route(see=TRUE)
+     * @Route(path='/',type=POST)
      * @Response(type=JSON)
      */
     public function create()
@@ -40,11 +40,11 @@ class Post
     /**
      * Edit post.
      * 
-     * @Route(path='{postId}')
+     * @Route(path='{postId}',type=GET)
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function viewPost($postId = '@Segment(index=postId)')
+    public function viewPost(int $postId)
     {
         
     }
@@ -52,11 +52,11 @@ class Post
     /**
      * Edit post.
      * 
-     * @Route(path='{postId}/like')
+     * @Route(path='{postId}/like',type=POST)
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function likePost($postId = '@Segment(index=postId)')
+    public function likePost(int $postId)
     {
         
     }
@@ -64,22 +64,22 @@ class Post
     /**
      * Edit post.
      * 
-     * @Route(path='{postId}/edit')
+     * @Route(path='{postId}',type=PUT)
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function editPost($postId = '@Segment(index=postId)')
+    public function editPost(int $postId)
     {
         
     }
 
     /**
      * 
-     * @Route(path='{postId}/remove')
+     * @Route(path='{postId}', type=DELETE)
      * @Placeholder(postId=number)
      * @Response(type=JSON)
      */
-    public function removePost($postId = '@Segment(index=postId)')
+    public function removePost(int $postId)
     {
         
     }
@@ -87,11 +87,11 @@ class Post
     /**
      * View List of comment.
      * 
-     * @Route(path='{postId}/comments')
+     * @Route(path='{postId}/comments',type=GET)
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function viewComments($postId = '@Segment(index=postId)')
+    public function viewComments(int $postId)
     {
         
     }
@@ -99,11 +99,11 @@ class Post
     /**
      * Add comment.
      * 
-     * @Route(path='{postId}/comment/add')
+     * @Route(path='{postId}/comment',type=POST)
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function addComment($postId = '@Segment(index=postId)')
+    public function addComment(int $postId)
     {
         
     }
@@ -111,12 +111,11 @@ class Post
     /**
      * Add comment.
      * 
-     * @Route(path='{postId}/comment/{commentId}/like')
+     * @Route(path='{postId}/comment/{commentId}/like',type=POST)
      * @Placeholder(postId=number,commentId=number)
      * @Response(type=VIEW)
      */
-    public function likeComment($postId = '@Segment(index=postId)',
-            $commentId = '@Segment(index=commentId)')
+    public function likeComment(int $postId, int $commentId)
     {
         
     }
@@ -124,12 +123,11 @@ class Post
     /**
      * Add comment.
      * 
-     * @Route(path='{postId}/comment/{commentId}/edit')
+     * @Route(path='{postId}/comment/{commentId}',type=PUT)
      * @Placeholder(postId=number,commentId=number)
      * @Response(type=VIEW)
      */
-    public function editComment($postId = '@Segment(index=postId)',
-            $commentId = '@Segment(index=commentId)')
+    public function editComment(int $postId, int $commentId)
     {
         
     }
@@ -137,12 +135,11 @@ class Post
     /**
      * Add comment.
      * 
-     * @Route(path='{postId}/comment/{commentId}/remove')
+     * @Route(path='{postId}/comment/{commentId}',type=DELETE)
      * @Placeholder(postId=number,commentId=number)
      * @Response(type=VIEW)
      */
-    public function removeComment($postId = '@Segment(index=postId)',
-            $commentId = '@Segment(index=commentId)')
+    public function removeComment(int $postId, int $commentId)
     {
         
     }

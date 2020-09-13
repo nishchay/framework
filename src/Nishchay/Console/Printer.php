@@ -45,7 +45,7 @@ class Printer
      */
     public static function write($string, $color = false, $code = 0)
     {
-        if ($code !== 0) {
+        if (!empty($code)) {
             $string = '(' . $code . ')' . $string;
         }
         if ($color === false) {

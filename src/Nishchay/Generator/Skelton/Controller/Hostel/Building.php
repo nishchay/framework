@@ -6,7 +6,7 @@ namespace Nishchay\Generator\Skelton\Controller\Hostel;
  * Hostel Building controller class.
  *
  * #ANN_START
- * @license     http:#Nishchay.io/license New BSD License
+ * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel
@@ -25,7 +25,7 @@ class Building
      * @Route(path='{hostelId}/building', type=GET)
      * @Placeholder(hostelId=number)
      */
-    public function index($hostelId = '@Segment(index=hostelId)')
+    public function index(int $hostelId)
     {
         # TODO: Display list of building belongs to hostel
     }
@@ -36,7 +36,7 @@ class Building
      * @Route(path='{hostelId}/building/{buildingId}', type=GET)
      * @Placeholder(hostelId=number,buildingId=number)
      */
-    public function view($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)')
+    public function view(int $hostelId, int $buildingId)
     {
         # TODO: Display hostel building detail
     }
@@ -47,7 +47,7 @@ class Building
      * @Route(path='{hostelId}/building', type=POST)
      * @Placeholder(hostelId=number)
      */
-    public function create($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)')
+    public function create(int $hostelId, int $buildingId)
     {
         # TODO: Add building to hostel
     }
@@ -58,7 +58,7 @@ class Building
      * @Route(path='{hostelId}/building/{buildingId}', type=PUT)
      * @Placeholder(hostelId=number,buildingId=number)
      */
-    public function update($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)')
+    public function update(int $hostelId, int $buildingId)
     {
         # TODO: Update building detail.
     }
@@ -69,7 +69,7 @@ class Building
      * @Route(path='{hostelId}/building/{buildingId}', type=DELETE)
      * @Placeholder(hostelId=number,buildingId=number)
      */
-    public function remove($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)')
+    public function remove(int $hostelId, int $buildingId)
     {
         # TODO: Remove building from hostel.
     }
@@ -80,7 +80,7 @@ class Building
      * @Route(path='{hostelId}/building/{buildingId}/guests')
      * @Placeholder(hostelId=number,buildingId=number)
      */
-    public function guests($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)')
+    public function guests(int $hostelId, int $buildingId)
     {
         # TODO: Display list of guests residing in hostel building
     }
@@ -91,7 +91,7 @@ class Building
      * @Route(path='{hostelId}/building/{buildingId}/fees')
      * @Placeholder(hostelId=number,buildingId=number)
      */
-    public function fees($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)')
+    public function fees(int $hostelId, int $buildingId)
     {
         # TODO: Display list of fees for hostel building
     }

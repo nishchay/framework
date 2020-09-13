@@ -6,7 +6,7 @@ namespace Nishchay\Generator\Skelton\Controller\Hostel;
  * Hostel Building room controller class.
  *
  * #ANN_START
- * @license     http:#Nishchay.io/license New BSD License
+ * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel
@@ -27,7 +27,7 @@ class Room
      * @Placeholder(hostelId=number,buildingId=number,roomId=number)
      * @Response(type=VIEW)
      */
-    public function view($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)', $roomId = '@Segment(index=roomId)')
+    public function view(int $hostelId, int $buildingId, int $roomId)
     {
         # TODO: Display building detail
     }
@@ -38,7 +38,7 @@ class Room
      * @Placeholder(hostelId=number,buildingId=number)
      * @Response(type=VIEW)
      */
-    public function create($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)', $roomId = '@Segment(index=roomId)')
+    public function create(int $hostelId, int $buildingId)
     {
         # TODO: ADD room to hostel building
     }
@@ -50,7 +50,7 @@ class Room
      * @Placeholder(hostelId=number,buildingId=number,roomId=number)
      * @Response(type=VIEW)
      */
-    public function update($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)', $roomId = '@Segment(index=roomId)')
+    public function update(int $hostelId, int $buildingId, int $roomId)
     {
         # TODO: Update room detail
     }
@@ -62,7 +62,7 @@ class Room
      * @Placeholder(hostelId=number,buildingId=number,roomId=number)
      * @Response(type=VIEW)
      */
-    public function remove($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)', $roomId = '@Segment(index=roomId)')
+    public function remove(int $hostelId, int $buildingId, int $roomId)
     {
         # TODO: Remove rooom.
     }
@@ -74,7 +74,7 @@ class Room
      * @Placeholder(hostelId=number,buildingId=number,roomId=number)
      * @Response(type=VIEW)
      */
-    public function viewRoomGuests($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)', $roomId = '@Segment(index=roomId)')
+    public function viewRoomGuests(int $hostelId, int $buildingId, int $roomId)
     {
         # TODO: Display list of guest staying in room.
     }
