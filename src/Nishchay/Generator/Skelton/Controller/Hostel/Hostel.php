@@ -47,7 +47,7 @@ class Hostel
      * 
      * @Route(path='/', type=POST)
      */
-    public function create($hostelId = '@Segment(index=hostelId)')
+    public function create()
     {
         # Create new hostel
     }

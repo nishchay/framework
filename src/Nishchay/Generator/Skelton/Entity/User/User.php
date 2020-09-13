@@ -26,27 +26,34 @@ class User
 
     /**
      *
-     * @DataType(type=string,length=50,required=true) 
+     * @DataType(type=string,length=50,required=true,encrypt=true) 
      */
     public $firstName;
 
     /**
      *
-     * @DataType(type=string,length=50,required=true) 
+     * @DataType(type=string,length=50,required=true,encrypt=true) 
      */
     public $lastName;
 
     /**
      *
-     * @DataType(type=string,length=10,required=true) 
+     * @DataType(type=string,value=[male,female],required=true,encrypt=true) 
      */
     public $gender;
     
     /**
      *
-     * @DataType(type=string,length=100,required=true)
+     * @DataType(type=string,length=100,required=true,encrypt=true)
      */
     public $email;
+    
+    /**
+     * User password.
+     * 
+     * @DataType(type=string,length=200,required=true)
+     */
+    public $password;
     
     /**
      *
@@ -56,8 +63,22 @@ class User
 
     /**
      *
-     * @DataType(type=date) 
+     * @DataType(type=date,encrypt=true) 
      */
     public $birthDate;
+    
+    /**
+     * Is user verified.
+     * 
+     * @DataType(type=boolean)
+     */
+    public $isVerified;
+
+    /**
+     * Time when was user verified.
+     * 
+     * @DataType(type=datetime)
+     */
+    public $verifiedAt;
 
 }

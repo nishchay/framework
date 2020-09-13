@@ -44,7 +44,7 @@ class TemplateMapper
             'hostel' => Hostel\Hostel::class,
             'mess' => Hostel\Mess::class,
             'room' => Hostel\Room::class,
-            'student' => Hostel\Student::class,
+            'student' => Hostel\Guest::class,
             'visitor' => Hostel\Visitor::class
         ];
     }

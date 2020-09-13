@@ -38,7 +38,7 @@ class Room
      * @Placeholder(hostelId=number,buildingId=number)
      * @Response(type=VIEW)
      */
-    public function create($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)', $roomId = '@Segment(index=roomId)')
+    public function create($hostelId = '@Segment(index=hostelId)', $buildingId = '@Segment(index=buildingId)')
     {
         # TODO: ADD room to hostel building
     }

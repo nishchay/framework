@@ -41,7 +41,7 @@ class Hostel
      *
      * @DataType(type=int)
      */
-    public $studentCount;
+    public $guestCount;
 
     /**
      *

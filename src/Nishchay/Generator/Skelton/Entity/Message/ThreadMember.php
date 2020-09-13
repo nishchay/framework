@@ -23,54 +23,54 @@ class ThreadMember
      * @Identity
      * @DataType(type=int, readonly=true)
      */
-    private $threadMemberId;
+    public $threadMemberId;
 
     /**
      *
      * @DataType(type=int, required=true)
      */
-    private $threadId;
+    public $threadId;
 
     /**
      *
      * @DataType(type=int, required=true)
      */
-    private $memberId;
+    public $userId;
 
     /**
      *
      * @DataType(type=datetime)
      */
-    private $lastSeen;
+    public $lastSeen;
 
     /**
      *
      * @DataType(type=int)
      */
-    private $lastReadId;
+    public $lastReadId;
 
     /**
      *
      * @DataType(type=datetime)
      */
-    private $lastReadAt;
+    public $lastReadAt;
 
     /**
      *
      * @DataType(type=int)
      */
-    private $lastMessageId;
+    public $lastMessageId;
 
     /**
      *
      * @DataType(type=datetime)
      */
-    private $lastMessageAt;
+    public $lastMessageAt;
 
     /**
      *
      * @DataType(type=string)
      */
-    private $isAdmin;
+    public $isAdmin;
 
 }

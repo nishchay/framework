@@ -40,7 +40,7 @@ class Employee
      * @Route(path='{employeeId}', type=GET)
      * @Placeholder(employeeId=number)
      */
-    public function view()
+    public function view($employeeId = '@Segment(index=employeeId)')
     {
         # TODO: Display employee detail.
     }
@@ -50,7 +50,7 @@ class Employee
      * 
      * @Route(path='/', type=POST)
      */
-    public function create($employeeId = '@Segment(index=employeeId)')
+    public function create()
     {
         # TODO: Create new employee
     }

@@ -29,7 +29,7 @@ class Visitor
      *
      * @DataType(type=int)
      */
-    public $studentId;
+    public $guestId;
 
     /**
      *

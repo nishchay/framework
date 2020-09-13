@@ -23,48 +23,24 @@ class Session
      * @Identity
      * @DataType(type=int, readonly=true)
      */
-    public $sessionId;
+    public $sessionIdentityId;
 
     /**
      *
      * @DataType(type=string, length=200,required=true)
      */
-    public $sessionKey;
+    public $sessionId;
 
     /**
      *
-     * @DataType(type=int, required=true)
+     * @DataType(type=string)
      */
-    public $userId;
-
-    /**
-     *
-     * @DataType(type=string, length=50)
-     */
-    public $ip;
-
-    /**
-     *
-     * @DataType(type=string, length=200)
-     */
-    public $client;
+    public $data;
 
     /**
      *
      * @DataType(type=datetime)
      */
-    public $start;
-
-    /**
-     *
-     * @DataType(type=datetime)
-     */
-    public $end;
-
-    /**
-     *
-     * @DataType(type=int)
-     */
-    public $active;
+    public $accessAt;
 
 }

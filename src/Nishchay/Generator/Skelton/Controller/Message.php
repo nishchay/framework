@@ -140,7 +140,7 @@ class Message
      * @Placeholder(threadId=number,messageId=number)
      * @Response(type=JSON)
      */
-    public function removeMessage($param)
+    public function removeMessage($threadId = '@Segment(index=threadId)', $messageId = '@Segment(index=messageId)')
     {
         
     }
@@ -149,7 +149,7 @@ class Message
      * @Route(path='{threadId}/{messageId}/read', type=PUT)
      * @Response(type=JSON)
      */
-    public function markRead()
+    public function markRead($threadId = '@Segment(index=threadId)', $messageId = '@Segment(index=messageId)')
     {
         // Implement message to mark as read.
         // You can implement list of messge or thread to be marked as read.

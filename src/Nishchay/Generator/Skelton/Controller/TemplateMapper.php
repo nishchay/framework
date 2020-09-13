@@ -59,4 +59,28 @@ class TemplateMapper
         ];
     }
 
+    /**
+     * Returns mapping for post controller template.
+     * 
+     * @return array
+     */
+    private function getPost(): array
+    {
+        return [
+            'post' => Post::class
+        ];
+    }
+
+    /**
+     * Returns mapping for message controller template.
+     * 
+     * @return array
+     */
+    private function getMessage(): array
+    {
+        return [
+            'message' => Message::class
+        ];
+    }
+
 }
