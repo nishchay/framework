@@ -48,7 +48,7 @@ class Collection extends AbstractCollection
      * 
      * @var boolean 
      */
-    private $sorted = FALSE;
+    private $sorted = false;
 
     /**
      * Initialization
@@ -250,7 +250,7 @@ class Collection extends AbstractCollection
             $method = Nishchay::getControllerCollection()
                     ->getMethod("{$route['object']->getClass()}::"
                     . "{$route['object']->getMethod()}");
-            if ($method->getService() !== FALSE) {
+            if ($method->getService() !== false) {
                 $services[] = $route['object'];
             }
         }
@@ -285,7 +285,7 @@ class Collection extends AbstractCollection
                 # Even if route string has been matched, we still need to match 
                 # request method if it is defined on route.
                 if ($all === false && !$this->isRequestAllowed(
-                                $requestMethod, $value['object']->getType()
+                                $requestMethod, $value['object']->getType(), $value['object']
                         )) {
                     continue;
                 }
@@ -322,9 +322,13 @@ class Collection extends AbstractCollection
      * @param   array       $supportedType
      * @return  boolean
      */
-    protected function isRequestAllowed($currentType, $supportedType)
+    protected function isRequestAllowed($currentType, $supportedType, Route $route)
     {
         if (is_array($supportedType) && !in_array($currentType, $supportedType)) {
+            return false;
+        }
+        
+        if (!empty($route->getStage()) && !in_array(Nishchay::getApplicationStage(), $route->getStage())) {
             return false;
         }
 
