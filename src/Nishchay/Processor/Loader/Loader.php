@@ -4,7 +4,7 @@ namespace Nishchay\Processor\Loader;
 
 use Nishchay\Exception\ApplicationException;
 use Nishchay\FileManager\SimpleDirectory;
-use Nishchay\Utility\Coding;
+use Nishchay\Utility\ArrayUtility;
 
 /**
  * Configuration Loader.
@@ -43,18 +43,7 @@ class Loader
         }
 
         $config = require $file;
-        return $this->loaded[$name] = $this->toObject($config);
-    }
-    
-    /**
-     * Returns array converted to object.
-     * 
-     * @param array $array
-     * @return \stdClass
-     */
-    public function toObject($array)
-    {
-        return is_array($array) ? (object) array_map(__METHOD__, $array) : $array;
+        return $this->loaded[$name] = ArrayUtility::toObject($config);
     }
 
     /**

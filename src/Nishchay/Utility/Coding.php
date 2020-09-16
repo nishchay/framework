@@ -312,4 +312,74 @@ class Coding
         return json_decode(json_encode($array), JSON_OBJECT_AS_ARRAY);
     }
 
+    /**
+     * Checks if version in range, version greater than or version less than.
+     * 
+     * @param string $range
+     * @param string $version
+     * @return boolean
+     */
+    public static function isVersionMatch($range, $version)
+    {
+        list($start, $end) = $range;
+        # If start of range does not exist we will check that $version
+        # is lesser then ending range.
+        if (self::isVersionLesser($start, $end, $version)) {
+            return true;
+        }
+        # If ending range does not exist we will check that $version
+        # is greater then starting range.
+        else if (self::isVersionGreater($start, $end, $version)) {
+            return true;
+        } else if (self::isVersionBetween($start, $end, $version)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if $start is empty and $version less than $end.
+     * 
+     * @param string $start
+     * @param string $end
+     * @param string $version
+     * @return boolean
+     */
+    public static function isVersionLesser($start, $end, $version)
+    {
+        return empty($start) && version_compare($version, $end) <= 0;
+    }
+
+    /**
+     * Returns true if $end is empty and $version greater than $end.
+     * 
+     * @param type $start
+     * @param type $end
+     * @param type $version
+     * @return type
+     */
+    public static function isVersionGreater($start, $end, $version)
+    {
+        return empty($end) && version_compare($version, $start) >= 0;
+    }
+
+    /**
+     * Returns true if version is between $start and $end.
+     * 
+     * @param string $start
+     * @param string $end
+     * @param string $version
+     * @return boolean
+     */
+    public static function isVersionBetween($start, $end, $version)
+    {
+        # This fix is for version_compare considers 9 is lower than 9.0
+        if ((int) $version === (int) $version) {
+            $version = (int) $version;
+        }
+        
+        return version_compare($version, $start) >= 0 &&
+                version_compare($version, $end) <= 0;
+    }
+
 }

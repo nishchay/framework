@@ -9,6 +9,7 @@ use Nishchay\Utility\ArrayUtility;
 use Nishchay\Route\Annotation\Placeholder;
 use Nishchay\Route\Annotation\Route;
 use Nishchay\Processor\AbstractCollection;
+use Nishchay\Route\Visibility;
 
 /**
  * Route collection class stores all route defined.
@@ -322,17 +323,28 @@ class Collection extends AbstractCollection
      * @param   array       $supportedType
      * @return  boolean
      */
-    protected function isRequestAllowed($currentType, $supportedType, Route $route)
+    protected function isRequestAllowed(string $currentType, $supportedType, Route $route)
     {
+        if ($this->isVisible($route) === false) {
+            return false;
+        }
         if (is_array($supportedType) && !in_array($currentType, $supportedType)) {
             return false;
         }
-        
+
         if (!empty($route->getStage()) && !in_array(Nishchay::getApplicationStage(), $route->getStage())) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Checks routes visibility.
+     */
+    private function isVisible(Route $route)
+    {
+        return Visibility::getInstance()->check($route);
     }
 
     /**

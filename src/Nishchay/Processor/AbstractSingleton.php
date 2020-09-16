@@ -18,7 +18,7 @@ abstract class AbstractSingleton
 
     private static $instance;
 
-    protected function __construct()
+    final protected function __construct()
     {
         ;
     }
