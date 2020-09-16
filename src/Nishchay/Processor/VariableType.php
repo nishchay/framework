@@ -37,6 +37,11 @@ interface VariableType
      * Data type boolean.
      */
     const BOOLEAN = 'boolean';
+    
+    /**
+     * Data type bool
+     */
+    const BOOL = 'bool';
 
     /**
      * Data type date only.

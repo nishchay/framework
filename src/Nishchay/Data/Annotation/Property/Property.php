@@ -325,6 +325,7 @@ class Property extends BaseAnnotationDefinition
             case VariableType::STRING:
                 return (string) $value;
             case VariableType::BOOLEAN:
+            case VariableType::BOOL:
                 if (is_bool($value) || $value === null) {
                     return $value;
                 } else if (in_array((int) $value, [0, 1])) {

@@ -216,7 +216,7 @@ class Collection extends AbstractCollection
         if (Nishchay::isApplicationStageLive()) {
             System::setPersistent('routes', $this->collection);
         }
-
+        
         $this->sorted = true;
     }
 
@@ -291,8 +291,8 @@ class Collection extends AbstractCollection
                     continue;
                 }
 
-                # If route defintion has defined special segment in it. We will
-                # first find sepecial segemnt and then we will add it to method
+                # If route defintion has defined placeholder segment in it. We will
+                # first find placeholder segemnt and then we will add it to
                 # response.
                 $value['segment'] = [];
                 foreach ($match as $segment => $found) {

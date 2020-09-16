@@ -432,12 +432,23 @@ class DataType extends BaseAnnotationDefinition
     /**
      * Returns TRUE if $value is valid boolean value.
      * 
-     * @param boolean $value
-     * @return boolean
+     * @param bool $value
+     * @return bool
      */
     private function isValidBoolean($value)
     {
         return is_bool($value);
+    }
+    
+    /**
+     * Returns TRUE if $value is valid bool value.
+     * 
+     * @param bool $value
+     * @return bool
+     */
+    private function isValidBool($value)
+    {
+        return $this->isValidBoolean($value);
     }
 
     /**
@@ -583,6 +594,7 @@ class DataType extends BaseAnnotationDefinition
             case VariableType::STRING:
                 return (string) $value;
             case VariableType::BOOLEAN:
+            case VariableType::BOOL:
                 return is_bool($value) ? $value : null;
             case VariableType::DATE:
             case VariableType::DATETIME:

@@ -202,15 +202,15 @@ class ArrayUtility
 
     /**
      * 
-     * @param array $arr
+     * @param array $array
      * @return boolean
      */
-    public static function isIndexedArray(array $arr)
+    public static function isIndexedArray(array $array)
     {
-        if ([] === $arr) {
+        if ([] === $array) {
             return true;
         }
-        return array_keys($arr) === range(0, count($arr) - 1);
+        return array_keys($array) === range(0, count($array) - 1);
     }
 
 }

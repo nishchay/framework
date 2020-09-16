@@ -12,6 +12,7 @@ use Nishchay\Exception\BadRequestException;
 use Nishchay\Controller\Annotation\Method\Parameter\Parameter;
 use Nishchay\DI\DI;
 use Nishchay\Http\Request\Request;
+use Nishchay\Processor\VariableType;
 
 /**
  * Class for validating only and required annotation and assigning values to
@@ -169,6 +170,10 @@ class Controller
                 $value = $this->processRequiredProperty($param, $reflection, $placeholder);
             }
 
+            if ($param->getType() && $param->getType()->getName() === VariableType::DATA_ARRAY && is_array($value) === false) {
+                $value = (array) $value;
+            }
+
             $parameters[$name] = $value;
         }
         return $parameters;
@@ -274,10 +279,13 @@ class Controller
      */
     protected function processDefaultProperty(ReflectionParameter $parameter, ReflectionMethod $reflection, $placeholder)
     {
+        $default = $parameter->getDefaultValue();
         $name = $parameter->name;
-        $doc = $parameter->getDefaultValue() . PHP_EOL;
-        $annotation = AnnotationParser::getAnnotations($doc);
 
+        if (is_scalar($default)) {
+            $doc = $parameter->getDefaultValue() . PHP_EOL;
+            $annotation = AnnotationParser::getAnnotations($doc);
+        }
         # There's no annotation?.
         if (empty($annotation)) {
             if (($value = $this->getFromRequest($name, $placeholder)) !== false) {
