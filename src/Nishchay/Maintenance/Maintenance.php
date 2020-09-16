@@ -8,6 +8,7 @@ use Processor;
 use Nishchay\Utility\DateUtility;
 use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\Utility\Coding;
+use Nishchay\Http\Request\Request;
 
 /**
  * Maintenance class.
@@ -76,6 +77,9 @@ class Maintenance
      */
     public function getRoute()
     {
+        if ($this->checkException() === true) {
+            return false;
+        }
 
         # No need to check again if we already have found maintenance route
         # for current request.
@@ -99,6 +103,24 @@ class Maintenance
         # Returning route name if all type of mode is inactive.
         if ($isAnyActive === false) {
             return $this->getConfig('route');
+        }
+        return false;
+    }
+
+    /**
+     * Checks exception list and allow application for the declared exception list.
+     * 
+     * @return boolean
+     */
+    private function checkException()
+    {
+        $ips = $this->getConfig('exception.ip');
+        
+        if (is_string($ips)) {
+            $ips = [$ips];
+        }
+        if (is_array($ips) && in_array(Request::ip(), $ips)) {
+            return true;
         }
         return false;
     }
