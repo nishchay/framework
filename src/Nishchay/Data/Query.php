@@ -770,10 +770,10 @@ class Query
      * 
      * @return string
      */
-    public function getSQL($raw = true)
+    public function getSQL(bool $raw = true)
     {
         return Connection::connection($this->connectionName)
-                        ->getSQL($this, (bool) $raw);
+                        ->getSQL($this, $raw);
     }
 
     /**

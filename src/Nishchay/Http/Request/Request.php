@@ -451,4 +451,47 @@ class Request
         return $array;
     }
 
+    /**
+     * Returns IP.
+     * Also considers proxy setting as declared in application.php setting file.
+     * 
+     * @return string
+     */
+    public static function ip()
+    {
+        $ip = self::server('IP');
+        if (Nishchay::getConfig('proxy.active') !== true) {
+            return $ip;
+        }
+
+        $header = Nishchay::getConfig('proxy.header');
+
+        if (empty($header)) {
+            return $ip;
+        }
+
+        $header = strtoupper($header);
+        $header = strpos($header, 'HTTP') === 0 ? $header : ('HTTP_' . $header);
+
+        $header = str_replace('-', '_', $header);
+
+        $ips = self::server($header);
+
+        if (empty($ips)) {
+            return $ip;
+        }
+
+        $proxyIPs = Nishchay::getConfig('proxy.header');
+        $proxyIPs = is_array($proxyIPs) === false ? [] : $proxyIPs;
+
+        $ips = array_map('trim', $ips);
+        $ips = array_diff($ips, $proxyIPs);
+
+        if (empty($ips)) {
+            return $ip;
+        }
+
+        return array_pop($ips);
+    }
+
 }

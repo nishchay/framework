@@ -438,6 +438,16 @@ class PostgresqlBuilder extends AbstractBuilder
     {
         return 'BOOLEAN';
     }
+    
+    /**
+     * Returns type of bool for DB.
+     * 
+     * @return string
+     */
+    protected function getTypeOfBool()
+    {
+        return $this->getTypeOfBoolean();
+    }
 
     /**
      * Returns type of float for the DB.

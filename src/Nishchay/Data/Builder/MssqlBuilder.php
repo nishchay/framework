@@ -534,6 +534,16 @@ class MssqlBuilder extends AbstractBuilder
     {
         return $this->getTypeOfInt(1);
     }
+    
+    /**
+     * Returns type of bool for DB.
+     * 
+     * @return string
+     */
+    protected function getTypeOfBool()
+    {
+        return $this->getTypeOfInt(1);
+    }
 
     /**
      * Returns type of float for the DB.
