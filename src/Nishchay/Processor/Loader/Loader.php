@@ -4,7 +4,7 @@ namespace Nishchay\Processor\Loader;
 
 use Nishchay\Exception\ApplicationException;
 use Nishchay\FileManager\SimpleDirectory;
-use Nishchay\Utility\Coding;
+use Nishchay\Utility\ArrayUtility;
 
 /**
  * Configuration Loader.
@@ -43,7 +43,7 @@ class Loader
         }
 
         $config = require $file;
-        return $this->loaded[$name] = Coding::decodeJSON(Coding::encodeJSON($config));
+        return $this->loaded[$name] = ArrayUtility::toObject($config);
     }
 
     /**
