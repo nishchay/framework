@@ -14,6 +14,7 @@ class Help
 
     private $helps = [
         'route' => [
+            '{route-alias}' => 'r',
             '{no-params}' => 'To list all defined routes',
             'path' => 'Gives information of route',
             'path -run' => 'Executes route',
@@ -25,6 +26,7 @@ class Help
             'path -handler' => 'Lists error handler for route',
         ],
         'controller' => [
+            '{controller-alias}' => 'c',
             '{no-params}' => 'List all controller',
             'class' => 'Gives information of controller',
             'class -annotation' => 'Lists annotation defined on class',
@@ -34,12 +36,14 @@ class Help
             '-create name -template name' => 'Creates controller from template name'
         ],
         'event' => [
+            '{event-alias}' => 'ev',
             '{no-params}' => 'Lists all events',
             '-context name' => 'Lists events belongs to context',
             '-scope' => 'Lists events belongs to scope',
             '-global' => 'Lists global events'
         ],
         'entity' => [
+            '{entity-alias}' => 'e',
             '{no-params}' => 'Lists all entities',
             'name -property' => 'Lists entity properties',
             'name -derived' => 'Lists derived properties',
