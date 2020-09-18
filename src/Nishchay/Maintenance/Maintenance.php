@@ -2,7 +2,6 @@
 
 namespace Nishchay\Maintenance;
 
-use DateTime;
 use Nishchay;
 use Processor;
 use Nishchay\Utility\DateUtility;

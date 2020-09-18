@@ -96,7 +96,7 @@ class AnnotationParser
      * 
      * @var array 
      */
-    private $multiple = ['beforechange', 'afterchange'];
+    private $multiple = ['beforechange', 'afterchange', 'validation'];
 
     /**
      * Current processing annotation name.

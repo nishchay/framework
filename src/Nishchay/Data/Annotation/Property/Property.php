@@ -6,17 +6,16 @@ use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
 use ReflectionProperty;
 use Nishchay\Annotation\BaseAnnotationDefinition;
-use Nishchay\Data\Annotation\Property\DataType;
-use Nishchay\Data\Annotation\Property\Derived;
-use Nishchay\Data\Annotation\Property\Relative;
-use Nishchay\Data\Annotation\Property\Validation;
-use Nishchay\Utility\Coding;
-use Nishchay\Utility\ArrayUtility;
+use Nishchay\Utility\{
+    Coding,
+    ArrayUtility,
+    MethodInvokerTrait,
+    DateUtility
+};
 use DateTime;
 use Nishchay\Processor\VariableType;
 use Nishchay\Security\Encrypt\EncryptTrait;
-use Nishchay\Utility\MethodInvokerTrait;
-use Nishchay\Utility\DateUtility;
+use Nishchay\Validation\MessageTrait;
 
 /**
  * Property annotation class.
@@ -30,7 +29,8 @@ class Property extends BaseAnnotationDefinition
 {
 
     use EncryptTrait,
-        MethodInvokerTrait;
+        MethodInvokerTrait,
+        MessageTrait;
 
     /**
      * Name for extra property column.
@@ -75,9 +75,9 @@ class Property extends BaseAnnotationDefinition
     /**
      * Validation annotation.
      * 
-     * @var \Nishchay\Data\Annotation\Property\Validation 
+     * @var array 
      */
-    private $validation = false;
+    private $validation = [];
 
     /**
      * Property name.
@@ -106,6 +106,13 @@ class Property extends BaseAnnotationDefinition
      * @var mixed
      */
     private $propertyValue;
+
+    /**
+     * Instances of validation rule.
+     * 
+     * @var array
+     */
+    private static $ruleInstance = [];
 
     /**
      * 
@@ -401,9 +408,9 @@ class Property extends BaseAnnotationDefinition
     }
 
     /**
-     * Returns instance Validation annotation.
+     * Returns validation annotations.
      * 
-     * @return Validation
+     * @return array
      */
     public function getValidation()
     {
@@ -417,7 +424,9 @@ class Property extends BaseAnnotationDefinition
      */
     protected function setValidation($validation)
     {
-        $this->validation = new Validation($this->class, $this->method, $validation);
+        foreach ($validation as $annotation) {
+            $this->validation[] = new Validation($this->class, $this->method, $annotation);
+        }
     }
 
     /**
@@ -517,16 +526,51 @@ class Property extends BaseAnnotationDefinition
      */
     private function validateFromValidationCallback($value)
     {
-        $validation = $this->getValidation();
-        if ($validation !== false) {
-            $callback = $validation->getCallback();
-            if ($this->invokeMethod([new $callback['class'], $callback['method']], [$value]) !== true) {
-                throw new ApplicationException('Value of property [' .
-                        $this->class . '::' . $this->propertyName . '] is not valid as'
-                        . ' it could not pass validation defined in [' .
-                        implode('::', $callback) . '].', $this->class, $this->method, 911025);
+        foreach ($this->getValidation() as $validation) {
+            if ($validation->getCallback() !== false) {
+                $callback = $validation->getCallback();
+                if ($this->invokeMethod([new $callback['class'], $callback['method']], [$value]) !== true) {
+                    throw new ApplicationException('Value of property [' .
+                            $this->class . '::' . $this->propertyName . '] is not valid as'
+                            . ' it could not pass validation defined in [' .
+                            implode('::', $callback) . '].', $this->class, $this->method, 911025);
+                }
+            } else {
+                $param = $validation->getParameter();
+                list ($class, $ruleName) = $validation->getRule();
+
+                # Adding value as first parameter
+                array_unshift($param, $value);
+
+                # Let's validate rule.
+                if ($this->invokeMethod([$this->getRuleInstance($class), $ruleName], $param) === false) {
+                    $property = $this->class . '::' . $this->propertyName;
+
+                    # Fetching rule message from validation rule class.
+                    $ruleMesage = $this->getRuleInstance($class)->getMessage($ruleName);
+
+                    # This will parse messages and replaces fields and params.
+                    $message = $this->getPreparedMessage(str_replace('{field}', 'Property [{field}]', $ruleMesage), $property, $ruleName, $validation->getParameter());
+
+                    throw new ApplicationException($message, $this->class, null, 911091);
+                }
             }
         }
+    }
+
+    /**
+     * Returns instance of rule.
+     * 
+     * @param string $class
+     * @return \Nishchay\Validation\Rules\AbstractRule
+     */
+    private function getRuleInstance(string $class)
+    {
+        if (isset(self::$ruleInstance[$class]) !== false) {
+            return self::$ruleInstance[$class];
+        }
+
+        return self::$ruleInstance[$class] = new $class;
     }
 
 }
