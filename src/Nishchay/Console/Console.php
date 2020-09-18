@@ -23,8 +23,7 @@ class Console extends AbstractCommand
         'controller',
         'entity',
         'handler',
-        'event',
-        'install'
+        'event'
     ];
 
     /**
@@ -36,6 +35,11 @@ class Console extends AbstractCommand
         'v' => 'version',
         '-v' => 'version',
         '-version' => 'version',
+        'r' => 'route',
+        'c' => 'controller',
+        'e' => 'entity',
+        'h' => 'handler',
+        'ev' => 'event',
     ];
 
     public function __construct($arguments)
