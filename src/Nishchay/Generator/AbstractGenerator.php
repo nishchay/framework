@@ -77,6 +77,35 @@ abstract class AbstractGenerator
     }
 
     /**
+     * Returns namespace.
+     * 
+     * @return string
+     */
+    private function getNamespace(): ?string
+    {
+        $directories = Nishchay::getStructureProcessor()->getDirectories($this->type);
+
+        if (count($directories) === 1) {
+            return key($directories);
+        }
+
+        $i = 1;
+        foreach ($directories as $namespace => $path) {
+            $options[$i++] = $namespace;
+        }
+
+        $answer = (int) $this->getInput('Where do you want to create(Type number)', $options, 3, true);
+
+        if (isset($options[$answer]) === false) {
+            throw new ApplicationException('Invalid choice for directory.');
+        }
+
+        $namespace = $options[$answer];
+
+        return $namespace;
+    }
+
+    /**
      * 
      * @throws ApplicationException
      */

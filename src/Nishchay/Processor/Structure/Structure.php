@@ -212,7 +212,7 @@ class Structure
      * 
      * @var boolean 
      */
-    private $specialStart = FALSE;
+    private $specialStart = false;
 
     /**
      * Supported file extensions.

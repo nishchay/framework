@@ -52,6 +52,11 @@ class Controller extends AbstractCommand
     {
         $class = $this->arguments[0];
         if (count($this->arguments) === 1) {
+
+            if (($class = $this->locateClass($class)) === false) {
+                return false;
+            }
+
             return $this->printControllerList($class);
         }
 
@@ -116,6 +121,31 @@ class Controller extends AbstractCommand
     }
 
     /**
+     * Locates controller class from name.
+     * 
+     * @param type $name
+     * @return boolean
+     */
+    public function locateClass($name)
+    {
+        $class = Nishchay::getControllerCollection()
+                ->locate($name);
+
+        if ($class === null) {
+            Printer::red('No controller found with name: ' .
+                    $name, 911302);
+            return false;
+        }
+
+        if ($class !== $name) {
+            Printer::write('Located: ');
+            Printer::yellow($class . PHP_EOL);
+        }
+
+        return $class;
+    }
+
+    /**
      * Prints annotation defined on controller class.
      * It prints annotation defined on method if -method command passed.
      * 
@@ -123,15 +153,12 @@ class Controller extends AbstractCommand
      */
     public function getAnnotation()
     {
-        $controller = Nishchay::getControllerCollection()
-                ->getClass($this->arguments[0]);
-
-        # Controller does not exist.
-        if ($controller === false) {
-            Printer::write('No controller found with name: ' .
-                    $this->arguments[0], Printer::RED_COLOR, 913004);
+        if (($class = $this->locateClass($this->arguments[0])) === false) {
             return false;
         }
+
+        $controller = Nishchay::getControllerCollection()
+                ->getClass($class);
 
         # If only argument is passed we will print annotation defined on
         # controller class.
@@ -146,11 +173,11 @@ class Controller extends AbstractCommand
 
             # Checking if method exist in controller class or not.
             if ($controller->getMethod($this->arguments[3]) === false) {
-                Printer::write('Method [' . $this->arguments[0] .
+                Printer::write('Method [' . $class .
                         '::' . $this->arguments[3] . '] does not exist', Printer::RED_COLOR, 913006);
                 return false;
             }
-            $reflection = new ReflectionMethod($this->arguments[0], $this->arguments[3]);
+            $reflection = new ReflectionMethod($class, $this->arguments[3]);
         }
 
         # Parsing annotation defined on controller or method.

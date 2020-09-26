@@ -22,7 +22,7 @@ class User
      * @Identity
      * @DataType(type=int,readonly=TRUE) 
      */
-    public $id;
+    public $userId;
 
     /**
      * First name of user.

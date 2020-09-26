@@ -51,7 +51,10 @@ class Help
             'name -trigger' => 'Lists all trigger of entity',
             '-create name' => 'Creates entity with identity property only',
             '-create name -crud' => 'Creates entity crud related properties',
-            '-create name -template name' => 'Creates entity from template'
+            '-create name -template name' => 'Creates entity from template',
+            '-generate -new' => 'Creates entity. Interactive command',
+            '-generate -db' => 'Creates all or specific entities from DB',
+            '-generate -table name' => 'Create entity for given table name'
         ]
     ];
 

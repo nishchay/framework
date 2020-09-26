@@ -2,6 +2,7 @@
 
 namespace Nishchay\Data;
 
+use Nishchay;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Persistent\System;
 
@@ -15,6 +16,8 @@ use Nishchay\Persistent\System;
  */
 class Collection extends AbstractCollection
 {
+
+    const DIR = 'entities';
 
     /**
      * Entities collection.
@@ -39,7 +42,7 @@ class Collection extends AbstractCollection
      * 
      * @param string $class
      */
-    public function register($class)
+    public function register(string $class): void
     {
         $this->checkStoring();
         $this->collection[$class] = false;
@@ -51,9 +54,31 @@ class Collection extends AbstractCollection
      * @param   string      $class
      * @return  boolean
      */
-    public function isExist($class)
+    public function isExist(string $class): bool
     {
         return array_key_exists($class, $this->collection);
+    }
+
+    /**
+     * Locates entity class from trailing class name.
+     * 
+     * @param string $name
+     * @return boolean|string
+     */
+    public function locate(string $name): ?string
+    {
+        if ($this->isExist($name)) {
+            return $name;
+        }
+
+        $directories = Nishchay::getStructureProcessor()->getDirectories('entity');
+        foreach ($directories as $namespace => $path) {
+            $class = $namespace . '\\' . $name;
+            if ($this->isExist($class)) {
+                return $class;
+            }
+        }
+        return null;
     }
 
     /**
@@ -61,7 +86,7 @@ class Collection extends AbstractCollection
      * 
      * @return array
      */
-    public function get()
+    public function get(): array
     {
         return $this->collection;
     }
@@ -69,7 +94,7 @@ class Collection extends AbstractCollection
     /**
      * Returns total number of defined entities in an application.
      */
-    public function count()
+    public function count(): int
     {
         return count($this->collection);
     }

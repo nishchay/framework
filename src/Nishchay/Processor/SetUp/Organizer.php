@@ -34,7 +34,7 @@ class Organizer
      * @var array 
      */
     private $specialClasses = [
-        'controller', 'entity', 'event', 'handler'
+        'controller', 'entity', 'event', 'handler', 'form'
     ];
 
     /**
@@ -400,7 +400,7 @@ class Organizer
         # Class type should be same as current class type mode
         if (!$this->isValidClass()) {
             throw new InvalidStructureException($reflection->getFileName() .
-                    ' should be ' . $this->currentValidationMode);
+                    ' should be ' . $this->currentValidationMode . '. Add @' . ucfirst($this->currentValidationMode) . ' annotation on class.');
         }
 
         $method = 'process' . ucfirst($this->currentType) . 'Class';

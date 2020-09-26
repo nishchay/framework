@@ -88,7 +88,7 @@ class AnnotationParser
      */
     private $usable = [
         'controller', 'service', 'doc', 'event', 'secure',
-        'reflective', 'identity', 'handler', 'noservice'
+        'reflective', 'identity', 'handler', 'noservice', 'form'
     ];
 
     /**

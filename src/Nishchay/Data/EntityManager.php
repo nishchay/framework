@@ -1154,6 +1154,17 @@ class EntityManager extends AbstractEntityStore
      */
     public function insert()
     {
+
+        # If there are any callback to be executed before inserting records, 
+        # we will fire callback. if any of callback returns false, will cancel 
+        # insert operation and return with false to indicate that insert got 
+        # cancelled.
+        if ($this->executeBeforeChange(self::INSERT) === false) {
+            throw new ApplicationException('Entity [' . $this->entityClass . ']'
+                    . ' record can be inserted as before change event return'
+                    . ' failure.', 1, null, 911071);
+        }
+        
         # We first must validate each property of entity class before we proceed
         # for anything. Below method will return updated properties with its 
         # value. We will these property query builder for update.
@@ -1171,16 +1182,6 @@ class EntityManager extends AbstractEntityStore
         # We should add extra property to query builder if any of extra 
         # property added, update or removed.
         $this->addExtraPropertyToQuery($query);
-
-        # If there are any callback to be executed before inserting records, 
-        # we will fire callback. if any of callback returns false, will cancel 
-        # insert operation and return with false to indicate that insert got 
-        # cancelled.
-        if ($this->executeBeforeChange(self::INSERT) === false) {
-            throw new ApplicationException('Entity [' . $this->entityClass . ']'
-                    . ' record can be inserted as before change event return'
-                    . ' failure.', 1, null, 911071);
-        }
 
         $result = $query->insert();
         $this->executeAfterChange(self::INSERT);
@@ -1270,10 +1271,7 @@ class EntityManager extends AbstractEntityStore
             return false;
         }
 
-        $this->validateUpdated($updated);
-
-        $query = $this->getReflectiveQuery($updated);
-
+        $beforeEventCall = Coding::serialize($this->getInstance());
         # If there are any callback to be executed before updating records, we
         # will execute. if any of callback returns false, will cancel update 
         # operation and return FASLE indicating that update got cancelled.
@@ -1282,6 +1280,21 @@ class EntityManager extends AbstractEntityStore
                     . ' record can not be updated as before change event'
                     . ' return failure.', 1, null, 911072);
         }
+
+        $afterEventCall = Coding::serialize($this->getInstance());
+
+        # Let's fetch again, this is to consider entity property updated by event.
+        if ($beforeEventCall !== $afterEventCall) {
+            $updated = $this->getUpdated();
+            if (empty($updated) &&
+                    $this->isExtraPropertyUpdated() === false) {
+                return false;
+            }
+        }
+
+        $this->validateUpdated($updated);
+
+        $query = $this->getReflectiveQuery($updated);
 
         $result = $this->setCondition($query)->update();
         $this->executeAfterChange(self::UPDATE, array_keys($updated));
@@ -1307,7 +1320,7 @@ class EntityManager extends AbstractEntityStore
     }
 
     /**
-     * Executes callback to be executed before persisting any changes of enitty
+     * Executes callback to be executed before persisting any changes of entity
      * to database.
      * 
      * @param   string      $mode
@@ -1316,7 +1329,7 @@ class EntityManager extends AbstractEntityStore
     private function executeBeforeChange($mode, $updatedNames = null)
     {
         return $this->getThisEntity()
-                        ->executeBeforeChange($this->getConstantEntity($this->getInstanceOfFetched()), $this->getConstantEntity($this->getInstance()), $mode, $updatedNames);
+                        ->executeBeforeChange($this->getConstantEntity($this->getInstanceOfFetched()), $this->getInstance(), $mode, $updatedNames);
     }
 
     /**
@@ -1332,7 +1345,7 @@ class EntityManager extends AbstractEntityStore
     }
 
     /**
-     * Executes callback to be executed after persisting any changes of enitty 
+     * Executes callback to be executed after persisting any changes of entity 
      * to database.
      * 
      * @param   string        $mode

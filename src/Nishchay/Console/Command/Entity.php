@@ -4,6 +4,7 @@ namespace Nishchay\Console\Command;
 
 use Nishchay;
 use Console_Table;
+use Nishchay\Exception\ApplicationException;
 use Nishchay\Console\AbstractCommand;
 use Nishchay\Console\Help;
 use Nishchay\Data\Reflection\DataClass;
@@ -48,11 +49,22 @@ class Entity extends AbstractCommand
     /**
      * Returns data class instance of $class.
      * 
-     * @param string $class
+     * @param string $name
      * @return \Nishchay\Data\Reflection\DataClass
      */
-    private function getDataClass($class)
+    private function getDataClass($name)
     {
+        $class = Nishchay::getEntityCollection()->locate($name);
+
+        if ($class === null) {
+            throw new ApplicationException('Entity not found: ' . $name);
+        }
+
+        if ($class !== $name) {
+            Printer::write('Located: ');
+            Printer::yellow($class . PHP_EOL);
+        }
+
         return new DataClass($class);
     }
 
@@ -180,6 +192,36 @@ class Entity extends AbstractCommand
     public function getCreate()
     {
         return $this->executeCreateCommand(EntityGenerator::class);
+    }
+
+    /**
+     * Generates entity from DB, table or guide.
+     * 
+     * @return boolean
+     */
+    public function getGenerate()
+    {
+
+        if (isset($this->arguments[1]) === false) {
+            Printer::write('-generate requires -db, -table or -new to be passed', Printer::RED_COLOR);
+            return false;
+        }
+
+        list(, $type) = $this->arguments;
+        if ($type === '-db') {
+            (new EntityGenerator(null))->createFromDB($this->arguments[2] ?? null);
+        } else if ($type === '-table') {
+            if (isset($this->arguments[2]) === false) {
+                Printer::write('-table requires table name to be passed', Printer::RED_COLOR);
+                return false;
+            }
+
+            (new EntityGenerator($this->arguments[2]))->createFromTable(null, $this->arguments[3] ?? null);
+        } else if ($type === '-new') {
+            (new EntityGenerator(null))->createNew();
+        }
+
+        return false;
     }
 
 }

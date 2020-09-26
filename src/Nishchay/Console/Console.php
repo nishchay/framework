@@ -8,7 +8,6 @@ use Nishchay\Console\Command\Event;
 use Nishchay\Console\Command\Entity;
 use Nishchay\Console\Printer;
 use Nishchay\Console\Command\Controller;
-use Nishchay\Console\Command\Install;
 
 /**
  * Description of Console
@@ -23,7 +22,8 @@ class Console extends AbstractCommand
         'controller',
         'entity',
         'handler',
-        'event'
+        'event',
+        'form'
     ];
 
     /**
@@ -132,16 +132,12 @@ class Console extends AbstractCommand
         $entity = new Entity($arguments);
         return $entity->run();
     }
-
-    /**
-     * Executes install command
-     * 
-     * @return boolean
-     */
-    public function getInstall()
+    
+    public function getForm($arguments)
     {
-        $install = new Install();
-        return $install->run();
+        $form = new Command\Form($arguments);
+        
+        return $form->run();
     }
 
     /**
