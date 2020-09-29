@@ -118,6 +118,13 @@ class Processor
     private $di;
 
     /**
+     * Instance reflection current located controller.
+     * 
+     * @var ReflectionClass
+     */
+    private $reflection;
+
+    /**
      * Initialization
      */
     public function __construct()
@@ -274,7 +281,21 @@ class Processor
      */
     private function call()
     {
-        $response = $this->getDI()->invoke($this->instance, $this->getCurrentMethod()->getMethod(), $this->parameter);
+        # In the case of abstract route, route method is not called.
+        if ($this->instance !== null) {
+            $response = $this->getDI()->invoke($this->instance, $this->getCurrentMethod()->getMethod(), $this->parameter);
+        } else {
+            $viewName = $this->getCurrentMethod()->getResponse()->getView();
+            if (empty($viewName) === false) {
+                $response = $viewName;
+            } else {
+                $response = (empty(Nishchay::getSetting('response.abstractViewPath')) === false ?
+                        Nishchay::getSetting('response.abstractViewPath') : '')
+                        . '/' . $this->getCurrentMethod()->getRoute()->getPath();
+            }
+
+            $response = trim($response, '/');
+        }
 
         return $this->respond($response);
     }
@@ -323,6 +344,20 @@ class Processor
     }
 
     /**
+     * Returns instance of reflection class on current located controller.
+     * 
+     * @return ReflectionClass
+     */
+    private function getReflection()
+    {
+        if ($this->reflection !== null && $this->reflection->getName() === $this->getCurrentClass()->getClass()) {
+            return $this->reflection;
+        }
+
+        return $this->reflection = new ReflectionClass($this->getCurrentClass()->getClass());
+    }
+
+    /**
      * Preparing controller properties and 
      * method parameter before it's method get called
      *  
@@ -351,19 +386,21 @@ class Processor
             return $this->respond($eventResponse);
         }
 
-        $this->instance = $this->getDI()->create($this->getCurrentMethod()->getClass(), [], true);
-        new ControllerProperty($this->instance);
+        if ($this->getReflection()->isAbstract() === false) {
+            $this->instance = $this->getDI()->create($this->getCurrentMethod()->getClass(), [], true);
+            new ControllerProperty($this->instance);
 
-        # Setting up controller ennvironment.
-        # We will first validates class annotation if any set.
-        # Then we will process annotation defiend on route method.
-        $this->controller->property($this->instance);
+            # Setting up controller ennvironment.
+            # We will first validates class annotation if any set.
+            # Then we will process annotation defiend on route method.
+            $this->controller->property($this->instance);
 
-        #Preparing parameter to autobind values.
-        $this->parameter = $this->controller
-                ->prepareMethodParameter(
-                new ReflectionMethod($this->instance, $method)
-        );
+            #Preparing parameter to autobind values.
+            $this->parameter = $this->controller
+                    ->prepareMethodParameter(
+                    new ReflectionMethod($this->instance, $method)
+            );
+        }
         $this->call();
     }
 
