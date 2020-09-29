@@ -52,6 +52,14 @@ class Response extends BaseAnnotationDefinition
     private $type = false;
 
     /**
+     * View name.
+     * Only applicable for abstract route.
+     * 
+     * @var string
+     */
+    private $view;
+
+    /**
      * 
      * @param   string      $class
      * @param   string      $method
@@ -62,11 +70,6 @@ class Response extends BaseAnnotationDefinition
         parent::__construct($class, $method);
         $this->parameter = $parameter;
         $this->setter($parameter, 'parameter');
-
-        if ($this->type === false) {
-            throw new InvalidAnnotationExecption('Annotation [response] requires paramter name [type].',
-                    $this->class, $this->method, 914018);
-        }
     }
 
     /**
@@ -98,6 +101,29 @@ class Response extends BaseAnnotationDefinition
         }
 
         $this->type = ($type === null ? self::NULL_RESPONSE : $type);
+    }
+
+    /**
+     * Returns view name.
+     * 
+     * @return string|null
+     */
+    public function getView(): ?string
+    {
+        return $this->view;
+    }
+
+    /**
+     * Sets view name.
+     * 
+     * @param string $view
+     * @return $this
+     */
+    public function setView(string $view)
+    {
+        $this->type = self::VIEW_RESPONSE;
+        $this->view = $view;
+        return $this;
     }
 
 }
