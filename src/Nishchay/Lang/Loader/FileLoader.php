@@ -38,6 +38,10 @@ class FileLoader implements LangLoaderInterface
         if (file_exists($this->langPath) === false) {
             throw new ApplicationException('Lang translations directory does not exists.', null, null, 921003);
         }
+
+        if (substr($this->langPath, -1, 1) !== DS) {
+            $this->langPath = $this->langPath . DS;
+        }
     }
 
     /**

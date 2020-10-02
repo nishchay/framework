@@ -88,7 +88,7 @@ class Facade
 
         if (!method_exists($object, $name)) {
             throw new BadMethodCallException('Method [' . $callingClass .
-                    '::' . $name . '] does not exist in Facade class.', null, null, 925031);
+                    '::' . $name . '] does not exist in Facade class.', 925031);
         }
 
         return call_user_func_array([$object, $name], $arguments);
