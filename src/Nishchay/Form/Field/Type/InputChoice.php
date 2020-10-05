@@ -89,7 +89,7 @@ class InputChoice extends AbstractField
     {
         $choices = $this->getChoices();
 
-        if (array_key_exists($name, $choices)) {
+        if (array_key_exists($name, $choices) === false) {
             throw new ApplicationException('Form field [' . $this->getName() .
                     '] does not have choice named [' . $name . '].', 1, null, 918003);
         }

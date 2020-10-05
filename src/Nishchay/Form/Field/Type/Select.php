@@ -56,6 +56,24 @@ class Select extends AbstractField
     }
 
     /**
+     * Returns HTML value of choice name.
+     * 
+     * @param string $name
+     * @return string
+     * @throws ApplicationException
+     */
+    public function getChoiceHTML(string $name)
+    {
+        $choices = $this->getChoices();
+        if (array_key_exists($name, $choices) === false) {
+            throw new ApplicationException('Form field [' . $this->getName() .
+                    '] does not have choice named [' . $name . '].', 1, null, 918003);
+        }
+
+        return $choices[$name];
+    }
+
+    /**
      * 
      * @return string
      */
