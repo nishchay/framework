@@ -88,18 +88,18 @@ class Coding
     {
         # Ignore  method  if starting with underscore.
         if (strpos($reflection->name, '_') === 0) {
-            return TRUE;
+            return true;
         }
         # Ignore staic method
         else if ($reflection->isStatic()) {
-            return TRUE;
+            return true;
         }
         # Ignore method defined on parent class.
         else if ($reflection->class !== $class) {
-            return TRUE;
+            return true;
         }
 
-        return FALSE;
+        return false;
     }
 
     /**

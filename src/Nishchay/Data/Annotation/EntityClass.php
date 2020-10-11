@@ -1157,7 +1157,7 @@ class EntityClass extends AbstractEntityStore
                 return true;
             }
             throw new ApplicationException('Property [' . $this->class . '::' .
-                    $property->getPropertyName() . '] can not be null as its relative to [' .
+                    $property->getPropertyName() . '] can not be null or empty as its relative to [' .
                     $relative->getTo() . '].', $this->class, null, 911042);
         }
 
