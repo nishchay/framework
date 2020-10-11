@@ -129,8 +129,8 @@ class Organizer
         $match = [];
         preg_match('#' . preg_quote(ROOT) . '(.*?)\.(.*)#', $path, $match);
         $class = str_replace('/', '\\', $match[1]);
-
-        if (!class_exists($class)) {
+        
+        if (!class_exists($class) && !interface_exists($class)) {
             throw new InvalidStructureException('Class [' . $class . '] not'
                     . ' found in file [' . $path . '].', null, null, 925005);
         }

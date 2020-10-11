@@ -2,11 +2,12 @@
 
 namespace Nishchay\Maintenance;
 
-use DateTime;
 use Nishchay;
 use Processor;
 use Nishchay\Utility\DateUtility;
 use Nishchay\Utility\MethodInvokerTrait;
+use Nishchay\Utility\Coding;
+use Nishchay\Http\Request\Request;
 
 /**
  * Maintenance class.
@@ -75,6 +76,9 @@ class Maintenance
      */
     public function getRoute()
     {
+        if ($this->checkException() === true) {
+            return false;
+        }
 
         # No need to check again if we already have found maintenance route
         # for current request.
@@ -98,6 +102,24 @@ class Maintenance
         # Returning route name if all type of mode is inactive.
         if ($isAnyActive === false) {
             return $this->getConfig('route');
+        }
+        return false;
+    }
+
+    /**
+     * Checks exception list and allow application for the declared exception list.
+     * 
+     * @return boolean
+     */
+    private function checkException()
+    {
+        $ips = $this->getConfig('exception.ip');
+        
+        if (is_string($ips)) {
+            $ips = [$ips];
+        }
+        if (is_array($ips) && in_array(Request::ip(), $ips)) {
+            return true;
         }
         return false;
     }
@@ -296,7 +318,7 @@ class Maintenance
             return false;
         }
 
-        $now = new DateTime;
+        $now = DateUtility::getNow();
 
         $route = isset($config->default) ? $config->default : false;
         foreach ($config->list as $timed) {
@@ -368,20 +390,18 @@ class Maintenance
 
         foreach ($config->list as $item) {
             $item = is_array($item) ? $item : [$item];
-            $agentName = $item[0];
+            list($agentName) = $item;
 
             # By default making version matched to true if there is only agent
             # name exist. This way we will make all version to match for agent.
             $versionMatch = true;
 
-            # Agent can be in {agent_name}/{version number} format.
+            # Agent can be in {$agentName}/{$agentVersion} format.
             if (strpos($agentName, '/')) {
-                $explode = explode('/', $agentName);
-                $agentName = current($explode);
+                list($agentName, $agentVersion) = explode('/', $agentName);
 
                 # Checking version with the range.
-                $versionMatch = $this->checkVersion(explode('-', $explode[1])
-                        , $version);
+                $versionMatch = $this->checkVersion(explode('-', $agentVersion), $version);
             }
 
 
@@ -391,7 +411,7 @@ class Maintenance
                 # There's match and invert is true means will allow that agent.
                 # We are returning false to indicate that there's no maintenance mode.
                 return $invert ? false :
-                        (isset($item[1]) ? $item[1] : $default);
+                        ($item[1] ?? $default);
             }
         }
 
@@ -409,75 +429,10 @@ class Maintenance
     private function checkVersion($range, $version)
     {
         if (count($range) === 2) {
-            return $this->isVersionMatch($range, $version);
+            return Coding::isVersionMatch($range, $version);
         }
 
         return $version == $range[0];
-    }
-
-    /**
-     * Checks if version in range, version greater than or version less than.
-     * 
-     * @param string $range
-     * @param string $version
-     * @return boolean
-     */
-    private function isVersionMatch($range, $version)
-    {
-
-        # If start of range does not exist we will check that $version
-        # is lesser then ending range.
-        if ($this->isLesser($range[0], $range[1], $version)) {
-            return true;
-        }
-        # If ending range does not exist we will check that $version
-        # is greater then starting range.
-        else if ($this->isGreater($range[0], $range[1], $version)) {
-            return true;
-        } else if ($this->isBetween($range[0], $range[1], $version)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if $start is empty and $version less than $end.
-     * 
-     * @param string $start
-     * @param string $end
-     * @param string $version
-     * @return boolean
-     */
-    private function isLesser($start, $end, $version)
-    {
-        return empty($start) && version_compare($version, $end) <= 0;
-    }
-
-    /**
-     * Returns true if $end is empty and $version greater than $end.
-     * 
-     * @param type $start
-     * @param type $end
-     * @param type $version
-     * @return type
-     */
-    private function isGreater($start, $end, $version)
-    {
-        return empty($end) && version_compare($version, $start) >= 0;
-    }
-
-    /**
-     * Returns true if version is between $start and $end.
-     * 
-     * @param string $start
-     * @param string $end
-     * @param string $version
-     * @return boolean
-     */
-    private function isBetween($start, $end, $version)
-    {
-        return version_compare($version, $start) >= 0 &&
-                version_compare($version, $end) <= 0;
     }
 
     /**

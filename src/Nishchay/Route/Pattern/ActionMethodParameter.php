@@ -3,6 +3,7 @@
 namespace Nishchay\Route\Pattern;
 
 use ReflectionMethod;
+use Nishchay\Processor\VariableType;
 
 /**
  * Action method route pattern.
@@ -35,12 +36,26 @@ class ActionMethodParameter extends ActionMethod
         $placeholders = $segments = [];
         foreach ($reflection->getParameters() as $parameter) {
             $type = $parameter->getType();
-            if ($type === null || $parameter->getType()->isBuiltIn() === false) {
+            if ($type === null || in_array($type->getName(), [VariableType::STRING, VariableType::INT, VariableType::BOOL, VariableType::DATA_ARRAY]) === false) {
                 break;
             }
 
-            $placeholders[$parameter->getName()] = $type->getName();
+            $placeholderValue = $type->getName();
             $optional = ($type->allowsNull() || $parameter->isOptional()) ? '?' : '';
+            if ($type->getName() === VariableType::DATA_ARRAY) {
+                if ($parameter->isOptional() === false) {
+                    break;
+                }
+
+                $default = $parameter->getDefaultValue();
+                if (!empty($default)) {
+                    $placeholderValue = $default;
+                }
+
+                $type->allowsNull() === false && $optional = '';
+            }
+
+            $placeholders[$parameter->getName()] = $placeholderValue;
             $segments[] = $optional . '{' . $parameter->getName() . '}';
         }
 
@@ -49,7 +64,6 @@ class ActionMethodParameter extends ActionMethod
             $route['path'] = trim($route['path'], '/') . $postfix;
             $route = ['route' => $route, 'placeholder' => $placeholders];
         }
-
         return $route;
     }
 

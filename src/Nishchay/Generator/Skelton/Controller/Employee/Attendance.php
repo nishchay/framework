@@ -23,10 +23,9 @@ class Attendance
     /**
      * Displays attendance of an employee for current month or trend.
      * 
-     * @Route(path='{employeeId}/attendance', type=GET)
-     * @Placeholder(employeeId=number)
+     * @Route(path='attendance', type=GET)
      */
-    public function index($employeeId = '@Segment(index=employeeId)')
+    public function index()
     {
         # TODO: You can display attendance of current month or
         # week or current trend
@@ -35,10 +34,10 @@ class Attendance
     /**
      * Displays attendance of an employee for requested month and year.
      * 
-     * @Route(path='{employeeId}/attendance/{year}/{month}', type=GET)
-     * @Placeholder(employeeId=number, year=number, month=number)
+     * @Route(path='attendance/{year}/{month}', type=GET)
+     * @Placeholder(year=number, month=number)
      */
-    public function monthAttendance($employeeId = '@Segment(index=employeeId)', $year = '@Segment(index=year)', $month = '@Segment(index=month)')
+    public function monthAttendance(int $year, int $month)
     {
         # TODO: Display employee's attendance of requested month and year
     }
@@ -46,10 +45,9 @@ class Attendance
     /**
      * Log employee attendance.
      * 
-     * @Route(path='{employeeId}/attendance', type=POST)
-     * @Placeholder(employeeId=number)
+     * @Route(path='attendance', type=POST)
      */
-    public function create($employeeId = '@Segment(index=employeeId)')
+    public function create()
     {
         # TODO: Implement business to log employee attedance
         # 
@@ -61,7 +59,6 @@ class Attendance
      * Display list of request.
      * 
      * @Route(path='attendance/request', type=GET)
-     * @Placeholder(employeeId=number)
      */
     public function request()
     {
@@ -74,9 +71,8 @@ class Attendance
      * Request for missed login or logout time.
      * 
      * @Route(path='attendance/request', type=POST)
-     * @Placeholder(employeeId=number)
      */
-    public function createRequest($employeeId = '@Segment(index=employeeId)')
+    public function createRequest()
     {
         # TODO: Implement business to request login and logout time.
     }
@@ -85,9 +81,9 @@ class Attendance
      * View to attendance request.
      * 
      * @Route(path='attendance/request/{requestId}', type=POST)
-     * @Placeholder(employeeId=number, requestId=number)
+     * @Placeholder(requestId=number)
      */
-    public function viewRequest($employeeId = '@Segment(index=employeeId)', $requestId = '@Segment(index=requestId)')
+    public function viewRequest(int $requestId)
     {
         # TODO: Implement business to respond attedance request.
     }
@@ -96,9 +92,9 @@ class Attendance
      * Responds to attendance request.
      * 
      * @Route(path='attendance/request/{requestId}/respond', type=POST)
-     * @Placeholder(employeeId=number, requestId=number)
+     * @Placeholder(requestId=number)
      */
-    public function responseRequest($employeeId = '@Segment(index=employeeId)', $requestId = '@Segment(index=requestId)')
+    public function responseRequest(int $requestId)
     {
         # TODO: Implement business to respond attedance request.
     }

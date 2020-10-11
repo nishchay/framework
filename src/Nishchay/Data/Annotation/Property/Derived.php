@@ -189,7 +189,7 @@ class Derived extends BaseAnnotationDefinition
      * 
      * @param string $from
      */
-    protected function setFrom($from)
+    public function setFrom($from)
     {
         $this->derivedType = 'join_from';
         $this->from = $from;

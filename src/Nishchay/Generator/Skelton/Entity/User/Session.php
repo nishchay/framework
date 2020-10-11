@@ -6,7 +6,7 @@ namespace Nishchay\Generator\Skelton\Entity\User;
  * Session entity class.
  *
  * #ANN_START
- * @license     http:#Nishchay.io/license New BSD License
+ * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel
@@ -23,48 +23,27 @@ class Session
      * @Identity
      * @DataType(type=int, readonly=true)
      */
+    public $sessionIdentityId;
+
+    /**
+     * Session id.
+     * 
+     * @DataType(type=string, length=200,required=true)
+     */
     public $sessionId;
 
     /**
-     *
-     * @DataType(type=string, length=200,required=true)
+     * Data of session.
+     * 
+     * @DataType(type=string)
      */
-    public $sessionKey;
-
+    public $data;
+    
     /**
-     *
-     * @DataType(type=int, required=true)
-     */
-    public $userId;
-
-    /**
-     *
-     * @DataType(type=string, length=50)
-     */
-    public $ip;
-
-    /**
-     *
-     * @DataType(type=string, length=200)
-     */
-    public $client;
-
-    /**
-     *
+     * Time when last accessed this session.
+     * 
      * @DataType(type=datetime)
      */
-    public $start;
-
-    /**
-     *
-     * @DataType(type=datetime)
-     */
-    public $end;
-
-    /**
-     *
-     * @DataType(type=int)
-     */
-    public $active;
+    public $accessAt;
 
 }

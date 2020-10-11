@@ -20,7 +20,7 @@ trait MethodInvokerTrait
      * @param array $parameter          Optional. Should be array.
      * @return mixed
      */
-    private function invokeMethod($method, $parameter = [])
+    private function invokeMethod($method, array $parameter = [])
     {
         if (is_string($method)) {
             $method = explode('::', $method);

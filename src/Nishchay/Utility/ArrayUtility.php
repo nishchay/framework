@@ -181,4 +181,36 @@ class ArrayUtility
         return $array;
     }
 
+    /**
+     * Returns array converted to object.
+     * 
+     * @param array $array
+     * @return \stdClass
+     */
+    public static function toObject($array)
+    {
+        $isIndexedArray = self::isIndexedArray($array);
+        $object = $isIndexedArray ? [] : (new \stdClass());
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $value = self::toObject($value);
+            }
+            $isIndexedArray ? ($object[$key] = $value) : ($object->{$key} = $value);
+        }
+        return $object;
+    }
+
+    /**
+     * 
+     * @param array $array
+     * @return boolean
+     */
+    public static function isIndexedArray(array $array)
+    {
+        if ([] === $array) {
+            return true;
+        }
+        return array_keys($array) === range(0, count($array) - 1);
+    }
+
 }

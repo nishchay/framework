@@ -7,6 +7,7 @@ use Nishchay\Exception\InvalidAnnotationExecption;
 use Nishchay\Exception\InvalidAnnotationParameterException;
 use Nishchay\Utility\ArrayUtility;
 use Nishchay\Controller\Annotation\Controller;
+use Nishchay\Processor\Application;
 
 /**
  * Route annotation class.
@@ -100,6 +101,13 @@ class Route extends BaseAnnotationDefinition
      * @var bool
      */
     private $isPatterned = false;
+
+    /**
+     * Stage for the route.
+     * 
+     * @var array
+     */
+    private $stage = [];
 
     /**
      * 
@@ -327,6 +335,39 @@ class Route extends BaseAnnotationDefinition
         $this->type = array_map(function($value) {
             return strtoupper($value);
         }, $type);
+    }
+
+    /**
+     * Returns route's stage.
+     * 
+     * @return array
+     */
+    public function getStage(): array
+    {
+        return $this->stage;
+    }
+
+    /**
+     * Sets route stage.
+     * 
+     * @param array $stage
+     * @return $this
+     * @throws InvalidAnnotationExecption
+     */
+    protected function setStage($stage)
+    {
+        $stage = (array) $stage;
+        $allowed = [Application::STAGE_LOCAL, Application::STAGE_TEST];
+        foreach ($stage as $index => $name) {
+            $name = strtolower($name);
+            if (!in_array($name, $allowed)) {
+                throw new InvalidAnnotationExecption('Invalid stage for the route, it should be local or test.', $this->class, $this->method);
+            }
+            $stage[$index] = $name;
+        }
+
+        $this->stage = $stage;
+        return $this;
     }
 
     /**

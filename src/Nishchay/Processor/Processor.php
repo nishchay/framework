@@ -118,6 +118,13 @@ class Processor
     private $di;
 
     /**
+     * Instance reflection current located controller.
+     * 
+     * @var ReflectionClass
+     */
+    private $reflection;
+
+    /**
      * Initialization
      */
     public function __construct()
@@ -239,7 +246,7 @@ class Processor
     private function initServiceCheck()
     {
         if ($this->isService()) {
-            $this->getService()->check($this->currentMethod);
+            $this->getService()->check($this->getCurrentMethod());
             return true;
         }
 
@@ -253,7 +260,7 @@ class Processor
     public function isService()
     {
         return Nishchay::getSetting('service.enable') === true ||
-                $this->currentMethod !== false && $this->currentMethod->getService() !== false;
+                $this->getCurrentMethod() !== false && $this->getCurrentMethod()->getService() !== false;
     }
 
     /**
@@ -274,39 +281,44 @@ class Processor
      */
     private function call()
     {
-        $className = $this->currentMethod->getClass();
-        $methodName = $this->currentMethod->getMethod();
-        $context = $this->getStageDetail('context');
-        $scope = $this->getStageDetail('scopeName');
-
-        $eventResponse = $this->eventManager
-                ->fireBeforeEvent($this->currentClass, $this->currentMethod, $context, $scope);
-        if ($eventResponse === false) {
-            $url = $this->getStageDetail('urlString');
-            throw new BadRequestException('Route [' .
-                    (empty($url) ? Nishchay::getConfig('config.landingRoute') : $url)
-                    . '] is not valid.', $className, $methodName, 925038);
-        }
-
-        if ($eventResponse === true || $eventResponse === null) {
-            $response = (new ReflectionMethod($className, $methodName))
-                    ->invokeArgs($this->instance, $this->parameter);
+        # In the case of abstract route, route method is not called.
+        if ($this->instance !== null) {
+            $response = $this->getDI()->invoke($this->instance, $this->getCurrentMethod()->getMethod(), $this->parameter);
         } else {
-            $response = $eventResponse;
+            $viewName = $this->getCurrentMethod()->getResponse()->getView();
+            if (empty($viewName) === false) {
+                $response = $viewName;
+            } else {
+                $response = (empty(Nishchay::getSetting('response.abstractViewPath')) === false ?
+                        Nishchay::getSetting('response.abstractViewPath') : '')
+                        . '/' . $this->getCurrentMethod()->getRoute()->getPath();
+            }
+
+            $response = trim($response, '/');
         }
 
+        return $this->respond($response);
+    }
+
+    /**
+     * Respond with response.
+     * 
+     * @param mixed $response
+     */
+    private function respond($response)
+    {
         if (is_object($response)) {
             # Before forwarding request to another route, we must fire 'after' event
             # for currently processed route.
-            $this->eventManager->fireAfterEvent($this->currentClass, $this->currentMethod, $context, $scope);
+            $this->eventManager->fireAfterEvent($this->getCurrentClass(), $this->getCurrentMethod(), $this->getContext(), $this->getScope());
             if ($response instanceof RequestForwarder) {
-                $this->forwardRequest(new Forwarder($response), $className, $methodName);
+                $this->forwardRequest(new Forwarder($response), $this->getCurrentMethod()->getClass(), $this->getCurrentMethod()->getMethod());
             } else if ($response instanceof RequestRedirector) {
                 Request::redirect($response->getRoute());
             }
         } else {
-            $this->eventManager->fireAfterEvent($this->currentClass, $this->currentMethod, $context, $scope);
-            new ResponseHandler($className, $methodName, $response);
+            $this->eventManager->fireAfterEvent($this->getCurrentClass(), $this->getCurrentMethod(), $this->getContext(), $this->getScope());
+            new ResponseHandler($this->getCurrentMethod()->getClass(), $this->getCurrentMethod()->getMethod(), $response);
         }
     }
 
@@ -320,15 +332,29 @@ class Processor
      */
     private function forwardRequest($response, $class, $method)
     {
-        if ($this->currentMethod->getForwarder()->getDescent() === false) {
+        if ($this->getCurrentMethod()->getForwarder()->getDescent() === false) {
             throw new NotSupportedException('Descent forward not allowed on'
-                    . ' route [' . $this->currentMethod->getRoute()->getPath() . '].', $class, $method, 925039);
+                    . ' route [' . $this->getCurrentMethod()->getRoute()->getPath() . '].', $class, $method, 925039);
         }
 
         $this->setURL($response->getForwardedRoute(), self::$stageNumber + 1);
         $this->setStageDetail('mode', 'forwarded', self::$stageNumber + 1);
-        $this->eventManager->fireAfterEvent($this->currentClass, $this->currentMethod, $this->getStageDetail('context'), $this->getStageDetail('scopeName'));
+        $this->eventManager->fireAfterEvent($this->getCurrentClass(), $this->getCurrentMethod(), $this->getContext(), $this->getScope());
         $this->startStage();
+    }
+
+    /**
+     * Returns instance of reflection class on current located controller.
+     * 
+     * @return ReflectionClass
+     */
+    private function getReflection()
+    {
+        if ($this->reflection !== null && $this->reflection->getName() === $this->getCurrentClass()->getClass()) {
+            return $this->reflection;
+        }
+
+        return $this->reflection = new ReflectionClass($this->getCurrentClass()->getClass());
     }
 
     /**
@@ -338,20 +364,43 @@ class Processor
      */
     private function prepare()
     {
-        $method = $this->currentMethod->getMethod();
+        $method = $this->getCurrentMethod()->getMethod();
 
-        # Setting up controller ennvironment.
-        # We will first validates class annotation if any set.
-        # Then we will process annotation defiend on route method.
-        $this->controller->classAnnotation($this->currentClass);
-        $this->controller->methodAnnotation($this->currentClass->getMethod($method));
-        $this->controller->property($this->instance);
+        $this->controller->classAnnotation($this->getCurrentClass());
+        $this->controller->methodAnnotation($this->getCurrentMethod());
 
-        #Preparing parameter to autobind values.
-        $this->parameter = $this->controller
-                ->prepareMethodParameter(
-                new ReflectionMethod($this->instance, $method)
-        );
+        $eventResponse = $this->eventManager
+                ->fireBeforeEvent($this->getCurrentClass(), $this->getCurrentMethod(), $this->getContext(), $this->getScope());
+
+        # Respond with bad request in case event respond with false.
+        if ($eventResponse === false) {
+            $url = $this->getStageDetail('urlString');
+            throw new BadRequestException('Route [' .
+                    (empty($url) ? Nishchay::getConfig('config.landingRoute') : $url)
+                    . '] is not valid.', $this->getCurrentMethod()->getClass(), $method, 925038);
+        }
+
+        # If event does not respond with true or null, it means that event
+        # rsponded to generate response.
+        if ($eventResponse !== true && $eventResponse !== null) {
+            return $this->respond($eventResponse);
+        }
+
+        if ($this->getReflection()->isAbstract() === false) {
+            $this->instance = $this->getDI()->create($this->getCurrentMethod()->getClass(), [], true);
+            new ControllerProperty($this->instance);
+
+            # Setting up controller ennvironment.
+            # We will first validates class annotation if any set.
+            # Then we will process annotation defiend on route method.
+            $this->controller->property($this->instance);
+
+            #Preparing parameter to autobind values.
+            $this->parameter = $this->controller
+                    ->prepareMethodParameter(
+                    new ReflectionMethod($this->instance, $method)
+            );
+        }
         $this->call();
     }
 
@@ -481,7 +530,7 @@ class Processor
     {
 
         $stage = $this->getStage();
-        if ($name == NULL) {
+        if ($name === null) {
             return $stage;
         }
 
@@ -491,6 +540,26 @@ class Processor
         }
 
         return $stage[$name];
+    }
+
+    /**
+     * Returns current context.
+     * 
+     * @return string
+     */
+    public function getContext()
+    {
+        return $this->getStageDetail('context');
+    }
+
+    /**
+     * Returns scope of current request.
+     * 
+     * @return mixed
+     */
+    public function getScope()
+    {
+        return $this->getStageDetail('scopeName');
     }
 
     /**
@@ -528,7 +597,7 @@ class Processor
 
         # Some pre verification is required to see incoming or ascent 
         # request is allowed or not.
-        $this->preCheck($this->currentMethod->getForwarder());
+        $this->preCheck($this->getCurrentMethod()->getForwarder());
 
         if ($this->getStageDetail('mode') !== Maintenance::MAINTENANCE &&
                 Nishchay::getSetting(Maintenance::MAINTENANCE . '.active')) {
@@ -546,8 +615,6 @@ class Processor
             }
         }
 
-        $this->instance = $this->getDI()->create($route->getClass(), [], true);
-        new ControllerProperty($this->instance);
         $this->prepare();
     }
 
@@ -575,9 +642,9 @@ class Processor
         # Controller instance of currently located route's class.
         $this->currentClass = Nishchay::getControllerCollection()
                 ->getClass($route->getClass());
-        $this->currentMethod = $this->currentClass
+        $this->currentMethod = $this->getCurrentClass()
                 ->getMethod($route->getMethod());
-        $this->setStageDetail('scopeName', $this->getScopeName($route));
+        $this->setStageDetail('scopeName', $this->getScopeName());
     }
 
     /**
@@ -587,7 +654,7 @@ class Processor
     private function getScopeName()
     {
         $scopeName = false;
-        if (($scope = $this->currentMethod->getNamedscope()) !== false) {
+        if (($scope = $this->getCurrentMethod()->getNamedscope()) !== false) {
             $scopeName = $scope->getName();
         }
         return $scopeName;
@@ -627,11 +694,20 @@ class Processor
     /**
      * Returns controller annotation instance of located route that is controller class.
      * 
-     * @return string
+     * @return \Nishchay\Controller\Annotation\Controller
      */
     public function getCurrentClass()
     {
         return $this->currentClass;
+    }
+
+    /**
+     * 
+     * @return Nishchay\Controller\Annotation\Method\Method
+     */
+    public function getCurrentMethod()
+    {
+        return $this->currentMethod;
     }
 
 }

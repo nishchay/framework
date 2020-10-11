@@ -48,7 +48,9 @@ class Placeholder extends BaseAnnotationDefinition
         'string' => '([a-zA-Z0-9_-]+)',
         'number' => '([0-9]+)',
         'int' => '([0-9]+)',
-        'alphanum' => '([a-zA-Z0-9]+)'
+        'alphanum' => '([a-zA-Z0-9]+)',
+        'bool' => '(0|1){1}',
+        'boolean' => '(0|1){1}',
     ];
 
     /**
@@ -116,17 +118,23 @@ class Placeholder extends BaseAnnotationDefinition
         }
 
         foreach ($placeholders as $key => $value) {
-            if (!array_key_exists($value, $this->supported)) {
+            if (is_string($value) && array_key_exists($value, $this->supported) === false) {
                 throw new NotSupportedException('Placeholder segment type [' .
                         $value . '] not supported.', $this->class, $this->method, 926004);
             }
 
-            $this->pattern['#{' . $key . '}#'] = $this->supported[$value];
+            if (is_string($value)) {
+                $regex = $this->supported[$value];
+            } else {
+                $value = array_map('preg_quote', $value);
+                $regex = '((' . implode('|', $value) . '){1})';
+            }
+            $this->pattern['#{' . $key . '}#'] = $regex;
 
-            # We are making pattern named pattern so we can retrieve special
+            # We are making pattern named pattern so we can retrieve placeholder
             # name value from it. Below code just inserts named pattern into
             # existing pattern.
-            $this->placeholder['#{' . $key . '}#'] = substr_replace($this->supported[$value],
+            $this->placeholder['#{' . $key . '}#'] = substr_replace($regex,
                     '?P<' . $key . '>', 1, 0);
         }
     }
