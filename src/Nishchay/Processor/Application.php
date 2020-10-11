@@ -313,10 +313,8 @@ final class Application
             throw new ApplicationException('Logger is disabled. To enable set'
                     . ' enable = true in logger.php file.', null, null, 925026);
         }
-        if (array_key_exists('logger', $this->registered) === false) {
-            $this->register('logger', new Logger());
-        }
-        return $this->registered['logger'];
+
+        return $this->getInstance(Logger::class);
     }
 
     /**

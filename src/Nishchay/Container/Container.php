@@ -9,6 +9,7 @@ use Nishchay\Exception\ApplicationException;
 use Nishchay\Utility\Coding;
 use Nishchay\DI\DI;
 use Nishchay\Data\EntityManager;
+use Nishchay\Processor\FetchSingletonTrait;
 
 /**
  * Container class.
@@ -20,6 +21,8 @@ use Nishchay\Data\EntityManager;
  */
 class Container
 {
+
+    use FetchSingletonTrait;
 
     /**
      * Container class name.
@@ -80,11 +83,7 @@ class Container
      */
     private function getReflection(): ReflectionClass
     {
-        if ($this->reflection !== null) {
-            return $this->reflection;
-        }
-
-        return $this->reflection = new ReflectionClass($this->containerClass);
+        return $this->getInstance(ReflectionClass::class, [$this->containerClass]);
     }
 
     /**
@@ -92,7 +91,7 @@ class Container
      * 
      * @return object
      */
-    private function getInstance()
+    private function getContainerInstance()
     {
         if ($this->instance !== null) {
             return $this->instance;
@@ -122,6 +121,25 @@ class Container
     public function init(string $containerClass)
     {
         $this->containerClass = $containerClass;
+
+        if ($this->getReflection()->hasProperty('resolveList')) {
+            $property = $this->getReflection()->getProperty('resolveList');
+            $property->setAccessible(true);
+            $resolveList = $property->getValue($this->getContainerInstance());
+
+            if (is_array($resolveList) === false) {
+                throw new ApplicationException('Property [' .
+                        $this->containerClass . '::resolveList' . '] must'
+                        . ' be array.', $this->containerClass);
+            }
+
+            $this->getDI()->set($resolveList);
+        }
+
+
+        if ($this->getReflection()->hasProperty('di') === false) {
+            $this->getContainerInstance()->di = $this->getDI();
+        }
 
         foreach ($this->getReflection()->getMethods() as $method) {
             if (Coding::isIgnorable($method, $this->containerClass)) {
@@ -181,7 +199,7 @@ class Container
 
         if ($this->methods[$name] === true) {
             $method = new ReflectionMethod($this->containerClass, $name);
-            $class = $method->invoke($this->getInstance());
+            $class = $method->invoke($this->getContainerInstance());
         } else {
             $class = $this->methods[$name];
         }
@@ -197,7 +215,6 @@ class Container
                 break;
             default:
                 throw new ApplicationException('Container method should return either instnace or class name.', $this->containerClass, $name);
-                break;
         }
         return $new ? $instnace : $this->methodInstances[$name] = $instnace;
     }
@@ -213,7 +230,7 @@ class Container
     {
         return Nishchay::getEntityCollection()->isExist($class) ?
                 new EntityManager($class) :
-                $this->di->create($class, $arguments[0] ?? []);
+                $this->getDI()->create($class, $arguments[0] ?? []);
     }
 
 }
