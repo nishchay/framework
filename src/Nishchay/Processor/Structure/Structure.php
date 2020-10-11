@@ -168,7 +168,7 @@ class Structure
      * These can not be used at root element of structure definition.
      * 
      * @var array 
-     */
+     */ 
     private $reservedNames = [
         'extension', 'public', 'bootstrap', 'logs', 'vendor', 'settings', 'tests', 'resources', 'persisted'];
 
@@ -190,7 +190,8 @@ class Structure
         'views' => 'view', 'view' => 'view',
         'entities' => 'entity', 'entity' => 'entity',
         'events' => 'event', 'event' => 'event',
-        'handlers' => 'handler', 'handler' => 'handler'
+        'handlers' => 'handler', 'handler' => 'handler',
+        'container' => 'container', 'containers' => 'container'
     ];
 
     /**

@@ -34,7 +34,7 @@ class Organizer
      * @var array 
      */
     private $specialClasses = [
-        'controller', 'entity', 'event', 'handler', 'form'
+        'controller', 'entity', 'event', 'handler', 'form', 'container'
     ];
 
     /**
@@ -59,7 +59,7 @@ class Organizer
     private $currentValidationMode = '';
 
     /**
-     * Curent processing class type
+     * Current processing class type
      * 
      * @var type 
      */
@@ -129,7 +129,7 @@ class Organizer
         $match = [];
         preg_match('#' . preg_quote(ROOT) . '(.*?)\.(.*)#', $path, $match);
         $class = str_replace('/', '\\', $match[1]);
-        
+
         if (!class_exists($class) && !interface_exists($class)) {
             throw new InvalidStructureException('Class [' . $class . '] not'
                     . ' found in file [' . $path . '].', null, null, 925005);
@@ -145,7 +145,7 @@ class Organizer
      */
     public function getClassType($annotations)
     {
-        return array_intersect($this->specialClasses, array_keys($annotations));
+        return array_intersect(self::SPECIAL_CLASSES, array_keys($annotations));
     }
 
     /**
@@ -192,7 +192,7 @@ class Organizer
     {
         if ($this->isOtherMode()) {
             $this->currentType = Structure::FILE_TYPE_OTHER;
-            return TRUE;
+            return true;
         } else {
             return $this->currentValidationMode === $this->currentType;
         }
@@ -292,12 +292,23 @@ class Organizer
     }
 
     /**
+     * Registers handlers.
      * 
      * @param string $class
      */
     protected function processHandlerClass($class, $annotation, $context)
     {
         Nishchay::getHandlerCollection()->store($class, $annotation, $context);
+    }
+
+    /**
+     * Registers container class.
+     * 
+     * @param string $class
+     */
+    protected function processContainerClass($class)
+    {
+        Nishchay::getContainerCollection()->store($class);
     }
 
     /**
@@ -390,7 +401,7 @@ class Organizer
 
         if (current($classType)) {
             $this->currentType = current($classType);
-        } else if (!empty($classAnnotation) && !in_array($this->currentValidationMode, $this->specialClasses)) {
+        } else if (!empty($classAnnotation) && !in_array($this->currentValidationMode, self::SPECIAL_CLASSES)) {
             $classType = new ClassType($class, $classAnnotation);
             $this->currentType = strtolower($classType->getClasstype());
         } else {

@@ -3,9 +3,11 @@
 namespace Nishchay\Processor;
 
 /**
- * Description of FetchSingletonTrait
+ * FetchSingletonTrait trait.
  *
- * @author bpatel
+ * @license     https://nishchay.io/license    New BSD License
+ * @copyright   (c) 2020, Nishchay PHP Framework
+ * @author      Bhavik Patel
  */
 trait FetchSingletonTrait
 {
