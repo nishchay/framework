@@ -34,7 +34,7 @@ class Organizer
      * @var array 
      */
     const SPECIAL_CLASSES = [
-        'controller', 'entity', 'event', 'handler', 'container'
+        'controller', 'entity', 'event', 'handler', 'form', 'container'
     ];
 
     /**

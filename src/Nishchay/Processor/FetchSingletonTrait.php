@@ -12,20 +12,32 @@ namespace Nishchay\Processor;
 trait FetchSingletonTrait
 {
 
+    /**
+     * Instances list.
+     * 
+     * @var object 
+     */
     private static $instances = [];
 
     /**
+     * Creates or returns instance of class.
      * 
      * @param string $class
-     * @return type
+     * @return object
      */
-    private function getInstance(string $class, array $parameters = [])
+    private function getInstance(string $class, array $arguments = [])
     {
         if (isset(self::$instances[$class])) {
             return self::$instances[$class];
         }
 
-        return self::$instances[$class] = new $class(...$parameters);
+        if (method_exists($class, __FUNCTION__)) {
+            $instance = call_user_func_array([$class, __FUNCTION__], $arguments);
+        } else {
+            $instance = new $class(...$arguments);
+        }
+
+        return self::$instances[$class] = $instance;
     }
 
 }
