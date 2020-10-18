@@ -418,6 +418,45 @@ class EntityManager extends AbstractEntityStore
         return $object;
     }
 
+    private function getAgregate(string $propertyName, string $agregateName)
+    {
+
+        $property = $this->getThisEntity()->getProperty($propertyName);
+        if ($property === false) {
+            throw new ApplicationException('[' . $this->entityClass . '::' .
+                    $propertyName . '] does not exists.', 1, null);
+        }
+
+        $value = (new Query())
+                ->setTable($this->entityTable)
+                ->{$agregateName}($propertyName);
+
+        $object = $this->getSelf();
+        $object->setPropertyValues([$propertyName => $value]);
+
+        return $object->{$propertyName};
+    }
+
+    /**
+     * 
+     * @param string $propertyName
+     * @return type
+     */
+    public function max(string $propertyName)
+    {
+        return $this->getAgregate($propertyName, 'max');
+    }
+
+    /**
+     * 
+     * @param string $propertyName
+     * @return type
+     */
+    public function min(string $propertyName)
+    {
+        return $this->getAgregate($propertyName, 'min');
+    }
+
     /**
      * Disable or enable lazy properties to be set while 
      * fetching record.

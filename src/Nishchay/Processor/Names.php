@@ -14,20 +14,30 @@ namespace Nishchay\Processor;
  */
 interface Names
 {
-    
 
     /**
      * Global name.
      */
     const TYPE_GLOBAL = 'global';
-    
+
     /**
      * Scope name.
      */
     const TYPE_SCOPE = 'scope';
-    
+
     /**
      * Context name.
      */
     const TYPE_CONTEXT = 'context';
+
+    /**
+     * Encryption type PHP for entity.
+     */
+    const ENCRYPTION_PHP = 'php';
+
+    /**
+     * Encryption type DB for entity.
+     */
+    const ENCRYPTION_DB = 'db';
+
 }

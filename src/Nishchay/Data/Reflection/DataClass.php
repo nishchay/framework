@@ -42,6 +42,16 @@ class DataClass extends AbstractEntityStore
     }
 
     /**
+     * Returns property name of identity property.
+     * 
+     * @return type
+     */
+    public function getIdentity()
+    {
+        return $this->entityClass->getIdentity();
+    }
+
+    /**
      * Returns table name of entity class.
      * 
      * @return string

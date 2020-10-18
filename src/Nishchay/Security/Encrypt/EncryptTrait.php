@@ -3,6 +3,7 @@
 namespace Nishchay\Security\Encrypt;
 
 use Nishchay;
+use Nishchay\Processor\Names;
 
 /**
  * Encrypter class.
@@ -36,7 +37,7 @@ trait EncryptTrait
      */
     protected function isDBEncryption()
     {
-        return Nishchay::getSetting('database.' . Encrypter::CONFIG_NAME) === 'db';
+        return Nishchay::getSetting('database.' . Encrypter::CONFIG_NAME . '.type') === Names::ENCRYPTION_DB;
     }
 
 }

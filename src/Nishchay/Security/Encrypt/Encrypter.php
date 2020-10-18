@@ -105,4 +105,14 @@ class Encrypter
         return openssl_random_pseudo_bytes($length);
     }
 
+    /**
+     * Returns encryption type.
+     * 
+     * @return string
+     */
+    public function getType()
+    {
+        return null;
+    }
+
 }

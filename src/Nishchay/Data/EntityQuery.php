@@ -454,7 +454,7 @@ class EntityQuery extends AbstractEntityStore
      * @param int $offset
      * @return $this
      */
-    public function setLimit($limit, $offset)
+    public function setLimit($limit, $offset = 0)
     {
         $this->query->setLimit($limit, $offset);
         return $this;

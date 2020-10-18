@@ -554,7 +554,7 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Returns name of identity column.
+     * Returns name of identity property.
      * 
      * @return string
      */

@@ -33,7 +33,7 @@ class Organizer
      * 
      * @var array 
      */
-    private $specialClasses = [
+    const SPECIAL_CLASSES = [
         'controller', 'entity', 'event', 'handler', 'form', 'container'
     ];
 

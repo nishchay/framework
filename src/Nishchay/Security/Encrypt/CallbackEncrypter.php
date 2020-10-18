@@ -134,4 +134,14 @@ class CallbackEncrypter
         return $callback->function . '(' . $this->getParameterAsString($params, false) . ')';
     }
 
+    /**
+     * Returns encryption type. db or php.
+     * 
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->config->type;
+    }
+
 }
