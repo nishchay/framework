@@ -2,42 +2,23 @@
 
 namespace Nishchay\Prototype\Account;
 
+use Closure;
 use Nishchay\Exception\BadRequestException;
 use Nishchay\Exception\AuthorizationFailedException;
-use Closure;
-use Nishchay\Data\EntityQuery;
-use Nishchay\Session\Session;
-use Nishchay\Security\Encrypt\EncryptTrait;
-use Nishchay\Processor\FetchSingletonTrait;
 use Nishchay\Http\Request\Request;
-use Nishchay\Http\Response\Response;
-use Nishchay\OAuth2\OAuth2;
 use Nishchay\Prototype\Account\Response\LoginResponse;
-use Nishchay\Data\Reflection\DataClass;
 use Nishchay\Data\Query;
+use Nishchay\Prototype\Account\AbstractAccountPrototype;
 
 /**
  * Login prototype class.
  * 
  * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
- * @version     1.0
  * @author      Bhavik Patel
  */
-class Login
+class Login extends AbstractAccountPrototype
 {
-
-    use EncryptTrait,
-        FetchSingletonTrait;
-
-    const ENTITY_ALIAS = 'User';
-
-    /**
-     * Entity class for login
-     * 
-     * @var string
-     */
-    private $entity;
 
     /**
      * User email.
@@ -68,20 +49,6 @@ class Login
     private $passwordName = 'password';
 
     /**
-     * Form class name.
-     * 
-     * @var string
-     */
-    private $form;
-
-    /**
-     * Whether to generate oauth token.
-     * 
-     * @var bool
-     */
-    private $oauth = true;
-
-    /**
      * Password verification callback.
      * 
      * @var Closure
@@ -96,13 +63,6 @@ class Login
     private $condition = [];
 
     /**
-     * Flag for writing userId to sessions.
-     * 
-     * @var bool
-     */
-    private $session = false;
-
-    /**
      * Post login closure.
      * 
      * @var Closure
@@ -110,26 +70,8 @@ class Login
     private $postLogin;
 
     /**
-     * 
-     * @param string $entity
-     */
-    public function __construct(string $entity)
-    {
-        $this->entity = $entity;
-    }
-
-    /**
-     * Returns entity manager instance for the entity.
-     * 
-     * @return EntityManager
-     */
-    private function getEntityQuery(): EntityQuery
-    {
-        return $this->getInstance(EntityQuery::class)
-                        ->setEntity($this->entity, self::ENTITY_ALIAS);
-    }
-
-    /**
+     * Sets user's email/username. While executing login prototype find user with
+     * this email/username.
      * 
      * @param string $email
      * @return $this
@@ -159,6 +101,8 @@ class Login
     }
 
     /**
+     * Set user password. While executing login this password will be matched
+     * against user's actual password.
      * 
      * @param string $password
      * @return $this
@@ -185,40 +129,6 @@ class Login
         }
 
         return Request::post($this->passwordName);
-    }
-
-    /**
-     * Sets form class name.
-     * 
-     * @param string $class
-     * @return $this
-     */
-    public function setForm(string $class): self
-    {
-        $this->form = $class;
-        return $this;
-    }
-
-    /**
-     * 
-     * @return \Nishchay\Form\Form
-     */
-    private function getForm()
-    {
-        if ($this->form === null) {
-            return null;
-        }
-        return $this->getInstance($this->form);
-    }
-
-    /**
-     * 
-     * @param bool $flag
-     */
-    public function setOAuth2(bool $flag): self
-    {
-        $this->oauth = $flag;
-        return $this;
     }
 
     /**
@@ -290,7 +200,7 @@ class Login
     /**
      * 
      */
-    public function getPostLogin(): Closure
+    public function getPostLogin(): ?Closure
     {
         return $this->postLogin;
     }
@@ -307,47 +217,6 @@ class Login
     }
 
     /**
-     * Returns instance of data class for entity.
-     * 
-     * @return DataClass
-     */
-    private function getDataClass(): DataClass
-    {
-        return $this->getInstance(DataClass::class, [$this->entity]);
-    }
-
-    /**
-     * Returns user detail.
-     * 
-     * @return \Nishchay\Data\EntityManager|null
-     */
-    private function getUser()
-    {
-        $query = $this->getEntityQuery()
-                ->setProperty(self::ENTITY_ALIAS);
-
-        $dataType = $this->getDataClass()
-                ->getProperty($this->getEmailName())
-                ->getProperty()
-                ->getDatatype();
-
-        # If email is encrypted.
-        if (empty($this->condition)) {
-            if ($dataType->getEncrypt()) {
-                $encryption = $this->getEncrypter($query);
-                $asItIs = $this->isDBEncryption() ? Query::AS_IT_IS : '';
-                $this->condition[$this->getEmailName() . $asItIs] = $encryption->encrypt($this->getEmail());
-            } else {
-                $this->condition[$this->getEmailName()] = $this->getEmail();
-            }
-        }
-
-        $query->setCondition($this->condition);
-
-        return $query->getOne();
-    }
-
-    /**
      * Sets query conditions to be use to fetch user.
      * 
      * @param array $condition
@@ -357,39 +226,6 @@ class Login
     {
         $this->condition = $condition;
         return $this;
-    }
-
-    /**
-     * Enable or disable writing userId and isLoggged= true to session.
-     * 
-     * @param array $session
-     * @return $this
-     */
-    public function setSession(bool $session): self
-    {
-        $this->session = $session;
-        return $this;
-    }
-
-    /**
-     * Validates form.
-     * 
-     * @return LoginResponse|null
-     */
-    private function validateForm(): ?LoginResponse
-    {
-        if (($form = $this->getForm()) !== null) {
-            if ($form->validate() !== true) {
-                Response::setStatus(HTTP_STATUS_BAD_REQUEST);
-                $fields = ['errors' => $form->getErrors()];
-                if ($form->getCSRF() !== false) {
-                    $fields['csrf'] = $form->getCSRF()->getValue();
-                }
-                return $this->getInstance(LoginResponse::class, [$fields]);
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -405,7 +241,7 @@ class Login
             return $response;
         }
 
-        if ((($user = $this->getUser())) === false) {
+        if ((($user = $this->getUser($this->condition, $this->getEmailName()))) === false) {
             throw new BadRequestException('User does not exists.');
         }
 
@@ -474,37 +310,6 @@ class Login
         } else if (password_verify($this->getPassword(), $userPassword) === false) {
             throw new AuthorizationFailedException('Invalid password.');
         }
-    }
-
-    /**
-     * Write user is logged to session.
-     * 
-     * @param int $userId
-     * @return $this
-     */
-    private function writeSession(int $userId): self
-    {
-        if ($this->session) {
-            $session = $this->getInstance(Session::class);
-            $session->isLogged = true;
-            $session->userId = $userId;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Generates and returns OAuth token.
-     * 
-     * @param int $userId
-     * @return array
-     */
-    private function getAccessToken(int $userId)
-    {
-        if ($this->oauth === false) {
-            return null;
-        }
-        return $this->getInstance(OAuth2::class)->generateUserCredentialToken($userId);
     }
 
 }

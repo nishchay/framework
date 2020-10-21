@@ -12,14 +12,14 @@ namespace Nishchay\Processor;
 trait FetchSingletonTrait
 {
 
-    private static $instances = [];
+    protected static $instances = [];
 
     /**
      * 
      * @param string $class
      * @return type
      */
-    private function getInstance(string $class, array $parameters = [])
+    protected function getInstance(string $class, array $parameters = [])
     {
         if (isset(self::$instances[$class])) {
             return self::$instances[$class];

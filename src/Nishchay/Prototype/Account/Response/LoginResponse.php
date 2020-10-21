@@ -3,9 +3,11 @@
 namespace Nishchay\Prototype\Account\Response;
 
 /**
- * Description of LoginResponse
- *
- * @author bhavik
+ * Login response class account login and register prototype.
+ * 
+ * @license     https://nishchay.io/license New BSD License
+ * @copyright   (c) 2020, Nishchay PHP Framework
+ * @author      Bhavik Patel
  */
 class LoginResponse
 {

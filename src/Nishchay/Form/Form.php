@@ -14,6 +14,7 @@ use Nishchay\Form\Field\Type\Input;
 use Nishchay\Form\Field\Type\InputChoice;
 use Nishchay\Form\Field\Type\Select;
 use Nishchay\Form\Field\Type\TextArea;
+use Nishchay\Processor\FetchSingletonTrait;
 
 /**
  * Nishchay Form class.
@@ -25,6 +26,8 @@ use Nishchay\Form\Field\Type\TextArea;
  */
 class Form
 {
+
+    use FetchSingletonTrait;
 
     /**
      * Form name.
@@ -298,6 +301,35 @@ class Form
         return false;
     }
 
+    private function getReflection()
+    {
+        return $this->getInstance(ReflectionClass::class, [static::class]);
+    }
+
+    /**
+     * Returns method names which are form field method.
+     * 
+     * @return array
+     */
+    public function getFormMethods(): array
+    {
+        $methods = [];
+        # We are here iterating over each method to find form field method.
+        foreach ($this->getReflection()->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+
+            # We will not proceed if method is not valid form field method or
+            # Form field does not have any validation for it.
+            if (($field = $this->getFormField($method)) === false ||
+                    empty($field->getValidation())) {
+                continue;
+            }
+
+            $methods[] = $method->name;
+        }
+
+        return $methods;
+    }
+
     /**
      * Returns Validator instance.
      * 
@@ -311,11 +343,10 @@ class Form
 
         $this->validator = new Validator($this->getMethod());
 
-        $reflection = new ReflectionClass(get_called_class());
         $validation = [];
 
         # We are here iterating over each method to find form field method.
-        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+        foreach ($this->getReflection()->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
 
             # We will not proceed if method is not valid form field method or
             # Form field does not have any validation for it.

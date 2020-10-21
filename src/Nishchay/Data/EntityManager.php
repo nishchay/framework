@@ -629,6 +629,25 @@ class EntityManager extends AbstractEntityStore
     }
 
     /**
+     * Convert value to data type same as property name's data type.
+     * 
+     * @param string $propertyName
+     * @param type $value
+     * @return type
+     * @throws ApplicationException
+     */
+    public function convert(string $propertyName, $value)
+    {
+        $property = $this->getThisEntity()->getProperty($propertyName);
+
+        if ($property === false) {
+            throw new ApplicationException('Property [' . $this->entityClass . '::' . $propertyName . '] does not exists.', null, null);
+        }
+
+        return $property->getDatatype()->convertDataType($value);
+    }
+
+    /**
      * Sets property's value which require callback from its callback response.
      * 
      */
@@ -1203,7 +1222,7 @@ class EntityManager extends AbstractEntityStore
                     . ' record can be inserted as before change event return'
                     . ' failure.', 1, null, 911071);
         }
-        
+
         # We first must validate each property of entity class before we proceed
         # for anything. Below method will return updated properties with its 
         # value. We will these property query builder for update.

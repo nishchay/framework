@@ -583,7 +583,7 @@ class DataType extends BaseAnnotationDefinition
      * @param string $value
      * @return mixed
      */
-    private function convertDataType($value)
+    public function convertDataType($value)
     {
         switch ($this->type) {
             case VariableType::INT:
