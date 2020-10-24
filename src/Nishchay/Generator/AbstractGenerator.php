@@ -81,10 +81,11 @@ abstract class AbstractGenerator
      * 
      * @return string
      */
-    private function getNamespace(): ?string
+    protected function getNamespace(): ?string
     {
         $directories = Nishchay::getStructureProcessor()->getDirectories($this->type);
 
+        # No need tp ask if there's single entity directory in an application.
         if (count($directories) === 1) {
             return key($directories);
         }

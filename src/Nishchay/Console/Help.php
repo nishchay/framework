@@ -53,8 +53,8 @@ class Help
             '-create name -crud' => 'Creates entity crud related properties',
             '-create name -template name' => 'Creates entity from template',
             '-generate -new' => 'Creates entity. Interactive command',
-            '-generate -db' => 'Creates all or specific entities from DB',
-            '-generate -table name' => 'Create entity for given table name'
+            '-generate -db (?connectionName)' => 'Creates all or specific entities from DB. Do not pass connection name to use default database connection.',
+            '-generate -table name (?connectionName)' => 'Create entity for given table name. Do not pass connection name to use default database connection.'
         ]
     ];
 

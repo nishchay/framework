@@ -186,7 +186,7 @@ class Entity extends AbstractGenerator
                 $chosenDataType = VariableType::INT;
                 $identity = true;
             }
-            $properties[] = [$property, ['type' => $chosenDataType], $identity];
+            $properties[] = [$property, ['type=' . $chosenDataType], $identity];
         }
 
         if (empty($properties)) {
@@ -284,7 +284,12 @@ class Entity extends AbstractGenerator
         $this->name = $namespace . '\\' . $entity;
 
         # Validating file.
-        $this->isValidFile(false);
+        try {
+            $this->isValidFile(false);
+        } catch (ApplicationException $e) {
+            Printer::red('[' . $this->name . '] is already exists.' . PHP_EOL);
+            return null;
+        }
         $file = new SimpleFile($filePath, SimpleFile::TRUNCATE_WRITE);
 
         # Writing start of class.
@@ -293,7 +298,6 @@ class Entity extends AbstractGenerator
         # Iterating over each properties and write it to class.
         foreach ($properties as $property) {
             $file->write(PHP_EOL . $this->getPropertyCode(...$property) . PHP_EOL);
-            usleep(1000);
         }
 
         # Ending class
