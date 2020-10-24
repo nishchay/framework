@@ -2017,7 +2017,7 @@ class EntityManager extends AbstractEntityStore
         # Listing all foreign key defined on table so that we can later add
         # foregin key only if it already exists in table.
         foreach ($meta->getForeignKeys() as $col) {
-            $foregins[$col->column_name] = $col;
+            $foregins[$col->columnName] = $col;
         }
 
         $identityPropertyName = false;
@@ -2026,10 +2026,14 @@ class EntityManager extends AbstractEntityStore
         }
 
         foreach ($this->getProperties() as $name => $property) {
+            
+            # Discard derived property
             if ($property->getDerived() !== false) {
                 continue;
             }
             $columnName = [$name => $name];
+            
+            # If column does not exists in table.
             if (!in_array($name, $columns)) {
                 $columnName = $name;
             }
