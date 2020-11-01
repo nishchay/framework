@@ -1869,8 +1869,12 @@ class EntityManager extends AbstractEntityStore
         # will not return in below call.
         $mapping = $query->getReturnableEntity();
         $iterator = [];
+
+
+        $propertyMapping = $query->getPropertyMapping();
+
         foreach ($records as $row) {
-            $value = $this->getRowAsEntity($row, $mapping, $query);
+            $value = $this->getRowAsEntity($row, $mapping, $query, $propertyMapping);
             foreach ($query->getDerivingProperties() as $name) {
                 list($alias, $property) = explode('.', $name);
                 if (isset($mapping[$alias]) === false) {
@@ -1887,6 +1891,7 @@ class EntityManager extends AbstractEntityStore
                 $entity = $this->entity($mapping[$alias]);
                 $toSet->setDerivedPropertyValues($property, $entity->getDerivedProperty($property), $row, $entity->getProperty($property), $entity->getJoinTable($property));
             }
+
             $iterator[] = $value;
         }
         return new DataIterator($this->processLazyProperties($iterator));
@@ -1930,7 +1935,7 @@ class EntityManager extends AbstractEntityStore
      * @param type $query
      * @return type
      */
-    private function getRowAsEntity($row, $mapping, $query)
+    private function getRowAsEntity($row, $mapping, $query, $onlyProperties = [])
     {
         # If one row contains more than one entity then row will contain
         # all alias with it's value as entity instance otherwise it contains
@@ -1964,6 +1969,14 @@ class EntityManager extends AbstractEntityStore
             # Creating clone of the fetched row so that any modification
             # do not affect original row.
             $fetchable = clone $row;
+
+            if (!empty($onlyProperties) && isset($onlyProperties[$alias])) {
+                foreach ($fetchable as $k => $v) {
+                    if (!in_array($k, $onlyProperties[$alias])) {
+                        unset($fetchable->{$k});
+                    }
+                }
+            }
 
             # Now we will remove properties which are unfetchable.
             foreach ($query->getUnFetchable($alias) as $notToFetch) {
@@ -2026,13 +2039,13 @@ class EntityManager extends AbstractEntityStore
         }
 
         foreach ($this->getProperties() as $name => $property) {
-            
+
             # Discard derived property
             if ($property->getDerived() !== false) {
                 continue;
             }
             $columnName = [$name => $name];
-            
+
             # If column does not exists in table.
             if (!in_array($name, $columns)) {
                 $columnName = $name;
