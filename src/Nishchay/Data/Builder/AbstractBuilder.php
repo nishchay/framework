@@ -145,7 +145,7 @@ abstract class AbstractBuilder extends AbstractConnection
     protected function getDetail($name)
     {
         return array_key_exists($name, $this->queryDetail) ?
-                $this->queryDetail[$name] : FALSE;
+                $this->queryDetail[$name] : false;
     }
 
     /**

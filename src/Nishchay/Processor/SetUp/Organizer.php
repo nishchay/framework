@@ -59,7 +59,7 @@ class Organizer
     private $currentValidationMode = '';
 
     /**
-     * Curent processing class type
+     * Current processing class type
      * 
      * @var type 
      */
@@ -129,7 +129,7 @@ class Organizer
         $match = [];
         preg_match('#' . preg_quote(ROOT) . '(.*?)\.(.*)#', $path, $match);
         $class = str_replace('/', '\\', $match[1]);
-        
+
         if (!class_exists($class) && !interface_exists($class)) {
             throw new InvalidStructureException('Class [' . $class . '] not'
                     . ' found in file [' . $path . '].', null, null, 925005);
@@ -342,7 +342,7 @@ class Organizer
         if ($this->isViewMode()) {
             return $this->storeView($path);
         }
-
+        
         # When current mode is other and current type is class
         # we should check for class name standard.
         if ($this->isOtherMode()) {
@@ -411,7 +411,7 @@ class Organizer
         # Class type should be same as current class type mode
         if (!$this->isValidClass()) {
             throw new InvalidStructureException($reflection->getFileName() .
-                    ' should be ' . $this->currentValidationMode);
+                    ' should be ' . $this->currentValidationMode . '. Add @' . ucfirst($this->currentValidationMode) . ' annotation on class.');
         }
 
         $method = 'process' . ucfirst($this->currentType) . 'Class';

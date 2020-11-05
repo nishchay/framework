@@ -30,7 +30,7 @@ class DataType extends BaseAnnotationDefinition
      * 
      * @var array 
      */
-    private static $predefinedTypes = [
+    const PREDEFINED_TYPES = [
         VariableType::INT, VariableType::FLOAT, VariableType::DOUBLE,
         VariableType::STRING, VariableType::DATE, VariableType::DATETIME,
         VariableType::DATA_ARRAY, VariableType::MIXED, VariableType::BOOLEAN
@@ -159,7 +159,7 @@ class DataType extends BaseAnnotationDefinition
     {
         $type = strtolower($type);
         #Class should be exist when type is not primitive.
-        if (!in_array($type, self::$predefinedTypes) && !class_exists($type)) {
+        if (!in_array($type, self::PREDEFINED_TYPES) && !class_exists($type)) {
             throw new InvalidAnnotationParameterException('Invalid data type'
                     . ' [' . $type . '] for property [' .
                     $this->class . '::' . $this->propertyName . '].', $this->class, null, 911003);
@@ -233,7 +233,7 @@ class DataType extends BaseAnnotationDefinition
      */
     public static function getPreDefinedTypes()
     {
-        return self::$predefinedTypes;
+        return self::PREDEFINED_TYPES;
     }
 
     /**
@@ -297,7 +297,7 @@ class DataType extends BaseAnnotationDefinition
     private function validatePredefined($value)
     {
         # Preadefined? Check validation as per type of property.
-        if (in_array($this->type, self::$predefinedTypes)) {
+        if (in_array($this->type, self::PREDEFINED_TYPES)) {
             if ($this->invokeMethod(
                             [$this, 'isValid' . ucfirst($this->type)], [$value]
                     ) === false) {
@@ -439,7 +439,7 @@ class DataType extends BaseAnnotationDefinition
     {
         return is_bool($value);
     }
-    
+
     /**
      * Returns TRUE if $value is valid bool value.
      * 
@@ -458,7 +458,7 @@ class DataType extends BaseAnnotationDefinition
      */
     public function isPrimitive()
     {
-        return in_array($this->type, self::$predefinedTypes);
+        return in_array($this->type, self::PREDEFINED_TYPES);
     }
 
     /**
@@ -518,7 +518,7 @@ class DataType extends BaseAnnotationDefinition
      */
     protected function setValues($values)
     {
-        if (!in_array($this->type, self::$predefinedTypes) ||
+        if (!in_array($this->type, self::PREDEFINED_TYPES) ||
                 in_array($this->type, [VariableType::BOOLEAN, VariableType::DATE, VariableType::DATETIME, VariableType::DATA_ARRAY, VariableType::MIXED])) {
             throw new NotSupportedException('Values parameter not supported for'
                     . ' data type [' . $this->type . '] for property'
@@ -549,7 +549,7 @@ class DataType extends BaseAnnotationDefinition
      */
     protected function setDefault($default)
     {
-        if (!in_array($this->type, self::$predefinedTypes) ||
+        if (!in_array($this->type, self::PREDEFINED_TYPES) ||
                 in_array($this->type, [VariableType::DATA_ARRAY, VariableType::MIXED])) {
             throw new NotSupportedException('Default paramter not supported for'
                     . ' data type [' . $this->type . '] for property'
@@ -583,7 +583,7 @@ class DataType extends BaseAnnotationDefinition
      * @param string $value
      * @return mixed
      */
-    private function convertDataType($value)
+    public function convertDataType($value)
     {
         switch ($this->type) {
             case VariableType::INT:

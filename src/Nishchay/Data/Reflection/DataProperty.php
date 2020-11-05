@@ -59,6 +59,16 @@ class DataProperty extends AbstractEntityStore
     {
         $this->property = $property;
     }
+    
+    /**
+     * Returns property annotation for property.erty.
+     * 
+     * @return Property
+     */
+    public function getProperty()
+    {
+        return $this->property;
+    }
 
     /**
      * Returns name of property's class.
@@ -117,7 +127,7 @@ class DataProperty extends AbstractEntityStore
      */
     public function isPrimitiveType()
     {
-        return $this->isDerived() ? false : in_array($this->getDataType(), DataType::getPreDefinedTypes());
+        return $this->isDerived() ? false : in_array($this->getDataType(), DataType::PREDEFINED_TYPES);
     }
 
     /**
@@ -127,7 +137,7 @@ class DataProperty extends AbstractEntityStore
      */
     public function isObjectType()
     {
-        return $this->isDerived() ? false : !$this->isPrimitiveType();
+        return $this->isDerived() ? false : $this->isPrimitiveType() === false;
     }
 
     /**

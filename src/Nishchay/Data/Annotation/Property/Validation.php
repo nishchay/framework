@@ -182,6 +182,12 @@ class Validation extends BaseAnnotationDefinition
     protected function setParameter($param)
     {
         $this->parameter = (array) $param;
+
+        foreach ($this->parameter as $key => $value) {
+            if (is_numeric($value)) {
+                $this->parameter[$key] = (double) $value;
+            }
+        }
         return $this;
     }
 

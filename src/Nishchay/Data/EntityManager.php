@@ -418,6 +418,45 @@ class EntityManager extends AbstractEntityStore
         return $object;
     }
 
+    private function getAgregate(string $propertyName, string $agregateName)
+    {
+
+        $property = $this->getThisEntity()->getProperty($propertyName);
+        if ($property === false) {
+            throw new ApplicationException('[' . $this->entityClass . '::' .
+                    $propertyName . '] does not exists.', 1, null);
+        }
+
+        $value = (new Query())
+                ->setTable($this->entityTable)
+                ->{$agregateName}($propertyName);
+
+        $object = $this->getSelf();
+        $object->setPropertyValues([$propertyName => $value]);
+
+        return $object->{$propertyName};
+    }
+
+    /**
+     * 
+     * @param string $propertyName
+     * @return type
+     */
+    public function max(string $propertyName)
+    {
+        return $this->getAgregate($propertyName, 'max');
+    }
+
+    /**
+     * 
+     * @param string $propertyName
+     * @return type
+     */
+    public function min(string $propertyName)
+    {
+        return $this->getAgregate($propertyName, 'min');
+    }
+
     /**
      * Disable or enable lazy properties to be set while 
      * fetching record.
@@ -587,6 +626,25 @@ class EntityManager extends AbstractEntityStore
         # Updating callback properties.
         $this->setCallbackProperties();
         return true;
+    }
+
+    /**
+     * Convert value to data type same as property name's data type.
+     * 
+     * @param string $propertyName
+     * @param type $value
+     * @return type
+     * @throws ApplicationException
+     */
+    public function convert(string $propertyName, $value)
+    {
+        $property = $this->getThisEntity()->getProperty($propertyName);
+
+        if ($property === false) {
+            throw new ApplicationException('Property [' . $this->entityClass . '::' . $propertyName . '] does not exists.', null, null);
+        }
+
+        return $property->getDatatype()->convertDataType($value);
     }
 
     /**
@@ -1154,6 +1212,17 @@ class EntityManager extends AbstractEntityStore
      */
     public function insert()
     {
+
+        # If there are any callback to be executed before inserting records, 
+        # we will fire callback. if any of callback returns false, will cancel 
+        # insert operation and return with false to indicate that insert got 
+        # cancelled.
+        if ($this->executeBeforeChange(self::INSERT) === false) {
+            throw new ApplicationException('Entity [' . $this->entityClass . ']'
+                    . ' record can be inserted as before change event return'
+                    . ' failure.', 1, null, 911071);
+        }
+
         # We first must validate each property of entity class before we proceed
         # for anything. Below method will return updated properties with its 
         # value. We will these property query builder for update.
@@ -1171,16 +1240,6 @@ class EntityManager extends AbstractEntityStore
         # We should add extra property to query builder if any of extra 
         # property added, update or removed.
         $this->addExtraPropertyToQuery($query);
-
-        # If there are any callback to be executed before inserting records, 
-        # we will fire callback. if any of callback returns false, will cancel 
-        # insert operation and return with false to indicate that insert got 
-        # cancelled.
-        if ($this->executeBeforeChange(self::INSERT) === false) {
-            throw new ApplicationException('Entity [' . $this->entityClass . ']'
-                    . ' record can be inserted as before change event return'
-                    . ' failure.', 1, null, 911071);
-        }
 
         $result = $query->insert();
         $this->executeAfterChange(self::INSERT);
@@ -1270,10 +1329,7 @@ class EntityManager extends AbstractEntityStore
             return false;
         }
 
-        $this->validateUpdated($updated);
-
-        $query = $this->getReflectiveQuery($updated);
-
+        $beforeEventCall = Coding::serialize($this->getInstance());
         # If there are any callback to be executed before updating records, we
         # will execute. if any of callback returns false, will cancel update 
         # operation and return FASLE indicating that update got cancelled.
@@ -1282,6 +1338,21 @@ class EntityManager extends AbstractEntityStore
                     . ' record can not be updated as before change event'
                     . ' return failure.', 1, null, 911072);
         }
+
+        $afterEventCall = Coding::serialize($this->getInstance());
+
+        # Let's fetch again, this is to consider entity property updated by event.
+        if ($beforeEventCall !== $afterEventCall) {
+            $updated = $this->getUpdated();
+            if (empty($updated) &&
+                    $this->isExtraPropertyUpdated() === false) {
+                return false;
+            }
+        }
+
+        $this->validateUpdated($updated);
+
+        $query = $this->getReflectiveQuery($updated);
 
         $result = $this->setCondition($query)->update();
         $this->executeAfterChange(self::UPDATE, array_keys($updated));
@@ -1307,7 +1378,7 @@ class EntityManager extends AbstractEntityStore
     }
 
     /**
-     * Executes callback to be executed before persisting any changes of enitty
+     * Executes callback to be executed before persisting any changes of entity
      * to database.
      * 
      * @param   string      $mode
@@ -1316,7 +1387,7 @@ class EntityManager extends AbstractEntityStore
     private function executeBeforeChange($mode, $updatedNames = null)
     {
         return $this->getThisEntity()
-                        ->executeBeforeChange($this->getConstantEntity($this->getInstanceOfFetched()), $this->getConstantEntity($this->getInstance()), $mode, $updatedNames);
+                        ->executeBeforeChange($this->getConstantEntity($this->getInstanceOfFetched()), $this->getInstance(), $mode, $updatedNames);
     }
 
     /**
@@ -1332,7 +1403,7 @@ class EntityManager extends AbstractEntityStore
     }
 
     /**
-     * Executes callback to be executed after persisting any changes of enitty 
+     * Executes callback to be executed after persisting any changes of entity 
      * to database.
      * 
      * @param   string        $mode
@@ -1798,8 +1869,12 @@ class EntityManager extends AbstractEntityStore
         # will not return in below call.
         $mapping = $query->getReturnableEntity();
         $iterator = [];
+
+
+        $propertyMapping = $query->getPropertyMapping();
+
         foreach ($records as $row) {
-            $value = $this->getRowAsEntity($row, $mapping, $query);
+            $value = $this->getRowAsEntity($row, $mapping, $query, $propertyMapping);
             foreach ($query->getDerivingProperties() as $name) {
                 list($alias, $property) = explode('.', $name);
                 if (isset($mapping[$alias]) === false) {
@@ -1816,6 +1891,7 @@ class EntityManager extends AbstractEntityStore
                 $entity = $this->entity($mapping[$alias]);
                 $toSet->setDerivedPropertyValues($property, $entity->getDerivedProperty($property), $row, $entity->getProperty($property), $entity->getJoinTable($property));
             }
+
             $iterator[] = $value;
         }
         return new DataIterator($this->processLazyProperties($iterator));
@@ -1859,7 +1935,7 @@ class EntityManager extends AbstractEntityStore
      * @param type $query
      * @return type
      */
-    private function getRowAsEntity($row, $mapping, $query)
+    private function getRowAsEntity($row, $mapping, $query, $onlyProperties = [])
     {
         # If one row contains more than one entity then row will contain
         # all alias with it's value as entity instance otherwise it contains
@@ -1893,6 +1969,14 @@ class EntityManager extends AbstractEntityStore
             # Creating clone of the fetched row so that any modification
             # do not affect original row.
             $fetchable = clone $row;
+
+            if (!empty($onlyProperties) && isset($onlyProperties[$alias])) {
+                foreach ($fetchable as $k => $v) {
+                    if (!in_array($k, $onlyProperties[$alias])) {
+                        unset($fetchable->{$k});
+                    }
+                }
+            }
 
             # Now we will remove properties which are unfetchable.
             foreach ($query->getUnFetchable($alias) as $notToFetch) {
@@ -1946,7 +2030,7 @@ class EntityManager extends AbstractEntityStore
         # Listing all foreign key defined on table so that we can later add
         # foregin key only if it already exists in table.
         foreach ($meta->getForeignKeys() as $col) {
-            $foregins[$col->column_name] = $col;
+            $foregins[$col->columnName] = $col;
         }
 
         $identityPropertyName = false;
@@ -1955,10 +2039,14 @@ class EntityManager extends AbstractEntityStore
         }
 
         foreach ($this->getProperties() as $name => $property) {
+
+            # Discard derived property
             if ($property->getDerived() !== false) {
                 continue;
             }
             $columnName = [$name => $name];
+
+            # If column does not exists in table.
             if (!in_array($name, $columns)) {
                 $columnName = $name;
             }

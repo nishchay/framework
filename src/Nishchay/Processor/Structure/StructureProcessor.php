@@ -91,8 +91,8 @@ class StructureProcessor extends Structure
                     ViewCollection::store($path);
                 }
 
-                if (in_array($value['special'], ['controller', 'entity'])) {
-                    $this->directorires[$value['special']][str_replace([ROOT, DS], ['','\\'], $path)] = $path;
+                if (in_array($value['special'], ['controller', 'entity', 'form'])) {
+                    $this->directorires[$value['special']][str_replace([ROOT, DS], ['', '\\'], $path)] = $path;
                 }
 
                 $this->processRequiredDirectory($path, $value['depth_path']);

@@ -191,7 +191,8 @@ class Structure
         'entities' => 'entity', 'entity' => 'entity',
         'events' => 'event', 'event' => 'event',
         'handlers' => 'handler', 'handler' => 'handler',
-        'container' => 'container', 'containers' => 'container'
+        'container' => 'container', 'containers' => 'container',
+        'form' => 'form', 'forms' => 'form'
     ];
 
     /**
@@ -213,7 +214,7 @@ class Structure
      * 
      * @var boolean 
      */
-    private $specialStart = FALSE;
+    private $specialStart = false;
 
     /**
      * Supported file extensions.

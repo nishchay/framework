@@ -554,7 +554,7 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Returns name of identity column.
+     * Returns name of identity property.
      * 
      * @return string
      */
@@ -1296,14 +1296,17 @@ class EntityClass extends AbstractEntityStore
      */
     public function executeBeforeChange($old, $new, $mode, $updatedNames)
     {
+        $eventCalled = 0;
         $name = 'isFor' . ucfirst(strtolower($mode));
         foreach ($this->beforechange as $trigger) {
             if ($this->isCallable($trigger, $name)) {
+                $eventCalled++;
                 if ($this->executeCallback($trigger->getCallback(), [$old, $new, $mode, $updatedNames]) === false) {
                     return false;
                 }
             }
         }
+        return $eventCalled;
     }
 
     /**

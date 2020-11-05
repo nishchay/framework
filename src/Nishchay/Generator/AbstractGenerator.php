@@ -11,6 +11,7 @@ use Nishchay\FileManager\SimpleFile;
 use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\Console\Printer;
 use Nishchay\FileManager\SimpleDirectory;
+use Nishchay\Data\Collection as EntityCollection;
 
 /**
  * Abstract Generator class.
@@ -74,6 +75,36 @@ abstract class AbstractGenerator
         if (Nishchay::isApplicationRunningForCommand() === false) {
             throw new ApplicationException('Application not running from command line.', null, null, 933002);
         }
+    }
+
+    /**
+     * Returns namespace.
+     * 
+     * @return string
+     */
+    protected function getNamespace(): ?string
+    {
+        $directories = Nishchay::getStructureProcessor()->getDirectories($this->type);
+
+        # No need tp ask if there's single entity directory in an application.
+        if (count($directories) === 1) {
+            return key($directories);
+        }
+
+        $i = 1;
+        $options = [];
+        foreach ($directories as $namespace => $path) {
+            $options[$i++] = $namespace;
+        }
+        $answer = (int) $this->getInput('Where do you want to create(Type number)', $options, 3, true);
+
+        if (isset($options[$answer]) === false) {
+            throw new ApplicationException('Invalid choice for directory.');
+        }
+
+        $namespace = $options[$answer];
+
+        return $namespace;
     }
 
     /**
@@ -228,6 +259,7 @@ abstract class AbstractGenerator
      */
     protected function createClass($class, $callback = false)
     {
+        $this->name = $this->getNamespace() . '\\' . $this->name;
         $filePath = $this->isValidName();
         $this->reflection = new ReflectionClass($class);
         list ($shortClassName, $namespace) = $this->getClassDetail();
@@ -419,6 +451,25 @@ abstract class AbstractGenerator
             throw new ApplicationException('Operation terminated after'
                     . ' limit exceeded to get input.', null, null, 933008);
         }
+    }
+
+    /**
+     * Registers entity to collection.
+     * 
+     * @param string $class
+     */
+    protected function registerEntity(string $class)
+    {
+        $reflection = (new ReflectionClass(EntityCollection::class))
+                ->getProperty('collection');
+
+        $entityCollection = Nishchay::getEntityCollection();
+
+        $collections = $entityCollection->get();
+        $collections[$class] = true;
+
+        $reflection->setAccessible(true);
+        $reflection->setValue($entityCollection, $collections);
     }
 
     /**

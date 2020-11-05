@@ -17,7 +17,7 @@ trait FetchSingletonTrait
      * 
      * @var object 
      */
-    private static $instances = [];
+    protected static $instances = [];
 
     /**
      * Creates or returns instance of class.
@@ -25,16 +25,16 @@ trait FetchSingletonTrait
      * @param string $class
      * @return object
      */
-    private function getInstance(string $class, array $arguments = [])
+    protected function getInstance(string $class, array $parameters = [])
     {
         if (isset(self::$instances[$class])) {
             return self::$instances[$class];
         }
 
         if (method_exists($class, __FUNCTION__)) {
-            $instance = call_user_func_array([$class, __FUNCTION__], $arguments);
+            $instance = call_user_func_array([$class, __FUNCTION__], $parameters);
         } else {
-            $instance = new $class(...$arguments);
+            $instance = new $class(...$parameters);
         }
 
         return self::$instances[$class] = $instance;
