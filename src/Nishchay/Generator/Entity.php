@@ -16,6 +16,7 @@ use Nishchay\Processor\VariableType;
 use Nishchay\Data\Meta\MetaTable;
 use Nishchay\Data\Meta\MetaConnection;
 use Nishchay\Data\Annotation\Property\Property;
+use Nishchay\Data\EntityManager;
 
 /**
  * Entity Generator class.
@@ -194,7 +195,21 @@ class Entity extends AbstractGenerator
             return false;
         }
 
-        $this->createEntity($namespace, $entity, $entity, $properties);
+        $created = $this->createEntity($namespace, $entity, $entity, $properties);
+
+        if ($created === false) {
+            return false;
+        }
+
+        $answer = $this->getInput('Do you want to create table in DB?', 'YN');
+
+        if ($answer === 'y') {
+            $entityManager = new EntityManager($namespace . '\\' . $entity);
+            $entityManager->getDatabaseManager()->execute();
+            Printer::yellow('Table has been created in DB.' . PHP_EOL);
+        }
+
+        return $namespace . '\\' . $entity;
     }
 
     /**
@@ -208,7 +223,7 @@ class Entity extends AbstractGenerator
         # able to connect to database, we can then terminate instantly.
         $meta = new MetaTable($this->name, $connection);
         $columns = $meta->getColumns();
-
+        
         if ($namespace === null) {
             $namespace = $this->getNamespace();
         }
@@ -234,6 +249,8 @@ class Entity extends AbstractGenerator
         }
 
         $this->createEntity($namespace, $entity, $this->name, $properties);
+        
+        return $namespace . '\\' . $entity;
     }
 
     /**
@@ -288,7 +305,7 @@ class Entity extends AbstractGenerator
             $this->isValidFile(false);
         } catch (ApplicationException $e) {
             Printer::red('[' . $this->name . '] is already exists.' . PHP_EOL);
-            return null;
+            return false;
         }
         $file = new SimpleFile($filePath, SimpleFile::TRUNCATE_WRITE);
 
@@ -305,6 +322,8 @@ class Entity extends AbstractGenerator
 
         # Close
         $file->close();
+
+        $this->registerEntity($this->name);
 
         # Inform
         Printer::write('Created at ');

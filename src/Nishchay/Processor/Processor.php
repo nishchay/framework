@@ -365,7 +365,6 @@ class Processor
     private function prepare()
     {
         $method = $this->getCurrentMethod()->getMethod();
-
         $this->controller->classAnnotation($this->getCurrentClass());
         $this->controller->methodAnnotation($this->getCurrentMethod());
 

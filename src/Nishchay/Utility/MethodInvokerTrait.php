@@ -22,6 +22,10 @@ trait MethodInvokerTrait
      */
     private function invokeMethod($method, array $parameter = [])
     {
+        if ($method instanceof \Closure) {
+            return call_user_func_array($method, $parameter);
+        }
+
         if (is_string($method)) {
             $method = explode('::', $method);
         }

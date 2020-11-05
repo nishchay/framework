@@ -6,7 +6,10 @@ use Nishchay;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Generator\Skelton\Controller\EmptyController;
 use Nishchay\Generator\Skelton\Controller\CrudController;
+use Nishchay\Generator\Skelton\Controller\ProtoCrud;
 use Nishchay\Generator\Skelton\Controller\TemplateMapper;
+use Nishchay\Form\Form as NishchayForm;
+use Nishchay\Generator\Entity as EntityGenerator;
 
 /**
  * Controller generator class.
@@ -40,6 +43,36 @@ class Controller extends AbstractGenerator
     public function createCrud()
     {
         return $this->createClass(CrudController::class, [$this, 'writeRouteName']);
+    }
+
+    /**
+     * Creates controller for the crud prototype.
+     * 
+     * @param type $entityClass
+     * @param type $formClass
+     * @param type $classBaseName
+     * @return type
+     */
+    public function createCrudPrototype($entityClass, $formClass, $classBaseName)
+    {
+        return $this->createClass(ProtoCrud::class, function($content) use($entityClass, $formClass, $classBaseName) {
+
+                    $formClassName = $classBaseName . 'Form';
+                    $entityClassName = $classBaseName . 'Entity';
+                    $search = [
+                        NishchayForm::class,
+                        EntityGenerator::class,
+                        'Form::class',
+                        'Entity::class'
+                    ];
+                    $replace = [
+                        $formClass . ' as ' . $formClassName,
+                        $entityClass . ' as ' . $entityClassName,
+                        $formClassName . '::class',
+                        $entityClassName . '::class'
+                    ];
+                    return str_replace($search, $replace, $this->writeRouteName($content));
+                });
     }
 
     /**

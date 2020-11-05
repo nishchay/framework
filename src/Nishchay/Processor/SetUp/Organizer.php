@@ -342,7 +342,7 @@ class Organizer
         if ($this->isViewMode()) {
             return $this->storeView($path);
         }
-
+        
         # When current mode is other and current type is class
         # we should check for class name standard.
         if ($this->isOtherMode()) {

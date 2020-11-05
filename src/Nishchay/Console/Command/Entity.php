@@ -219,6 +219,8 @@ class Entity extends AbstractCommand
             (new EntityGenerator($this->arguments[2]))->createFromTable(null, $this->arguments[3] ?? null);
         } else if ($type === '-new') {
             (new EntityGenerator(null))->createNew();
+        } else {
+            Printer::red('Invalid command: ' . $type);
         }
 
         return false;

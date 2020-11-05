@@ -88,7 +88,7 @@ abstract class AbstractPrototype
      * @param string $class
      * @return $this
      */
-    public function setForm(string $class): self
+    public function setForm(string $class)
     {
         $this->form = $class;
         return $this;
@@ -109,7 +109,7 @@ abstract class AbstractPrototype
      *  
      * @return EntityManager
      */
-    protected function getEntity(): EntityManager
+    protected function getEntity()
     {
         return $this->getInstance(EntityManager::class, [$this->entityClass]);
     }
@@ -143,7 +143,7 @@ abstract class AbstractPrototype
      * @param string|array $fields
      * @return $this
      */
-    public function setIgnoreFileds($fields): self
+    public function setIgnoreFileds($fields)
     {
         if (is_string($fields)) {
             $fields = [$fields];
@@ -227,7 +227,7 @@ abstract class AbstractPrototype
             $field = $this->getForm()->{$name}();
 
             $name = $field->getName();
-
+            
             # Skipping inserting/updating to entity
             if ($this->isIgnoredField($name)) {
                 continue;

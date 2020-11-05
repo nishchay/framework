@@ -319,8 +319,7 @@ class Form
 
             # We will not proceed if method is not valid form field method or
             # Form field does not have any validation for it.
-            if (($field = $this->getFormField($method)) === false ||
-                    empty($field->getValidation())) {
+            if (($field = $this->getFormField($method)) === false) {
                 continue;
             }
 

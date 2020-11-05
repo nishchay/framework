@@ -55,7 +55,21 @@ class Help
             '-generate -new' => 'Creates entity. Interactive command',
             '-generate -db (?connectionName)' => 'Creates all or specific entities from DB. Do not pass connection name to use default database connection.',
             '-generate -table name (?connectionName)' => 'Create entity for given table name. Do not pass connection name to use default database connection.'
-        ]
+        ],
+        'form' => [
+            '{form-alias}' => 'f',
+            '-generate -entity name' => 'Generates form from entity class name'
+        ],
+        'prototype' => [
+            '{prototype-alias}' => 'p',
+            '-generate -new' => 'Generates new prototype based on interactive command',
+            '-generate -table name (?connectionName)' => 'Generates prototype from table. Do not pass connection name to use default database connection.'
+        ],
+        '' => [
+            'version' => 'Prints framework version information',
+            '-v' => 'Alias of version',
+            '-version' => 'Alias of version'
+        ],
     ];
 
     /**

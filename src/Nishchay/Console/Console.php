@@ -3,16 +3,23 @@
 namespace Nishchay\Console;
 
 use Nishchay\Processor\Application;
-use Nishchay\Console\Command\Route;
-use Nishchay\Console\Command\Event;
-use Nishchay\Console\Command\Entity;
 use Nishchay\Console\Printer;
-use Nishchay\Console\Command\Controller;
+use Nishchay\Console\Command\{
+    Route,
+    Event,
+    Entity,
+    Controller,
+    Form,
+    Prototype
+};
 
 /**
- * Description of Console
- *
- * @author bpatel
+ * Console command class.
+ * 
+ * @license     https://nishchay.io/license    New BSD License
+ * @copyright   (c) 2020, Nishchay PHP Framework
+ * @version     1.0
+ * @author      Bhavik Patel
  */
 class Console extends AbstractCommand
 {
@@ -23,7 +30,8 @@ class Console extends AbstractCommand
         'entity',
         'handler',
         'event',
-        'form'
+        'form',
+        'prototype'
     ];
 
     /**
@@ -40,6 +48,8 @@ class Console extends AbstractCommand
         'e' => 'entity',
         'h' => 'handler',
         'ev' => 'event',
+        'f' => 'form',
+        'p' => 'prototype',
     ];
 
     public function __construct($arguments)
@@ -132,12 +142,25 @@ class Console extends AbstractCommand
         $entity = new Entity($arguments);
         return $entity->run();
     }
-    
+
+    /**
+     * Executes form command.
+     * 
+     * @param type $arguments
+     * @return type
+     */
     public function getForm($arguments)
     {
-        $form = new Command\Form($arguments);
-        
+        $form = new Form($arguments);
+
         return $form->run();
+    }
+
+    public function getPrototype($arguments)
+    {
+        $prototype = new Prototype($arguments);
+
+        return $prototype->run();
     }
 
     /**

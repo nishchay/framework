@@ -4,35 +4,25 @@ namespace Nishchay\Console\Command;
 
 use Nishchay\Console\AbstractCommand;
 use Nishchay\Console\Printer;
-use Nishchay\Generator\Form as FormGenerator;
+use Nishchay\Generator\Prototype as PrototypeGenerator;
 use Nishchay\Console\Help;
 
 /**
- * Form console command class.
+ * Prototype console command class.
  * 
  * @license     https://nishchay.io/license    New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel
  */
-class Form extends AbstractCommand
+class Prototype extends AbstractCommand
 {
 
-    /**
-     * Initialization.
-     * 
-     * @param array $arguments
-     */
     public function __construct($arguments)
     {
         parent::__construct($arguments);
     }
 
-    /**
-     * Generates entity from DB, table or guide.
-     * 
-     * @return boolean
-     */
     public function getGenerate()
     {
 
@@ -42,20 +32,25 @@ class Form extends AbstractCommand
         }
 
         list(, $type) = $this->arguments;
-        if ($type === '-entity') {
+        if ($type === '-table') {
             if (isset($this->arguments[2]) === false) {
-                Printer::write('-entity requires entity name to be passed', Printer::RED_COLOR);
+                Printer::write('-table requires entity name to be passed', Printer::RED_COLOR);
                 return false;
             }
 
-            (new FormGenerator($this->arguments[2]))->createFromEntity();
+            (new PrototypeGenerator($this->arguments[2]))->createFromTable($this->arguments[3] ?? null);
+        } else if ($type === '-new') {
+
+            (new PrototypeGenerator(null))->createNew();
         } else {
             Printer::red('Invalid command: ' . $type);
         }
-
-        return false;
     }
 
+    /**
+     * 
+     * @return boolean
+     */
     protected function printList(): void
     {
         Printer::red('Invalid command: Pass -generate to generate based on table or interactive command.');
@@ -68,7 +63,7 @@ class Form extends AbstractCommand
      */
     public function getHelp()
     {
-        new Help('form');
+        new Help('prototype');
     }
 
 }

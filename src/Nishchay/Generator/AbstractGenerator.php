@@ -11,6 +11,7 @@ use Nishchay\FileManager\SimpleFile;
 use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\Console\Printer;
 use Nishchay\FileManager\SimpleDirectory;
+use Nishchay\Data\Collection as EntityCollection;
 
 /**
  * Abstract Generator class.
@@ -91,10 +92,10 @@ abstract class AbstractGenerator
         }
 
         $i = 1;
+        $options = [];
         foreach ($directories as $namespace => $path) {
             $options[$i++] = $namespace;
         }
-
         $answer = (int) $this->getInput('Where do you want to create(Type number)', $options, 3, true);
 
         if (isset($options[$answer]) === false) {
@@ -258,6 +259,7 @@ abstract class AbstractGenerator
      */
     protected function createClass($class, $callback = false)
     {
+        $this->name = $this->getNamespace() . '\\' . $this->name;
         $filePath = $this->isValidName();
         $this->reflection = new ReflectionClass($class);
         list ($shortClassName, $namespace) = $this->getClassDetail();
@@ -449,6 +451,25 @@ abstract class AbstractGenerator
             throw new ApplicationException('Operation terminated after'
                     . ' limit exceeded to get input.', null, null, 933008);
         }
+    }
+
+    /**
+     * Registers entity to collection.
+     * 
+     * @param string $class
+     */
+    protected function registerEntity(string $class)
+    {
+        $reflection = (new ReflectionClass(EntityCollection::class))
+                ->getProperty('collection');
+
+        $entityCollection = Nishchay::getEntityCollection();
+
+        $collections = $entityCollection->get();
+        $collections[$class] = true;
+
+        $reflection->setAccessible(true);
+        $reflection->setValue($entityCollection, $collections);
     }
 
     /**

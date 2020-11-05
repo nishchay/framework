@@ -84,7 +84,6 @@ abstract class AbstractCommand
         if (empty($this->arguments)) {
             return $this->printList();
         }
-
         if ($this->isValidCommand($this->arguments[0])) {
             return $this->executeCommand(substr($this->arguments[0], 1));
         } else {

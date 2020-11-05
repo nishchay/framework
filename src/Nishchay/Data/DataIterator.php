@@ -43,12 +43,20 @@ class DataIterator extends ArrayIterator
      * @param bool $withNull
      * @return array
      */
-    public function getAsArray(bool $withNull = true): array
+    public function getAsArray(bool $withNull = true, array $properties = []): array
     {
         $array = [];
         foreach ($this as $row) {
             if ($row instanceof EntityManager) {
                 $value = $row->getData('array', true, $withNull);
+
+                if (!empty($properties)) {
+                    foreach ($value as $name => $val) {
+                        if (!in_array($name, $properties)) {
+                            unset($value[$name]);
+                        }
+                    }
+                }
             } else {
                 $value = [];
                 foreach ($row as $k => $v) {

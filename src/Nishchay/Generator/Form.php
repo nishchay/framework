@@ -77,9 +77,9 @@ class Form extends AbstractGenerator
     }
 
     /**
-     * 
+     * Creates form class from entity
      */
-    public function createFromEntity()
+    public function createFromEntity($csrf = true)
     {
         $dataClass = $this->getDataClass($this->name);
         $namespace = $this->getNamespace();
@@ -93,7 +93,7 @@ class Form extends AbstractGenerator
         $file = new SimpleFile($filePath, SimpleFile::TRUNCATE_WRITE);
 
         # Writing start of class.
-        $file->write($this->getClassStartCode($namespace, $name) . PHP_EOL . PHP_EOL);
+        $file->write($this->getClassStartCode($namespace, $name, $csrf) . PHP_EOL . PHP_EOL);
 
         foreach ($dataClass->getProperties() as $property) {
             if ($property->isIdentity() || $property->isDerived() || $property->isPrimitiveType() === false) {
@@ -115,9 +115,17 @@ class Form extends AbstractGenerator
         # Inform
         Printer::write('Created at ');
         Printer::yellow($filePath . PHP_EOL);
+
+        return $this->name;
     }
 
-    private function getMethodCode(DataProperty $property)
+    /**
+     * Returns method code which return form field for the property.
+     * 
+     * @param DataProperty $property
+     * @return string
+     */
+    private function getMethodCode(DataProperty $property): string
     {
         $propertyName = $property->getName();
         $method = 'get' . ucfirst($propertyName);
@@ -177,6 +185,12 @@ METHOD;
         if ($dataType->getRequired() === true) {
             $validation[] = <<<VALIDATION
                         ->isRequired()
+VALIDATION;
+        }
+
+        if ($dataType->getLength() !== null) {
+            $validation[] = <<<VALIDATION
+                        ->setValidation('string:max', {$this->getParameterCode([$dataType->getLength()])})
 VALIDATION;
         }
 
@@ -249,11 +263,12 @@ VALIDATION;
      * @param string $name
      * @return string
      */
-    private function getClassStartCode(string $namespace, string $name): string
+    private function getClassStartCode(string $namespace, string $name, bool $csrf): string
     {
         $formName = strtolower($name) . '-form';
         $formClass = RequestForm::class;
         $requestClass = Request::class;
+        $csrf = $csrf ? '' : (PHP_EOL . '$this->removeCSRF();');
         return <<<CL
 <?php
 
@@ -275,7 +290,7 @@ class {$name} extends Form
      */
     public function __construct()
     {
-        parent::__construct('{$formName}', Request::POST);
+        parent::__construct('{$formName}', Request::POST);{$csrf}
     }
 CL;
     }
