@@ -92,6 +92,17 @@ class Validator extends AbstractValidator
                 return $value === $this->getRequest($fieldName);
             }, '{field} should be same as {0}');
         }
+
+        if (MixedRule::isExist('depends') === false) {
+            MixedRule::addRule('depends', function ($value, $fieldName, $shouldBe = null) {
+                $fieldValue = $this->getRequest($fieldName);
+                if ($shouldBe === null) {
+                    return empty($fieldValue) ? true : !empty($value);
+                }
+
+                return $fieldValue == $shouldBe ? !empty($value) : true;
+            }, '{field} is required for {0}');
+        }
     }
 
     /**
@@ -149,7 +160,14 @@ class Validator extends AbstractValidator
         $validated = true;
         foreach ($this->validation as $fieldName => $rule) {
             if ($rule !== 'required' && array_key_exists('required', $rule) === false && empty($this->getRequest($fieldName))) {
-                continue;
+                if (array_key_exists('depends', $rule) !== false) {
+                    $validated = $this->validateField($fieldName, $rule);
+                    if ($validated === false) {
+                        return false;
+                    }
+                } else {
+                    continue;
+                }
             }
 
             if ((!$this->validateField($fieldName, $rule))) {
@@ -315,6 +333,7 @@ class Validator extends AbstractValidator
                 }
             }
         }
+
         return true;
     }
 

@@ -25,7 +25,7 @@ trait FetchSingletonTrait
      * @param string $class
      * @return object
      */
-    protected function getInstance(string $class, array $parameters = [])
+    private function getInstance(string $class, array $parameters = [])
     {
         if (isset(self::$instances[$class])) {
             return self::$instances[$class];
