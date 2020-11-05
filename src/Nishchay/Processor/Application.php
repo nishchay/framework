@@ -39,10 +39,12 @@ use Nishchay\Lang\Lang;
 final class Application
 {
 
+    use FetchSingletonTrait;
+
     /**
      * Nishchay framework version number.
      */
-    const VERSION = '1.0';
+    const VERSION = '1.1';
 
     /**
      * Nishchay framework version name.
@@ -103,7 +105,7 @@ final class Application
      * 
      * @var object 
      */
-    private $applicationName = FALSE;
+    private $applicationName = false;
 
     /**
      * Author Name of application.
@@ -142,7 +144,7 @@ final class Application
      * 
      * @var string 
      */
-    private $landingRoute = NULL;
+    private $landingRoute = null;
 
     /**
      * Configuration Loader instance.
@@ -156,13 +158,6 @@ final class Application
      * @var \Nishchay\Processor\Structure\StructureProcessor 
      */
     private $structureProcessor;
-
-    /**
-     * All registered instances.
-     * 
-     * @var array 
-     */
-    private $registered = [];
 
     /**
      * Initialization.
@@ -292,17 +287,6 @@ final class Application
     }
 
     /**
-     * Register instance with given name.
-     * 
-     * @param type $name
-     * @param type $instance
-     */
-    private function register($name, $instance)
-    {
-        $this->registered[$name] = $instance;
-    }
-
-    /**
      * Returns Logger instance.
      * 
      * @return \Nishchay\Logger\Logger
@@ -407,28 +391,6 @@ final class Application
     public function getContainer(string $class)
     {
         return $this->getContainerCollection()->get($class);
-    }
-
-    /**
-     * Returns instance of given class.
-     * 
-     * @param string $class
-     * @return type
-     */
-    private function getInstance(string $class)
-    {
-        if (array_key_exists($class, $this->registered) == false) {
-
-            if (method_exists($class, __FUNCTION__)) {
-                $instance = call_user_func([$class, __FUNCTION__]);
-            } else {
-                $instance = new $class;
-            }
-
-            $this->register($class, $instance);
-        }
-
-        return $this->registered[$class];
     }
 
     /**
