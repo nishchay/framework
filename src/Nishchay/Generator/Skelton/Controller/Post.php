@@ -18,7 +18,7 @@ class Post
     /**
      * To render list of posts.
      * 
-     * @Route(path='/')
+     * @Route(path='/', type=GET)
      * @Response(type=VIEW)
      */
     public function index()
@@ -144,5 +144,4 @@ class Post
         
     }
 
-    
 }

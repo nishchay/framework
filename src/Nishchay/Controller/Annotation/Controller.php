@@ -272,6 +272,7 @@ class Controller extends BaseAnnotationDefinition
             # we will add this method annotation to this class registry.
             $methodAnnotation = new ControllerMethodAnnotation($method->class,
                     $method->name, $annotation, $this);
+
             if ($methodAnnotation->getRoute() !== false) {
                 if ($reflection->isAbstract() === true) {
 

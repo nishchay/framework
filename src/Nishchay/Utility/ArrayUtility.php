@@ -201,6 +201,7 @@ class ArrayUtility
     }
 
     /**
+     * Returns true array only contains numeric index and in incrementing order.
      * 
      * @param array $array
      * @return boolean

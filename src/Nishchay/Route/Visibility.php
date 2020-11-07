@@ -74,7 +74,7 @@ class Visibility extends AbstractSingleton
         }
 
         $method = $this->getMethod($route);
-
+        
         # Let's iterate over and find visibility if any.
         foreach ($config as $row) {
             if (($row->active ?? false) === true) {

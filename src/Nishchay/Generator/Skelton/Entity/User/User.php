@@ -44,14 +44,13 @@ class User
      * @DataType(type=string,length=10,value=[male,female],encrypt=true) 
      */
     public $gender;
-    
+
     /**
      * Email of user.
-     * 
      * @DataType(type=string,length=100,required=true,encrypt=true)
      */
     public $email;
-    
+
     /**
      * User password.
      * 
@@ -65,14 +64,14 @@ class User
      * @DataType(type=date,encrypt=true) 
      */
     public $birthDate;
-    
+
     /**
      * Is user active.
      * 
      * @DataType(type=boolean)
      */
     public $isActive;
-    
+
     /**
      * Is user verified.
      * 
@@ -86,4 +85,5 @@ class User
      * @DataType(type=datetime)
      */
     public $verifiedAt;
+
 }

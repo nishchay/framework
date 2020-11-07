@@ -38,7 +38,7 @@ class Session
      * @DataType(type=string)
      */
     public $data;
-    
+
     /**
      * Time when last accessed this session.
      * 
