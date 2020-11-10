@@ -3,6 +3,7 @@
 namespace Nishchay\Route;
 
 use Nishchay;
+use Nishchay\Exception\ApplicationException;
 use Nishchay\Route\Annotation\Route;
 use Nishchay\Utility\DateUtility;
 use Nishchay\Utility\Coding;
@@ -69,12 +70,12 @@ class Visibility extends AbstractSingleton
         $config = $this->setting->config ?? false;
 
         # There's no visibility config
-        if (is_array($config) === false || empty($config)) {
+        if (empty($config)) {
             return true;
         }
 
         $method = $this->getMethod($route);
-        
+
         # Let's iterate over and find visibility if any.
         foreach ($config as $row) {
             if (($row->active ?? false) === true) {
@@ -91,6 +92,35 @@ class Visibility extends AbstractSingleton
         }
 
         return true;
+    }
+
+    /**
+     * Returns true if config is visible.
+     * 
+     * @param string $configName
+     * @return boolean
+     * @throws ApplicationException
+     */
+    public function isConfigVisible(string $configName)
+    {
+        # Visibility is disabled.
+        if (($this->setting->active ?? false) === false) {
+            return true;
+        }
+
+        $config = $this->setting->config ?? false;
+
+        # There's no visibility config
+        if (empty($config) || isset($config->{$configName}) === false) {
+            throw new ApplicationException('Route visibility config [' . $configName . '] does not exists.');
+        }
+
+        $config = $config->{$configName};
+        if (($config->active ?? false) === false) {
+            return true;
+        }
+
+        return $this->checkVisibility($config->visible ?? false);
     }
 
     /**
