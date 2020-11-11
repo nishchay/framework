@@ -20,11 +20,11 @@ class Account
      * Returns account login prototype.
      * 
      * @param string $entity
-     * @return \Nishchay\Prototype\Account\Login
+     * @return \Nishchay\Prototype\Account\Auth
      */
-    public function getAuth(string $entity): Login
+    public function getAuth(string $entity): Auth
     {
-        return $this->getInstance(Login::class, [$entity]);
+        return $this->getInstance(Auth::class, [$entity]);
     }
 
     /**

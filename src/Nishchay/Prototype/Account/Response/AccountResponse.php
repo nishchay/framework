@@ -9,7 +9,7 @@ namespace Nishchay\Prototype\Account\Response;
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @author      Bhavik Patel
  */
-class LoginResponse
+class AccountResponse
 {
 
     /**

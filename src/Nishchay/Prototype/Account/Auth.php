@@ -6,8 +6,9 @@ use Closure;
 use Nishchay\Exception\BadRequestException;
 use Nishchay\Exception\AuthorizationFailedException;
 use Nishchay\Http\Request\Request;
-use Nishchay\Prototype\Account\Response\LoginResponse;
+use Nishchay\Prototype\Account\Response\AccountResponse;
 use Nishchay\Prototype\Account\AbstractAccountPrototype;
+use Nishchay\Utility\MethodInvokerTrait;
 
 /**
  * Login prototype class.
@@ -16,8 +17,10 @@ use Nishchay\Prototype\Account\AbstractAccountPrototype;
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @author      Bhavik Patel
  */
-class Login extends AbstractAccountPrototype
+class Auth extends AbstractAccountPrototype
 {
+
+    use MethodInvokerTrait;
 
     /**
      * User email.
@@ -66,7 +69,7 @@ class Login extends AbstractAccountPrototype
      * 
      * @var Closure
      */
-    private $postLogin;
+    private $postAuth;
 
     /**
      * Sets user's email/username. While executing login prototype find user with
@@ -197,21 +200,23 @@ class Login extends AbstractAccountPrototype
     }
 
     /**
-     * 
+     * Returns post authentication callback.
      */
-    public function getPostLogin(): ?Closure
+    public function getPostAuth(): ?Closure
     {
-        return $this->postLogin;
+        return $this->postAuth;
     }
 
     /**
+     * Sets post authentication callback.
+     * This callback will be after user credential verification.
      * 
-     * @param Closure $postLogin
+     * @param Closure $postAuth
      * @return $this
      */
-    public function postLogin(Closure $postLogin)
+    public function postAuth(Closure $postAuth)
     {
-        $this->postLogin = $postLogin;
+        $this->postAuth = $postAuth;
         return $this;
     }
 
@@ -230,13 +235,13 @@ class Login extends AbstractAccountPrototype
     /**
      * Executes prototype to make user login.
      * 
-     * @return LoginResponse
+     * @return AccountResponse
      * @throws BadRequestException
      * @throws AuthorizationFailedException
      */
-    public function execute(): LoginResponse
+    public function execute(): AccountResponse
     {
-        if (($response = $this->validateForm()) instanceof LoginResponse) {
+        if (($response = $this->validateForm()) instanceof AccountResponse) {
             return $response;
         }
 
@@ -248,14 +253,14 @@ class Login extends AbstractAccountPrototype
                 ->isUserVerified($user)
                 ->processPasswordVerification($user->password);
 
-        if ($this->getPostLogin() instanceof Closure) {
-            call_user_func_array($this->getPostLogin(), [$user]);
+        if ($this->getPostAuth() instanceof Closure) {
+            $this->invokeMethod($this->getPostAuth(), [$user]);
         }
 
         $identity = $this->getDataClass()->getIdentity();
 
         return $this->writeSession($user->{$identity})
-                        ->getInstance(LoginResponse::class, [[
+                        ->getInstance(AccountResponse::class, [[
                         'userDetail' => $user,
                         'accessToken' => $this->getAccessToken($user->{$identity}),
                         'isSuccess' => true

@@ -4,7 +4,7 @@ namespace Nishchay\Prototype\Account;
 
 use Nishchay\Data\EntityQuery;
 use Nishchay\Prototype\AbstractPrototype;
-use Nishchay\Prototype\Account\Response\LoginResponse;
+use Nishchay\Prototype\Account\Response\AccountResponse;
 use Nishchay\Session\Session;
 use Nishchay\OAuth2\OAuth2;
 use Nishchay\Http\Request\Request;
@@ -59,14 +59,14 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
     /**
      * Validates form.
      * 
-     * @return LoginResponse
+     * @return AccountResponse
      */
     protected function validateForm()
     {
         $response = parent::validateForm();
 
         if (is_array($response)) {
-            return $this->getInstance(LoginResponse::class, [$response]);
+            return $this->getInstance(AccountResponse::class, [$response]);
         }
     }
 

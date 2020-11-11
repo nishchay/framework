@@ -6,7 +6,7 @@ use Closure;
 use Nishchay\Exception\BadRequestException;
 use Nishchay\Prototype\Account\{
     AbstractAccountPrototype,
-    Response\LoginResponse
+    Response\AccountResponse
 };
 
 /**
@@ -36,11 +36,11 @@ class Register extends AbstractAccountPrototype
     /**
      * Execute register prototype.
      * 
-     * @return LoginResponse
+     * @return AccountResponse
      */
-    public function execute(): LoginResponse
+    public function execute(): AccountResponse
     {
-        if (($response = $this->validateForm()) instanceof LoginResponse) {
+        if (($response = $this->validateForm()) instanceof AccountResponse) {
             return $response;
         }
 
@@ -66,7 +66,7 @@ class Register extends AbstractAccountPrototype
 
 
         return $this->writeSession($userId)
-                        ->getInstance(LoginResponse::class, [[
+                        ->getInstance(AccountResponse::class, [[
                         'userDetail' => $entity,
                         'accessToken' => $this->getAccessToken($userId),
                         'isSuccess' => true
