@@ -22,7 +22,7 @@ class Account
      * @param string $entity
      * @return \Nishchay\Prototype\Account\Login
      */
-    public function getLogin(string $entity): Login
+    public function getAuth(string $entity): Login
     {
         return $this->getInstance(Login::class, [$entity]);
     }

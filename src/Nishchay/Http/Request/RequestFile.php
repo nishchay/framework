@@ -124,7 +124,7 @@ class RequestFile
      * @param string $fileName
      * @return $this
      */
-    private function setFileName(string $fileName): self
+    private function setFileName(string $fileName)
     {
         $this->fileName = $fileName;
         return $this;
@@ -136,7 +136,7 @@ class RequestFile
      * 
      * @param string $newName
      */
-    public function rename(string $newName): self
+    public function rename(string $newName)
     {
         $ext = StringUtility::getExplodeLast('.', $this->getFileName());
         $this->fileName = $newName . '.' . $ext;
@@ -149,7 +149,7 @@ class RequestFile
      * @param string $tempName
      * @return $this
      */
-    private function setTempName(string $tempName): self
+    private function setTempName(string $tempName)
     {
         $this->tempName = $tempName;
         return $this;
@@ -161,7 +161,7 @@ class RequestFile
      * @param string $type
      * @return $this
      */
-    private function setType(string $type): self
+    private function setType(string $type)
     {
         $this->type = $type;
         return $this;
@@ -173,7 +173,7 @@ class RequestFile
      * @param int $size
      * @return $this
      */
-    private function setSize(int $size): self
+    private function setSize(int $size)
     {
         $this->size = $size;
         return $this;
@@ -185,7 +185,7 @@ class RequestFile
      * @param int $error
      * @return $this
      */
-    private function setError(int $error): self
+    private function setError(int $error)
     {
         $this->error = $error;
         return $this;

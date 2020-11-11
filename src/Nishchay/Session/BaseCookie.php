@@ -129,7 +129,7 @@ class BaseCookie extends BaseSession
      * @param int $expiry
      * @return $this
      */
-    public function setExpiry(int $expiry): self
+    public function setExpiry(int $expiry)
     {
         $this->expiry = $expiry;
         return $this;
@@ -142,7 +142,7 @@ class BaseCookie extends BaseSession
      * @param string $path
      * @return $this
      */
-    public function setPath(string $path): self
+    public function setPath(string $path)
     {
         $this->path = $path;
         return $this;
@@ -155,7 +155,7 @@ class BaseCookie extends BaseSession
      * @param string $domain
      * @return $this
      */
-    public function setDomain(string $domain): self
+    public function setDomain(string $domain)
     {
         $this->domain = $domain;
         return $this;
@@ -168,7 +168,7 @@ class BaseCookie extends BaseSession
      * @param string $secure
      * @return $this
      */
-    public function setSecure(bool $secure): self
+    public function setSecure(bool $secure)
     {
         $this->secure = $secure;
         return $this;
@@ -181,7 +181,7 @@ class BaseCookie extends BaseSession
      * @param string $httpOnly
      * @return $this
      */
-    public function setHttpOnly(bool $httpOnly): self
+    public function setHttpOnly(bool $httpOnly)
     {
         $this->httpOnly = $httpOnly;
         return $this;

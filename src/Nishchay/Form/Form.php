@@ -99,7 +99,7 @@ class Form
      * @param string $formName
      * @return $this
      */
-    final public function setFormName(string $formName): self
+    final public function setFormName(string $formName)
     {
         $this->formName = $formName;
         return $this;

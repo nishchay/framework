@@ -107,7 +107,7 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
      * @param array $session
      * @return \self
      */
-    public function setSession(bool $session): self
+    public function setSession(bool $session)
     {
         $this->session = $session;
         return $this;
@@ -119,7 +119,7 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
      * @param int $userId
      * @return \self
      */
-    protected function writeSession(int $userId): self
+    protected function writeSession(int $userId)
     {
         if ($this->session) {
             $session = $this->getInstance(Session::class);
@@ -136,7 +136,7 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
      * @param bool $flag
      * @return \self
      */
-    public function generateOAuth2(bool $flag): self
+    public function generateOAuth2(bool $flag)
     {
         $this->oauth = $flag;
         return $this;

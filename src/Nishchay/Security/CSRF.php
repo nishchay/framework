@@ -108,7 +108,7 @@ class CSRF
      * @param type $name
      * @return $this
      */
-    public function setName(string $name): self
+    public function setName(string $name)
     {
         $this->name = $name;
         return $this;
@@ -130,7 +130,7 @@ class CSRF
      * @param string $where
      * @return $this
      */
-    public function setWhere(string $where): self
+    public function setWhere(string $where)
     {
         $shouldBe = [Request::HEADER, Request::GET, Request::POST];
         if (!in_array(strtoupper($where), $shouldBe)) {

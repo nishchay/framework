@@ -7,7 +7,6 @@ use Nishchay\Exception\BadRequestException;
 use Nishchay\Exception\AuthorizationFailedException;
 use Nishchay\Http\Request\Request;
 use Nishchay\Prototype\Account\Response\LoginResponse;
-use Nishchay\Data\Query;
 use Nishchay\Prototype\Account\AbstractAccountPrototype;
 
 /**
@@ -76,7 +75,7 @@ class Login extends AbstractAccountPrototype
      * @param string $email
      * @return $this
      */
-    public function setEmail(string $email): self
+    public function setEmail(string $email)
     {
         $this->email = $email;
         return $this;
@@ -107,7 +106,7 @@ class Login extends AbstractAccountPrototype
      * @param string $password
      * @return $this
      */
-    public function setPassword(string $password): self
+    public function setPassword(string $password)
     {
         $this->password = $password;
         return $this;
@@ -167,7 +166,7 @@ class Login extends AbstractAccountPrototype
      * @param string $emailName
      * @return $this
      */
-    public function setEmailName(string $emailName): self
+    public function setEmailName(string $emailName)
     {
         $this->emailName = $emailName;
         return $this;
@@ -179,7 +178,7 @@ class Login extends AbstractAccountPrototype
      * @param string $passwordName
      * @return $this
      */
-    public function setPasswordName(string $passwordName): self
+    public function setPasswordName(string $passwordName)
     {
         $this->passwordName = $passwordName;
         return $this;
@@ -191,7 +190,7 @@ class Login extends AbstractAccountPrototype
      * @param Closure $verifyPassword
      * @return $this
      */
-    public function verifyPassword(Closure $verifyPassword): self
+    public function verifyPassword(Closure $verifyPassword)
     {
         $this->verifyPassword = $verifyPassword;
         return $this;
@@ -222,7 +221,7 @@ class Login extends AbstractAccountPrototype
      * @param array $condition
      * @return $this
      */
-    public function setCondition(array $condition): self
+    public function setCondition(array $condition)
     {
         $this->condition = $condition;
         return $this;
@@ -270,7 +269,7 @@ class Login extends AbstractAccountPrototype
      * @return $this
      * @throws AuthorizationFailedException
      */
-    private function isUserActive($user): self
+    private function isUserActive($user)
     {
         if (isset($user->isActive) && $user->isActive === false) {
             throw new AuthorizationFailedException('User is not active');
@@ -286,7 +285,7 @@ class Login extends AbstractAccountPrototype
      * @return $this
      * @throws AuthorizationFailedException
      */
-    private function isUserVerified($user): self
+    private function isUserVerified($user)
     {
         if (isset($user->isVerified) && $user->isVerified === false) {
             throw new AuthorizationFailedException('User is not verified.');

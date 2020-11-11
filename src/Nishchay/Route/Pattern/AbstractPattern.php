@@ -108,7 +108,7 @@ abstract class AbstractPattern
      * @param string $name
      * @return null
      */
-    protected function checkRequired($name): self
+    protected function checkRequired($name)
     {
         if ($this->{$name} === true && $this->isSet($name) === false) {
             throw new NotSupportedException('Route pattern [' . $this->patternName . '] requires [' . $name . '] annotation to be defined on method.', null, null, 926014);
@@ -149,7 +149,7 @@ abstract class AbstractPattern
      * @throws NotSupportedException
      * @throws ApplicationException
      */
-    public function processRoute(): self
+    public function processRoute()
     {
         $this->checkRequired(self::ROUTE_NAME);
 
@@ -161,7 +161,7 @@ abstract class AbstractPattern
      * 
      * @return $this
      */
-    public function processNamedScope(): self
+    public function processNamedScope()
     {
         $this->checkRequired(self::NAMEDSCOPE_NAME)
                 ->checkOverride(self::NAMEDSCOPE_NAME);
@@ -179,7 +179,7 @@ abstract class AbstractPattern
      * 
      * @return $this
      */
-    public function processService(): self
+    public function processService()
     {
         $this->checkRequired(self::SERVICE_NAME)
                 ->checkOverride(self::SERVICE_NAME);
@@ -196,7 +196,7 @@ abstract class AbstractPattern
      * 
      * @return $this
      */
-    public function processResponse(): self
+    public function processResponse()
     {
         $this->checkRequired(self::RESPONSE_NAME)
                 ->checkOverride(self::RESPONSE_NAME);
