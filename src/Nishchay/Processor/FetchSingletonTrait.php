@@ -2,6 +2,8 @@
 
 namespace Nishchay\Processor;
 
+use ReflectionMethod;
+
 /**
  * FetchSingletonTrait trait.
  *
@@ -25,14 +27,19 @@ trait FetchSingletonTrait
      * @param string $class
      * @return object
      */
-    private function getInstance(string $class, array $parameters = [])
+    protected function getInstance(string $class, array $parameters = [])
     {
         if (isset(self::$instances[$class])) {
             return self::$instances[$class];
         }
 
         if (method_exists($class, __FUNCTION__)) {
-            $instance = call_user_func_array([$class, __FUNCTION__], $parameters);
+            $reflection = new \ReflectionMethod($class, __FUNCTION__);
+            if ($reflection->isPublic() && $reflection->isStatic()) {
+                $instance = $reflection->invokeArgs(null, $parameters);
+            } else {
+                $instance = new $class(...$parameters);
+            }
         } else {
             $instance = new $class(...$parameters);
         }

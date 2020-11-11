@@ -3,15 +3,28 @@
 namespace Nishchay\OAuth2;
 
 use Nishchay;
+use Processor;
+use Nishchay\Exception\ApplicationException;
+use Nishchay\Exception\BadRequestException;
+use Nishchay\Exception\AuthorizationFailedException;
 use Nishchay\Utility\StringUtility;
+use Nishchay\Processor\AbstractSingleton;
 
 /**
- * Description of OAuth2
+ * OAuth2 class.
  *
- * @author bhavik
+ * @license     https://nishchay.io/license New BSD License
+ * @copyright   (c) 2020, Nishchay PHP Framework
+ * @version     1.0
+ * @author      Bhavik Patel
  */
-class OAuth2
+class OAuth2 extends AbstractSingleton
 {
+
+    protected function onCreateInstance()
+    {
+        
+    }
 
     /**
      * OAuth configuration name.
@@ -38,6 +51,21 @@ class OAuth2
         return json_encode(['typ' => 'JWT', 'alg' => 'RS256']);
     }
 
+    private function validateGenerateScope(?array $scope)
+    {
+        if ($scope === null) {
+            return true;
+        }
+
+        foreach ($scope as $name) {
+            if (Nishchay::getScopeCollection()->isExists($name) === false) {
+                throw new BadRequestException('Invalid scope [' . $name . '].');
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Returns payload.
      * 
@@ -47,6 +75,7 @@ class OAuth2
      */
     private function getPayload($userId = null, $scope = null)
     {
+        $this->validateGenerateScope($scope);
         $time = time();
         return json_encode([
             'oti' => StringUtility::getRandomString(32, true),
@@ -66,11 +95,11 @@ class OAuth2
      * @param int $userId
      * @return array
      */
-    public function generateUserCredentialToken($userId): array
+    public function generateUserCredentialToken($userId, ?array $scope = null): array
     {
         $header = $this->urlSafeBase64Encode($this->getHeader());
-        $payload = $this->urlSafeBase64Encode($this->getPayload($userId));
-        openssl_sign($header . self::SEPARATOR . $payload, $signature, $this->getPrivateKey(), OPENSSL_ALGO_SHA256);
+        $payload = $this->urlSafeBase64Encode($this->getPayload($userId, $scope));
+        openssl_sign($header . self::SEPARATOR . $payload . self::SEPARATOR . $this->getAppSecret(), $signature, $this->getPrivateKey(), OPENSSL_ALGO_SHA256);
 
         $signature = $this->urlSafeBase64Encode($signature);
 
@@ -78,7 +107,7 @@ class OAuth2
             implode(self::SEPARATOR, [$header, $payload, $signature]),
             $this->getExpiry(),
             'password',
-            null
+            empty($scope) ? null : implode(',', $scope)
         ];
 
         return array_combine(['accessToken', 'expiresIn', 'tokenType', 'scope'], $response);
@@ -155,7 +184,7 @@ class OAuth2
         $decodedSignature = $this->urlSafeBase64Decode($signature);
 
 
-        $payloadToVerify = ($header . self::SEPARATOR . $payload);
+        $payloadToVerify = ($header . self::SEPARATOR . $payload . self::SEPARATOR . $this->getAppSecret());
 
         $verified = openssl_verify($payloadToVerify, $decodedSignature, $this->getPublicKey(), OPENSSL_ALGO_SHA256);
 
@@ -177,7 +206,35 @@ class OAuth2
             return false;
         }
 
-        return true;
+        $this->isValidScope($payload);
+
+        return $payload;
+    }
+
+    /**
+     * Checks whether scope in access token is exists in current route scope.
+     * 
+     * @param \stdClass $payload
+     * @return boolean
+     * @throws AuthorizationFailedException
+     */
+    private function isValidScope($payload)
+    {
+        $currentScope = Processor::getStageDetail('scopeName');
+
+        if ($currentScope === false) {
+            return true;
+        }
+
+        if ($payload->scope !== null) {
+            foreach ($payload->scope as $name) {
+                if (in_array($name, $currentScope)) {
+                    return true;
+                }
+            }
+        }
+
+        throw new AuthorizationFailedException('Unautorized access to service.');
     }
 
     /**
@@ -187,8 +244,12 @@ class OAuth2
      */
     private function getPrivateKey()
     {
-        $privateKey = Nishchay::getSetting(self::CONFIG_NAME . '.privateKey');
-        return file_get_contents($privateKey);
+        $path = Nishchay::getSetting(self::CONFIG_NAME . '.privateKey');
+
+        if (file_exists($path) === false) {
+            throw new ApplicationException('Private key does not exists.');
+        }
+        return file_get_contents($path);
     }
 
     /**
@@ -198,8 +259,13 @@ class OAuth2
      */
     private function getPublicKey()
     {
-        $privateKey = Nishchay::getSetting(self::CONFIG_NAME . '.publicKey');
-        return file_get_contents($privateKey);
+        $path = Nishchay::getSetting(self::CONFIG_NAME . '.publicKey');
+
+        if (file_exists($path) === false) {
+            throw new ApplicationException('Public key does not exists.');
+        }
+
+        return file_get_contents($path);
     }
 
 }

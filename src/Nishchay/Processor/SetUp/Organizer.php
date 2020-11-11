@@ -254,6 +254,7 @@ class Organizer
         Nishchay::getRouteCollection()->sort();
         Nishchay::getEventCollection()->persist();
         Nishchay::getHandlerCollection()->persist();
+        Nishchay::getScopeCollection()->persist();
     }
 
     /**

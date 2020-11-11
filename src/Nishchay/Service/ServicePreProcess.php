@@ -10,6 +10,7 @@ use Nishchay\Exception\AuthorizationFailedException;
 use Nishchay\Controller\Annotation\Method\Method;
 use Nishchay\Http\Request\Request;
 use Nishchay\Utility\MethodInvokerTrait;
+use Nishchay\OAuth2\OAuth2;
 
 /**
  * Web Service process class.
@@ -23,6 +24,12 @@ class ServicePreProcess extends BaseServiceProcess
 {
 
     use MethodInvokerTrait;
+
+    /**
+     *
+     * @var type 
+     */
+    private static $payload;
 
     /**
      *
@@ -55,12 +62,24 @@ class ServicePreProcess extends BaseServiceProcess
 
         $verifyCallback = Nishchay::getSetting('service.token.verifyCallback');
 
-        if ($verifyCallback !== false) {
-            return $this->invokeMethod($verifyCallback, [$this->getRequestToken()]);
+        $isValid = true;
+        $errroCode = 0;
+        if ($verifyCallback === 'oauth') {
+            if ((self::$payload = OAuth2::getInstance()->verify($this->getRequestToken())) === false) {
+                list($isValid, $errroCode) = [false, 928011];
+            }
+        } else if ($verifyCallback instanceof \Closure) {
+            if ($this->invokeMethod($verifyCallback, [$this->getRequestToken()]) !== true) {
+                list($isValid, $errroCode) = [false, 928012];
+            }
         } else {
             if ($this->getSessionToken() !== $this->getRequestToken()) {
-                throw new AuthorizationFailedException('Invalid service token.', null, null, 928004);
+                list($isValid, $errroCode) = [false, 928004];
             }
+        }
+
+        if ($isValid === false) {
+            throw new AuthorizationFailedException('Invalid service token.', null, null, $errroCode);
         }
 
         return $this;
@@ -214,6 +233,16 @@ class ServicePreProcess extends BaseServiceProcess
         }
 
         return $this;
+    }
+
+    /**
+     * Returns payload of OAuth2 token.
+     * 
+     * @return type
+     */
+    public static function getPayload()
+    {
+        return self::$payload;
     }
 
 }

@@ -21,6 +21,7 @@ use Nishchay\Cache\Collection as CacheCollection;
 use Nishchay\Security\Encrypt\Collection as EncryptCollection;
 use Nishchay\Container\Collection as ContainerCollection;
 use Nishchay\Route\Pattern\Collection as PatternCollection;
+use Nishchay\Route\ScopeCollection;
 use Nishchay\Handler\Dispatcher;
 use Nishchay\Processor\Structure\StructureProcessor;
 use Nishchay\Persistent\System as SystemPersistent;
@@ -401,6 +402,16 @@ final class Application
     public function getRoutePatternCollection()
     {
         return $this->getInstance(PatternCollection::class);
+    }
+
+    /**
+     * Returns instance of scope collection.
+     * 
+     * @return ScopeCollection
+     */
+    public function getScopeCollection()
+    {
+        return $this->getInstance(ScopeCollection::class);
     }
 
     /**

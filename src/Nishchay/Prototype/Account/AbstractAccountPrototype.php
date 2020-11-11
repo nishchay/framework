@@ -7,6 +7,8 @@ use Nishchay\Prototype\AbstractPrototype;
 use Nishchay\Prototype\Account\Response\LoginResponse;
 use Nishchay\Session\Session;
 use Nishchay\OAuth2\OAuth2;
+use Nishchay\Http\Request\Request;
+use Nishchay\Exception\BadRequestException;
 
 /** Abstract account prototype class.
  * 
@@ -35,6 +37,13 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
      * @var bool
      */
     protected $oauth = true;
+
+    /**
+     * Flag for whether scope is required or not.
+     * 
+     * @var bool
+     */
+    protected $isScopeRequired = true;
 
     /**
      * Returns entity query.
@@ -144,7 +153,42 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
         if ($this->oauth === false) {
             return null;
         }
-        return $this->getInstance(OAuth2::class)->generateUserCredentialToken($userId);
+
+        $scope = Request::post('scope');
+
+        if ($this->getScopeRequired() && $scope === false) {
+            throw new BadRequestException('Please pass scope.');
+        }
+
+        if ($scope !== false) {
+            $scope = explode(',', $scope);
+        } else {
+            $scope = null;
+        }
+
+        return $this->getInstance(OAuth2::class)->generateUserCredentialToken($userId, $scope);
+    }
+
+    /**
+     * Returns TRUE if scope is required.
+     * 
+     * @return bool
+     */
+    public function getScopeRequired(): bool
+    {
+        return $this->isScopeRequired;
+    }
+
+    /**
+     * Set scope required to generate OAuth2 token.
+     * 
+     * @param bool $isScopeRequired
+     * @return $this
+     */
+    public function setScopeRequired(bool $isScopeRequired)
+    {
+        $this->isScopeRequired = $isScopeRequired;
+        return $this;
     }
 
 }

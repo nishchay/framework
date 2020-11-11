@@ -2,6 +2,7 @@
 
 namespace Nishchay\Route\Annotation;
 
+use Nishchay;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Annotation\BaseAnnotationDefinition;
 
@@ -67,6 +68,7 @@ class NamedScope extends BaseAnnotationDefinition
             if (is_string($value) === false || empty($value)) {
                 throw new ApplicationException('Invalid named scope, all scope name should be string.', $this->class, $this->method, 926013);
             }
+            Nishchay::getScopeCollection()->store($value);
         }
 
         $this->name = $name;
