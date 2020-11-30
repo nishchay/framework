@@ -16,7 +16,7 @@ Nishchay is open structure php framework which allows us to create web applicati
 This framework is installed using composer only.  Use below command
 
 ```
-composer create-project nishchay/nishchay MyNewNishchayApp
+composer create-project nishchay/nishchay {YourAppName}
 ```
 
 ## Installaion guidelines
