@@ -9,6 +9,8 @@ use Nishchay\Session\Session;
 use Nishchay\OAuth2\OAuth2;
 use Nishchay\Http\Request\Request;
 use Nishchay\Exception\BadRequestException;
+use Closure;
+use Nishchay\Utility\MethodInvokerTrait;
 
 /** Abstract account prototype class.
  * 
@@ -18,6 +20,8 @@ use Nishchay\Exception\BadRequestException;
  */
 abstract class AbstractAccountPrototype extends AbstractPrototype
 {
+
+    use MethodInvokerTrait;
 
     /**
      * Alias for entity.
@@ -44,6 +48,13 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
      * @var bool
      */
     protected $isScopeRequired = true;
+
+    /**
+     * Callback for verifying scope.
+     * 
+     * @var \Closure
+     */
+    protected $verifyScope;
 
     /**
      * Returns entity query.
@@ -166,6 +177,10 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
             $scope = null;
         }
 
+        if (($callback = $this->getVerifyScope()) !== null && $this->invokeMethod($callback, [$scope]) !== true) {
+            throw new BadRequestException('Invalid scope.');
+        }
+
         return $this->getInstance(OAuth2::class)->generateUserCredentialToken($userId, $scope);
     }
 
@@ -188,6 +203,29 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
     public function setScopeRequired(bool $isScopeRequired)
     {
         $this->isScopeRequired = $isScopeRequired;
+        return $this;
+    }
+
+    /**
+     * Returns callback to verify scope.
+     * 
+     * @return Closure|null
+     */
+    public function getVerifyScope(): ?Closure
+    {
+        return $this->verifyScope;
+    }
+
+    /**
+     * Sets callback to verify scope before generating oauth token.
+     * Nishchay still verifies scope before generating oauth token apart from this callback.
+     * 
+     * @param Closure $verifyScope
+     * @return $this
+     */
+    public function verifyScope(Closure $verifyScope)
+    {
+        $this->verifyScope = $verifyScope;
         return $this;
     }
 

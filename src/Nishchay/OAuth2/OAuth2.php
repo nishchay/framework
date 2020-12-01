@@ -21,11 +21,6 @@ use Nishchay\Processor\AbstractSingleton;
 class OAuth2 extends AbstractSingleton
 {
 
-    protected function onCreateInstance()
-    {
-        
-    }
-
     /**
      * OAuth configuration name.
      */
@@ -51,6 +46,18 @@ class OAuth2 extends AbstractSingleton
         return json_encode(['typ' => 'JWT', 'alg' => 'RS256']);
     }
 
+    protected function onCreateInstance()
+    {
+        
+    }
+
+    /**
+     * Validates generate scope request.
+     * 
+     * @param array $scope
+     * @return boolean
+     * @throws BadRequestException
+     */
     private function validateGenerateScope(?array $scope)
     {
         if ($scope === null) {
