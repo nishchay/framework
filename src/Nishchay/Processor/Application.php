@@ -50,7 +50,7 @@ final class Application
     /**
      * Nishchay framework version name.
      */
-    const VERSION_NAME = 'Namaste';
+    const VERSION_NAME = 'Naman';
 
     /**
      * Nishchay framework name.

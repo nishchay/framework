@@ -2,7 +2,10 @@
 
 namespace Nishchay\Prototype;
 
-use Nishchay\Exception\ApplicationException;
+use Nishchay\Exception\{
+    ApplicationException,
+    BadRequestException
+};
 use Nishchay\Prototype\AbstractPrototype;
 use Nishchay\Data\{
     EntityQuery,
@@ -214,6 +217,11 @@ class Crud extends AbstractPrototype
      */
     public function insert()
     {
+
+        if ($this->getForm() === null) {
+            throw new ApplicationException('Form is required.', null, null);
+        }
+
         $response = $this->validateForm();
 
         if (is_array($response)) {
@@ -244,6 +252,7 @@ class Crud extends AbstractPrototype
         if (($response = $this->executeOnFailure(['code' => self::FAILED_TO_INSERT])) === false) {
             throw new ApplicationException('Failed to insert record');
         }
+        
         return $response;
     }
 
@@ -254,11 +263,19 @@ class Crud extends AbstractPrototype
      */
     public function update(int $id)
     {
+
+        if ($this->getForm() === null) {
+            throw new ApplicationException('Form is required.', null, null);
+        }
+
         $this->id = $id;
+
         if (($form = $this->getForm()) !== null) {
             $form->setMethod(Request::PUT);
         }
+
         $response = $this->validateForm();
+
         if (is_array($response)) {
             return $response;
         }
@@ -266,7 +283,11 @@ class Crud extends AbstractPrototype
         $entity = $this->getEntity();
 
         if ($entity === false) {
-            throw new ApplicationException('Record does not exists.');
+            if (($response = $this->executeOnFailure(['code' => self::RECORD_NOT_FOUND])) === false) {
+                throw new BadRequestException('Record does not exists.');
+            }
+
+            return $response;
         }
 
         $this->prepareEntity();
@@ -302,7 +323,7 @@ class Crud extends AbstractPrototype
      * 
      * @param int $id
      * @return string
-     * @throws ApplicationException
+     * @throws BadRequestException
      */
     public function remove(int $id)
     {
@@ -312,7 +333,7 @@ class Crud extends AbstractPrototype
 
         if ($entity === false) {
             if (($response = $this->executeOnFailure(['code' => self::RECORD_NOT_FOUND])) === false) {
-                throw new ApplicationException('Record does not exists.');
+                throw new BadRequestException('Record does not exists.');
             }
 
             return $response;
@@ -339,7 +360,7 @@ class Crud extends AbstractPrototype
      * 
      * @param int $id
      * @return type
-     * @throws ApplicationException
+     * @throws BadRequestException
      */
     public function getOne(int $id)
     {
@@ -349,7 +370,7 @@ class Crud extends AbstractPrototype
 
         if ($entity === false) {
             if (($response = $this->executeOnFailure(['code' => self::RECORD_NOT_FOUND])) === false) {
-                throw new ApplicationException('Record does not exists.');
+                throw new BadRequestException('Record does not exists.');
             }
 
             return $response;

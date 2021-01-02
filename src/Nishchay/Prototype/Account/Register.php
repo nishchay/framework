@@ -4,6 +4,7 @@ namespace Nishchay\Prototype\Account;
 
 use Closure;
 use Nishchay\Exception\BadRequestException;
+use Nishchay\Exception\ApplicationException;
 use Nishchay\Prototype\Account\{
     AbstractAccountPrototype,
     Response\AccountResponse
@@ -44,6 +45,10 @@ class Register extends AbstractAccountPrototype
             return $response;
         }
 
+        if ($this->getForm() === null) {
+            throw new ApplicationException('Register prototype requires form to be set');
+        }
+
         $email = $this->getForm()->getEmail();
 
         if ($this->getUser([], $email->getName()) !== false) {
@@ -51,7 +56,7 @@ class Register extends AbstractAccountPrototype
                     . ' provided email.');
         }
 
-        # Before registeration callback
+        # Before registration callback
         $this->getPreRegister() instanceof Closure &&
                 call_user_func($this->getPreRegister(), [$this->getForm()]);
 
@@ -60,7 +65,7 @@ class Register extends AbstractAccountPrototype
 
         $userId = $this->saveEntity();
 
-        # After registeration callback.
+        # After registration callback.
         $this->getPostRegister() instanceof Closure &&
                 call_user_func($this->getPostRegister(), [$entity, $this->getForm()]);
 

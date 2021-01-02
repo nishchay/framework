@@ -230,7 +230,7 @@ class Container
     {
         return Nishchay::getEntityCollection()->isExist($class) ?
                 new EntityManager($class) :
-                $this->getDI()->create($class, $arguments[0] ?? []);
+                $this->getDI()->create($class, $arguments);
     }
 
 }
