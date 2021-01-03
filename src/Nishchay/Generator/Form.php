@@ -65,7 +65,7 @@ class Form extends AbstractGenerator
         $class = Nishchay::getEntityCollection()->locate($name);
 
         if ($class === null) {
-            throw new ApplicationException('Entity not found: ' . $name);
+            throw new ApplicationException('Entity [' . $name . '] not found.', null, null, 933016);
         }
 
         if ($class !== $name) {

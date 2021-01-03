@@ -99,7 +99,7 @@ abstract class AbstractGenerator
         $answer = (int) $this->getInput('Where do you want to create(Type number)', $options, 3, true);
 
         if (isset($options[$answer]) === false) {
-            throw new ApplicationException('Invalid choice for directory.');
+            throw new ApplicationException('Invalid choice for directory.', null, null, 933010);
         }
 
         $namespace = $options[$answer];

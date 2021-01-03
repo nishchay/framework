@@ -59,7 +59,7 @@ class Collection extends AbstractCollection
     public function get(string $class)
     {
         if (array_key_exists($class, $this->collection) === false) {
-            throw new NotSupportedException('[' . $class . '] is not container.');
+            throw new NotSupportedException('Class [' . $class . '] is not container.', null, null, 934001);
         }
 
         return $this->collection[$class];

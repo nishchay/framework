@@ -143,7 +143,7 @@ class Entity extends AbstractGenerator
         $entity = $this->getInput('Enter entity name', null);
 
         if (!$this->isValidPropOrClassName($entity)) {
-            Printer::red('Entity name is not valid.' . PHP_EOL);
+            Printer::red('Entity name is not valid.' . PHP_EOL, 933011);
             return false;
         }
 
@@ -166,7 +166,7 @@ class Entity extends AbstractGenerator
 
             # Checking if provided property name is valid.
             if (!$this->isValidPropOrClassName($property)) {
-                Printer::red('Property name is not valid.' . PHP_EOL);
+                Printer::red('Property name is not valid.' . PHP_EOL, 933012);
                 return false;
             }
 
@@ -191,7 +191,7 @@ class Entity extends AbstractGenerator
         }
 
         if (empty($properties)) {
-            Printer::red('Entity without property is not allowed.' . PHP_EOL);
+            Printer::red('Entity without property is not allowed.' . PHP_EOL, 933013);
             return false;
         }
 
@@ -223,7 +223,7 @@ class Entity extends AbstractGenerator
         # able to connect to database, we can then terminate instantly.
         $meta = new MetaTable($this->name, $connection);
         $columns = $meta->getColumns();
-        
+
         if ($namespace === null) {
             $namespace = $this->getNamespace();
         }
@@ -249,7 +249,7 @@ class Entity extends AbstractGenerator
         }
 
         $this->createEntity($namespace, $entity, $this->name, $properties);
-        
+
         return $namespace . '\\' . $entity;
     }
 
@@ -295,7 +295,7 @@ class Entity extends AbstractGenerator
         $filePath = SystemUtility::refactorDS(ROOT . $namespace . DS . $entity . '.php');
 
         if (empty($properties)) {
-            Printer::red('Can not create:' . $entity . '. Table or columns not found.' . PHP_EOL);
+            Printer::red('Can not create [' . $entity . ']. Table or columns not found.' . PHP_EOL, 933014);
             return false;
         }
         $this->name = $namespace . '\\' . $entity;
@@ -304,7 +304,7 @@ class Entity extends AbstractGenerator
         try {
             $this->isValidFile(false);
         } catch (ApplicationException $e) {
-            Printer::red('[' . $this->name . '] is already exists.' . PHP_EOL);
+            Printer::red('Entity [' . $this->name . '] is already exists.' . PHP_EOL, 933015);
             return false;
         }
         $file = new SimpleFile($filePath, SimpleFile::TRUNCATE_WRITE);

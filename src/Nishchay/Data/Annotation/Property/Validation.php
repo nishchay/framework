@@ -83,12 +83,12 @@ class Validation extends BaseAnnotationDefinition
     {
         if (isset($parameter['callback']) === false && isset($parameter['rule']) === false) {
             throw new InvalidAnnotationExecption('Annotation [validation]'
-                    . ' requires one of callback or type paramter.', $this->class);
+                    . ' requires one of callback or type paramter.', $this->class, null, 911092);
         }
 
         if (isset($parameter['callback']) && isset($parameter['rule'])) {
             throw new InvalidAnnotationExecption('Annotation paramter can'
-                    . ' callback and type can not used together.', $this->class);
+                    . ' callback and type can not used together.', $this->class, null, 911093);
         }
     }
 
@@ -156,7 +156,7 @@ class Validation extends BaseAnnotationDefinition
 
         list ($ruleType, $ruleName) = explode(':', $rule);
         if (isset($this->supportedRules[$ruleType]) === false || method_exists($this->supportedRules[$ruleType], $ruleName) === false) {
-            throw new InvalidAnnotationExecption('Rule [' . $rule . '] does not exists.', $this->class);
+            throw new InvalidAnnotationExecption('Rule [' . $rule . '] does not exists.', $this->class, null, 911094);
         }
 
         $this->rule = [$this->supportedRules[$ruleType], $ruleName];

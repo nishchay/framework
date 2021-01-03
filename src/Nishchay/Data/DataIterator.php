@@ -186,7 +186,7 @@ class DataIterator extends ArrayIterator
 
             if (!isset($row->{$key})) {
                 throw new ApplicationException('Key [' . $name . '] does'
-                        . ' not exists in records.', 2, null);
+                        . ' not exists in records.', 2, null, 911095);
             }
 
             $row = $row->{$key};
@@ -210,7 +210,7 @@ class DataIterator extends ArrayIterator
 
             if (is_scalar($key) === false) {
                 throw new ApplicationException('Records can only be group'
-                        . ' based on scaler value.', 1, null);
+                        . ' based on scaler value.', 1, null, 911096);
             }
 
             $grouped[$key][] = $row;

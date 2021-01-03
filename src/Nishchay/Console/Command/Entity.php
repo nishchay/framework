@@ -57,7 +57,7 @@ class Entity extends AbstractCommand
         $class = Nishchay::getEntityCollection()->locate($name);
 
         if ($class === null) {
-            throw new ApplicationException('Entity not found: ' . $name);
+            throw new ApplicationException('Entity not found: ' . $name, null, null, 913032);
         }
 
         if ($class !== $name) {
@@ -203,7 +203,7 @@ class Entity extends AbstractCommand
     {
 
         if (isset($this->arguments[1]) === false) {
-            Printer::write('-generate requires -db, -table or -new to be passed', Printer::RED_COLOR);
+            Printer::write('-generate requires -db, -table or -new to be passed', Printer::RED_COLOR, 913033);
             return false;
         }
 
@@ -212,7 +212,7 @@ class Entity extends AbstractCommand
             (new EntityGenerator(null))->createFromDB($this->arguments[2] ?? null);
         } else if ($type === '-table') {
             if (isset($this->arguments[2]) === false) {
-                Printer::write('-table requires table name to be passed', Printer::RED_COLOR);
+                Printer::write('-table requires table name to be passed', Printer::RED_COLOR, 913034);
                 return false;
             }
 

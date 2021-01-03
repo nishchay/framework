@@ -423,8 +423,8 @@ class EntityManager extends AbstractEntityStore
 
         $property = $this->getThisEntity()->getProperty($propertyName);
         if ($property === false) {
-            throw new ApplicationException('[' . $this->entityClass . '::' .
-                    $propertyName . '] does not exists.', 1, null);
+            throw new ApplicationException('Property [' . $this->entityClass . '::' .
+                    $propertyName . '] does not exists.', 1, null, 911097);
         }
 
         $value = (new Query())
@@ -641,7 +641,7 @@ class EntityManager extends AbstractEntityStore
         $property = $this->getThisEntity()->getProperty($propertyName);
 
         if ($property === false) {
-            throw new ApplicationException('Property [' . $this->entityClass . '::' . $propertyName . '] does not exists.', null, null);
+            throw new ApplicationException('Property [' . $this->entityClass . '::' . $propertyName . '] does not exists.', null, null, 911098);
         }
 
         return $property->getDatatype()->convertDataType($value);

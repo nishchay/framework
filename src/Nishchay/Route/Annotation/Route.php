@@ -361,7 +361,7 @@ class Route extends BaseAnnotationDefinition
         foreach ($stage as $index => $name) {
             $name = strtolower($name);
             if (!in_array($name, $allowed)) {
-                throw new InvalidAnnotationExecption('Invalid stage for the route, it should be local or test.', $this->class, $this->method);
+                throw new InvalidAnnotationExecption('Invalid stage for the route, it should be local or test.', $this->class, $this->method, 926);
             }
             $stage[$index] = $name;
         }

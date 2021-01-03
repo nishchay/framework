@@ -130,7 +130,7 @@ class Container
             if (is_array($resolveList) === false) {
                 throw new ApplicationException('Property [' .
                         $this->containerClass . '::resolveList' . '] must'
-                        . ' be array.', $this->containerClass);
+                        . ' be array.', $this->containerClass, null, 934002);
             }
 
             $this->getDI()->set($resolveList);
@@ -177,8 +177,8 @@ class Container
     public function __call($name, $arguments)
     {
         if (strpos($name, 'get') !== 0 || array_key_exists($name, $this->methods) === false) {
-            throw new ApplicationException('Method [' . $name . '] does'
-                    . ' not exists in container class [' . $this->containerClass . '].');
+            throw new ApplicationException('Method [' . $this->containerClass . '::' . $name . '] does'
+                    . ' not exists in container.', $this->containerClass, null, 934003);
         }
 
         return $this->getMethodInstance($name, ...$arguments);
@@ -214,7 +214,7 @@ class Container
                 $instnace = $class;
                 break;
             default:
-                throw new ApplicationException('Container method should return either instnace or class name.', $this->containerClass, $name);
+                throw new ApplicationException('Container method should return either instnace or class name.', $this->containerClass, $name, 934004);
         }
         return $new ? $instnace : $this->methodInstances[$name] = $instnace;
     }

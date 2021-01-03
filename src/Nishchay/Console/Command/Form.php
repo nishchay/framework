@@ -37,20 +37,20 @@ class Form extends AbstractCommand
     {
 
         if (isset($this->arguments[1]) === false) {
-            Printer::write('-generate requires -entity or -new to be passed', Printer::RED_COLOR);
+            Printer::red('-generate requires -entity or -new to be passed', 913035);
             return false;
         }
 
         list(, $type) = $this->arguments;
         if ($type === '-entity') {
             if (isset($this->arguments[2]) === false) {
-                Printer::write('-entity requires entity name to be passed', Printer::RED_COLOR);
+                Printer::red('-entity requires entity name to be passed', 913036);
                 return false;
             }
 
             (new FormGenerator($this->arguments[2]))->createFromEntity();
         } else {
-            Printer::red('Invalid command: ' . $type);
+            Printer::red('Invalid command: ' . $type, 913037);
         }
 
         return false;
@@ -58,7 +58,7 @@ class Form extends AbstractCommand
 
     protected function printList(): void
     {
-        Printer::red('Invalid command: Pass -generate to generate based on table or interactive command.');
+        Printer::red('Invalid command: Pass -generate to generate based on table or interactive command.', 913038);
     }
 
     /**

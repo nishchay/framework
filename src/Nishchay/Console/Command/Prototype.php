@@ -27,14 +27,14 @@ class Prototype extends AbstractCommand
     {
 
         if (isset($this->arguments[1]) === false) {
-            Printer::write('-generate requires -entity or -new to be passed', Printer::RED_COLOR);
+            Printer::red('-generate requires -entity or -new to be passed', 913039);
             return false;
         }
 
         list(, $type) = $this->arguments;
         if ($type === '-table') {
             if (isset($this->arguments[2]) === false) {
-                Printer::write('-table requires entity name to be passed', Printer::RED_COLOR);
+                Printer::red('-table requires entity name to be passed', 913040);
                 return false;
             }
 
@@ -43,7 +43,7 @@ class Prototype extends AbstractCommand
 
             (new PrototypeGenerator(null))->createNew();
         } else {
-            Printer::red('Invalid command: ' . $type);
+            Printer::red('Invalid command: ' . $type, 913041);
         }
     }
 
@@ -53,7 +53,7 @@ class Prototype extends AbstractCommand
      */
     protected function printList(): void
     {
-        Printer::red('Invalid command: Pass -generate to generate based on table or interactive command.');
+        Printer::red('Invalid command: Pass -generate to generate based on table or interactive command.', 913042);
     }
 
     /**

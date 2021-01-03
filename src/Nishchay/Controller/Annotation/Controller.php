@@ -277,16 +277,16 @@ class Controller extends BaseAnnotationDefinition
                 if ($reflection->isAbstract() === true) {
 
                     if ($methodAnnotation->getPlaceholder() !== false) {
-                        throw new ApplicationException('Placeholders are not allowed for abstract route.', $this->class, $method->name);
+                        throw new ApplicationException('Placeholders are not allowed for abstract route.', $this->class, $method->name, 914029);
                     }
 
                     $response = $methodAnnotation->getResponse();
                     if (strtolower($response->getType()) !== ResponseAnnotation::VIEW_RESPONSE) {
-                        throw new ApplicationException('Response type must be [view] for abstract route.', $this->class, $method->name);
+                        throw new ApplicationException('Response type must be [view] for abstract route.', $this->class, $method->name, 914030);
                     }
 
                     if ($method->isAbstract() === false) {
-                        throw new ApplicationException('In abstract controller only abstract routes are allowed.', $this->class, $method->name);
+                        throw new ApplicationException('In abstract controller only abstract routes are allowed.', $this->class, $method->name, 914031);
                     }
                 }
 
