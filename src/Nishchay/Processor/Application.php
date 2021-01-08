@@ -538,7 +538,11 @@ final class Application
                 }
             }
         }
-        $this->landingRoute = $this->getConfig('config.landingRoute');
+        
+        $this->landingRoute = $this->getSetting('routes.landing');
+        if ($this->landingRoute === false) {
+            $this->landingRoute = $this->getConfig('config.landingRoute');
+        }
         if ($this->landingRoute === false || empty($this->landingRoute)) {
             throw new InvalidStructureException('Please spcify landing route'
                     . ' in application configuration setting.', null, null, 925028);
