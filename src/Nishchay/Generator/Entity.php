@@ -187,7 +187,7 @@ class Entity extends AbstractGenerator
                 $chosenDataType = VariableType::INT;
                 $identity = true;
             }
-            $properties[] = [$property, ['type=' . $chosenDataType], $identity];
+            $properties[strtolower($property)] = [$property, ['type=' . $chosenDataType], $identity];
         }
 
         if (empty($properties)) {
