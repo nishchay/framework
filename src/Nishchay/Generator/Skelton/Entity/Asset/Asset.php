@@ -6,7 +6,7 @@ namespace Nishchay\Generator\Skelton\Entity\Asset;
  * Asset entity class.
  *
  * #ANN_START
- * @license     http:#Nishchay.io/license New BSD License
+ * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel
@@ -26,25 +26,29 @@ class Asset
     public $assetId;
 
     /**
-     *
+     * Name of asset.
+     * 
      * @DataType(type=string,length=100)
      */
     public $name;
 
     /**
-     *
+     * Category Id of asset.
+     * 
      * @DataType(type=int)
      */
     public $categoryId;
 
     /**
-     *
+     * Type of asset.
+     * 
      * @DataType(type=int)
      */
     public $typeId;
 
     /**
-     *
+     * Code for the asset.
+     * 
      * @DataType(type=string,length=20)
      */
     public $code;

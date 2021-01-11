@@ -2,17 +2,21 @@
 
 namespace Nishchay\Controller;
 
+use Nishchay;
 use AnnotationParser;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionParameter;
 use Nishchay\Exception\UnableToResolveException;
 use Nishchay\Exception\BadRequestException;
 use Nishchay\Controller\Annotation\Method\Parameter\Parameter;
 use Nishchay\DI\DI;
 use Nishchay\Http\Request\Request;
+use Nishchay\Processor\VariableType;
 
 /**
- * Description of Processor
+ * Class for validating only and required annotation and assigning values to
+ * controller property and method
  *
  * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
@@ -21,13 +25,6 @@ use Nishchay\Http\Request\Request;
  */
 class Controller
 {
-
-    /**
-     * All system instances
-     * 
-     * @var array 
-     */
-    private $systemInstance = ['Request'];
 
     /**
      * Calling dependency instance to resolve parameter.
@@ -62,16 +59,16 @@ class Controller
     protected function processOnlyRequiredAnnotation($instance)
     {
         # Processing Only_get validation.
-        $this->requestParameterOnly($instance->getOnlyget(), 'get');
+        $this->requestParameterOnly($instance->getOnlyget(), Request::GET);
 
         # Processing Only_post validation.
-        $this->requestParameterOnly($instance->getOnlypost(), 'post');
+        $this->requestParameterOnly($instance->getOnlypost(), Request::POST);
 
         # Processing Required_get validation.
-        $this->requestParameterRequired($instance->getRequiredget(), "get");
+        $this->requestParameterRequired($instance->getRequiredget(), Request::GET);
 
         # Processing Required_post validation.
-        $this->requestParameterRequired($instance->getRequiredpost(), "post");
+        $this->requestParameterRequired($instance->getRequiredpost(), Request::POST);
     }
 
     /**
@@ -92,7 +89,7 @@ class Controller
 
         # Requirement parameter as defined in annotation
         $requirement = $annotation->getParameter();
-        $received = array_keys($type === 'get' ? Request::get() : Request::post());
+        $received = array_keys($type === Request::GET ? Request::get() : Request::post());
 
         # Directly throwing error if receieved request parameter count differ from
         # requirement parameter count.
@@ -132,7 +129,7 @@ class Controller
         if ($annotation === false) {
             return false;
         }
-        $request = ($type === 'get') ? Request::get() : Request::post();
+        $request = ($type === Request::GET) ? Request::get() : Request::post();
 
         # We are iterating over requirement parameter to find in received 
         # parameter. If any not found we process required action.
@@ -153,27 +150,33 @@ class Controller
      */
     public function prepareMethodParameter(ReflectionMethod $reflection)
     {
-        $parameter = [];
+        $placeholder = Nishchay::getControllerCollection()
+                ->getMethod($reflection->class . '::' . $reflection->name)
+                ->getPlaceholder();
+        $parameters = [];
         foreach ($reflection->getParameters() as $param) {
             $name = $param->name;
 
             # If the type hint is exist we will create instance by resolving 
             # dependency
             if (($hinting = $param->getClass()) !== null) {
-                $parameter[$name] = $this->getResolvedHinting($hinting);
+                $parameters[$name] = $this->getResolvedHinting($hinting);
                 continue;
             }
 
             if ($param->isOptional() === true) {
-                $value = $this->processDefaultProperty($param->getDefaultValue()
-                        . PHP_EOL, $reflection, $name);
+                $value = $this->processDefaultProperty($param, $reflection, $placeholder);
             } else {
-                $value = $this->processRequiredProperty($name, $reflection);
+                $value = $this->processRequiredProperty($param, $reflection, $placeholder);
             }
 
-            $parameter[$name] = $value;
+            if ($param->getType() && $param->getType()->getName() === VariableType::DATA_ARRAY && is_array($value) === false) {
+                $value = (array) $value;
+            }
+
+            $parameters[$name] = $value;
         }
-        return $parameter;
+        return $parameters;
     }
 
     /**
@@ -213,39 +216,84 @@ class Controller
      * @param   string  $name
      * @return  mixed
      */
-    protected function processRequiredProperty($name, ReflectionMethod $reflection)
+    protected function processRequiredProperty(ReflectionParameter $parameter, ReflectionMethod $reflection, $placeholder)
     {
-        //when name is same as system instance
-        if (in_array($name, $this->systemInstance)) {
-            $value = $name::me();
-        } else {
-            switch ($name) {
-                case 'GET':
-                    $value = Request::get();
-                    break;
-                case 'POST':
-                    $value = Request::post();
-                default:
-                    throw new UnableToResolveException('Not able to find '
-                            . 'what to assign to [' . $name . ']'
-                            . ' parameter.', $reflection->class, $reflection->name, 914025);
-            }
+        $name = $parameter->getName();
+        switch ($name) {
+            case Request::GET:
+                $value = Request::get();
+                break;
+            case Request::POST:
+                $value = Request::post();
+                break;
+            default:
+                if (($value = $this->getFromRequest($name, $placeholder)) !== false) {
+                    return $value;
+                }
+
+                if ($parameter->getType() !== null && $parameter->getType()->allowsNull()) {
+                    return null;
+                }
+
+                throw new UnableToResolveException('Not able to find '
+                        . 'what to assign to [' . $name . ']'
+                        . ' parameter.', $reflection->class, $reflection->name, 914025);
         }
         return $value;
+    }
+
+    /**
+     * Returns value from request.
+     * 
+     * @param type $name
+     * @return mixed
+     */
+    private function getFromRequest($name, $placeholder)
+    {
+
+        # If parameter name exists in segment we will return it from segment only.
+        # When segment is optional and it does not exists in url path then
+        # Request::segment returns false, if we don't do this then it result in
+        # fetching from GET or POST parameter.
+        if ($placeholder && $placeholder->getPlaceholderType($name) !== false) {
+            return Request::segment($name);
+        }
+        $from = ['segment', 'file', 'post', 'get'];
+        foreach ($from as $fromName) {
+            if (($value = Request::{$fromName}($name)) !== false) {
+                return $value;
+            }
+        }
+
+        return false;
     }
 
     /**
      * Processes default parameter of the method to auto bind value depends
      * annotation defined in default value.
      * 
-     * @param   string  $doc
+     * @param   ReflectionParameter  $parameter
      * @param   string  $reflection
-     * @param   string  $name
+     * @param   \Nishchay\Route\Annotation\Placeholder  $placeholder
      * @return  mixed
      */
-    protected function processDefaultProperty($doc, ReflectionMethod $reflection, $name)
+    protected function processDefaultProperty(ReflectionParameter $parameter, ReflectionMethod $reflection, $placeholder)
     {
-        $annotation = AnnotationParser::getAnnotations($doc);
+        $default = $parameter->getDefaultValue();
+        $name = $parameter->name;
+
+        if (is_scalar($default)) {
+            $doc = $parameter->getDefaultValue() . PHP_EOL;
+            $annotation = AnnotationParser::getAnnotations($doc);
+        }
+        # There's no annotation?.
+        if (empty($annotation)) {
+            if (($value = $this->getFromRequest($name, $placeholder)) !== false) {
+                return $value;
+            }
+
+            return $parameter->getDefaultValue();
+        }
         $parsed = new Parameter($reflection->class, $reflection->name, $annotation, $name);
         return $parsed->getAnnotationValue();
     }

@@ -2,6 +2,8 @@
 
 namespace Nishchay\Generator\Skelton\Controller;
 
+use Nishchay\Utility\MethodInvokerTrait;
+
 /**
  * Template mapper class controller.
  *
@@ -13,6 +15,8 @@ namespace Nishchay\Generator\Skelton\Controller;
 class TemplateMapper
 {
 
+    use MethodInvokerTrait;
+
     /**
      * Returns template mapping to class if it does exist.
      * 
@@ -23,8 +27,8 @@ class TemplateMapper
     public function getMapping($template)
     {
         $method = 'get' . ucfirst(strtolower($template));
-        if (method_exists($this, $method)) {
-            return call_user_func([$this, $method]);
+        if ($this->isCallbackExist([$this, $method])) {
+            return $this->invokeMethod([$this, $method]);
         }
 
         return false;
@@ -35,7 +39,7 @@ class TemplateMapper
      * 
      * @return array
      */
-    private function getHostel()
+    private function getHostel(): array
     {
         return [
             'hostel' => Hostel\Hostel::class,
@@ -51,7 +55,7 @@ class TemplateMapper
      * 
      * @return array
      */
-    private function getEmployee()
+    private function getEmployee(): array
     {
         return [
             'employee' => Employee\Employee::class,

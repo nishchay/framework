@@ -58,6 +58,54 @@ class Printer
     }
 
     /**
+     * Writes string in color red.
+     * 
+     * @param string $string
+     * @param int $code
+     * @return null
+     */
+    public static function red($string, $code = 0)
+    {
+        return self::write($string, self::RED_COLOR, $code);
+    }
+
+    /**
+     * Writes string in color red.
+     * 
+     * @param string $string
+     * @param int $code
+     * @return null
+     */
+    public static function grey($string, $code = 0)
+    {
+        return self::write($string, self::GREY_COLOR, $code);
+    }
+
+    /**
+     * Writes string in color red.
+     * 
+     * @param string $string
+     * @param int $code
+     * @return null
+     */
+    public static function green($string, $code = 0)
+    {
+        return self::write($string, self::GREEN_COLOR, $code);
+    }
+
+    /**
+     * Writes string in color red.
+     * 
+     * @param string $string
+     * @param int $code
+     * @return null
+     */
+    public static function yellow($string, $code = 0)
+    {
+        return self::write($string, self::YELLOW_COLOR, $code);
+    }
+
+    /**
      * Returns text wrapped with color code.
      * 
      * @param stirng $string

@@ -4,6 +4,7 @@ namespace Nishchay\Data\Annotation\Property;
 
 use Nishchay;
 use Nishchay\Exception\InvalidAnnotationExecption;
+use ReflectionClass;
 use Nishchay\Annotation\BaseAnnotationDefinition;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Utility\ArrayUtility;
@@ -97,7 +98,19 @@ class Relative extends BaseAnnotationDefinition
      */
     protected function setTo($to)
     {
-        if (Nishchay::getEntityCollection()->isExist($to) === FALSE) {
+        $entityCollection = Nishchay::getEntityCollection();
+
+        $reflection = new ReflectionClass($this->class);
+
+        $isExists = false;
+        if ($entityCollection->isExist($to)) {
+            $isExists = true;
+        } else if ($entityCollection->isExist($reflection->getNamespaceName() . '\\' . $to) === true) {
+            $to = $reflection->getNamespaceName() . '\\' . $to;
+            $isExists = true;
+        }
+
+        if ($isExists === false) {
             throw new ApplicationException('Relative class [' . $to . '] defiend for'
                     . ' property [' . $this->class . '::' . $this->propertyName
                     . '] does not exist.', $this->class, null, 911026);

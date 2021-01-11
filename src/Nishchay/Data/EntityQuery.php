@@ -83,6 +83,13 @@ class EntityQuery extends AbstractEntityStore
     private $lazy = false;
 
     /**
+     * Property mapping.
+     * 
+     * @var array
+     */
+    private $propertyMapping = [];
+
+    /**
      * 
      * @param   string      $connection
      */
@@ -217,6 +224,7 @@ class EntityQuery extends AbstractEntityStore
                 continue;
             }
             $columns[$colAlias] = str_replace($table . '.', $alias . '.', $toSelect);
+            $this->propertyMapping[$alias][] = $colAlias;
         }
 
         $this->query->setColumn($columns);
@@ -252,7 +260,7 @@ class EntityQuery extends AbstractEntityStore
             if (is_array($assignTo) && $this->setNotToFetch($assignTo, $class, $propertyName)) {
                 continue;
             }
-
+            $this->propertyMapping[$class][] = $propertyName;
             $this->returnableEntity[$class] = $this->getMappedClass($class);
         }
         return $this;
@@ -454,7 +462,7 @@ class EntityQuery extends AbstractEntityStore
      * @param int $offset
      * @return $this
      */
-    public function setLimit($limit, $offset)
+    public function setLimit($limit, $offset = 0)
     {
         $this->query->setLimit($limit, $offset);
         return $this;
@@ -577,6 +585,16 @@ class EntityQuery extends AbstractEntityStore
     }
 
     /**
+     * Returns property mapping.
+     * 
+     * @return array
+     */
+    public function getPropertyMapping(): array
+    {
+        return $this->propertyMapping;
+    }
+
+    /**
      * Executes query and returns record.
      * 
      * @return DataIterator
@@ -612,13 +630,9 @@ class EntityQuery extends AbstractEntityStore
      */
     private function reset()
     {
-        $this->entityMapping = [];
-        $this->mainEntity = null;
-        $this->mainEntityAlias = null;
-        $this->unfetchable = [];
-        $this->returnableEntity = [];
-        $this->derivingProperties = [];
-        $this->propertyWithValues = [];
+        foreach (new static($this->query->getConnectionName()) as $key => $value) {
+            $this->{$key} = $value;
+        }
     }
 
     /**

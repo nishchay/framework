@@ -17,6 +17,8 @@ use Nishchay\FileManager\SimpleFile;
 class System
 {
 
+    const EXT = '.nsch';
+
     /**
      * Returns path of persistent file given name.
      * 
@@ -27,7 +29,7 @@ class System
     {
         return SystemUtility::refactorDS(PERSISTED . 'version' . DS
                         . (Nishchay::getApplicationVersion()) . DS
-                        . "{$name}.nsch");
+                        . md5($name) . self::EXT);
     }
 
     /**
@@ -64,8 +66,8 @@ class System
     public static function setPersistent($name, $content = '')
     {
         if (Nishchay::isApplicationStageLive()) {
-            $peristed_name = self::getPath($name);
-            $file = new SimpleFile($peristed_name, SimpleFile::TRUNCATE_WRITE);
+            $peristedName = self::getPath($name);
+            $file = new SimpleFile($peristedName, SimpleFile::TRUNCATE_WRITE);
             $file->write(serialize($content));
         }
     }

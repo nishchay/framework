@@ -71,7 +71,7 @@ class Conditional extends BaseSession
      * @param string $readCheck
      * @return $this
      */
-    public function setReadCheck(string $readCheck): self
+    public function setReadCheck(string $readCheck)
     {
         $this->readCheck = $readCheck;
         return $this;
@@ -82,7 +82,7 @@ class Conditional extends BaseSession
      * @param type $saveCheck
      * @return $this
      */
-    public function setSaveCheck(string $saveCheck): self
+    public function setSaveCheck(string $saveCheck)
     {
         $this->saveCheck = $saveCheck;
         return $this;

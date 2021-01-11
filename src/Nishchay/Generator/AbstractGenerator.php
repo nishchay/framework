@@ -10,6 +10,8 @@ use Nishchay\Utility\SystemUtility;
 use Nishchay\FileManager\SimpleFile;
 use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\Console\Printer;
+use Nishchay\FileManager\SimpleDirectory;
+use Nishchay\Data\Collection as EntityCollection;
 
 /**
  * Abstract Generator class.
@@ -76,12 +78,42 @@ abstract class AbstractGenerator
     }
 
     /**
+     * Returns namespace.
+     * 
+     * @return string
+     */
+    protected function getNamespace(): ?string
+    {
+        $directories = Nishchay::getStructureProcessor()->getDirectories($this->type);
+
+        # No need tp ask if there's single entity directory in an application.
+        if (count($directories) === 1) {
+            return key($directories);
+        }
+
+        $i = 1;
+        $options = [];
+        foreach ($directories as $namespace => $path) {
+            $options[$i++] = $namespace;
+        }
+        $answer = (int) $this->getInput('Where do you want to create(Type number)', $options, 3, true);
+
+        if (isset($options[$answer]) === false) {
+            throw new ApplicationException('Invalid choice for directory.', null, null, 933010);
+        }
+
+        $namespace = $options[$answer];
+
+        return $namespace;
+    }
+
+    /**
      * 
      * @throws ApplicationException
      */
-    protected function isValidName($template = false)
+    protected function isValidName($template = false, $ask = false)
     {
-        return $template ? $this->isValidDirectory() : $this->isValidFile();
+        return $template ? $this->isValidDirectory() : $this->isValidFile($ask);
     }
 
     /**
@@ -90,11 +122,26 @@ abstract class AbstractGenerator
      * @return string
      * @throws ApplicationException
      */
-    protected function isValidFile()
+    protected function isValidFile($ask = true)
     {
         $this->isClassExists();
-        $filePath = SystemUtility::refactorDS(ROOT . $this->name . '.php');
 
+        if ($ask) {
+            $directories = Nishchay::getStructureProcessor()->getDirectories($this->type);
+
+            $options = [];
+            $i = 1;
+            foreach ($directories as $namespace => $path) {
+                $options[$i++] = $namespace;
+            }
+            $options[$i] = 'Select this if you entered class name with namespace';
+
+            $answer = (int) $this->getInput('Where do you want to create(Type number)', $options, 3, true);
+            if ($answer !== $i) {
+                $this->name = $options[$answer] . '\\' . $this->name;
+            }
+        }
+        $filePath = SystemUtility::refactorDS(ROOT . $this->name . '.php');
         try {
             if (file_exists($filePath)) {
                 throw new ApplicationException('File with name [' . $filePath . ']'
@@ -105,6 +152,28 @@ abstract class AbstractGenerator
                     $detail['special'] !== $this->type) {
                 goto INVALID;
             }
+
+            $postfix = ucfirst($this->type);
+            if ($ask && strpos($filePath, $postfix . '.php') === false) {
+                $directory = new SimpleDirectory(dirname($filePath));
+                $count = 0;
+                $files = $directory->getFiles();
+                foreach ($files as $path) {
+                    if (strpos($path, $postfix . '.php') !== false) {
+                        $count++;
+                    }
+                }
+                if ($count === count($files)) {
+                    Printer::write('We have detected that, all ' . $this->type . ' are ends with ' . $postfix . ' in selected directory.' . PHP_EOL, Printer::GREEN_COLOR);
+                    Printer::write('So we have applied ' . $postfix . ' at end of file and class name.' . PHP_EOL, Printer::GREEN_COLOR);
+                    $this->name = $this->name . $postfix;
+                    $filePath = SystemUtility::refactorDS(ROOT . $this->name . '.php');
+                } else if ($count !== 0) {
+                    Printer::write('We have detected that you do not folllow consistent class name.' . PHP_EOL, Printer::RED_COLOR);
+                    Printer::write('Problem: Some class name ends with ' . $postfix . ' and some does not, please maintain consistency.' . PHP_EOL, Printer::RED_COLOR);
+                }
+            }
+
             return $filePath;
         } catch (InvalidStructureException $e) {
             INVALID:
@@ -122,7 +191,20 @@ abstract class AbstractGenerator
     protected function isValidDirectory()
     {
         $path = SystemUtility::refactorDS(ROOT . $this->name);
+        $directories = Nishchay::getStructureProcessor()->getDirectories($this->type);
 
+        $options = [];
+        $i = 1;
+        foreach ($directories as $namespace => $path) {
+            $options[$i++] = $namespace;
+        }
+        $options[$i] = 'Select this if you have entered namespace';
+
+        $answer = (int) $this->getInput('Where do you want to create(Type number)', $options, 3, true);
+        if ($answer !== $i) {
+            $this->name = $options[$answer] . '\\' . $this->name;
+        }
+        $path = SystemUtility::refactorDS(ROOT . $this->name);
         try {
             if (file_exists($path)) {
                 $input = $this->getInput('Directory already exist,'
@@ -177,6 +259,7 @@ abstract class AbstractGenerator
      */
     protected function createClass($class, $callback = false)
     {
+        $this->name = $this->getNamespace() . '\\' . $this->name;
         $filePath = $this->isValidName();
         $this->reflection = new ReflectionClass($class);
         list ($shortClassName, $namespace) = $this->getClassDetail();
@@ -294,7 +377,7 @@ abstract class AbstractGenerator
             $content = $this->getContent();
             list($class) = $this->getClassDetail($templateClass);
             $this->name = $namespace . '\\' . $class;
-            $this->isValidName();
+            $this->isValidName(false, false);
 
             # Creating write only access to file so that we can
             # write content to it.
@@ -321,7 +404,7 @@ abstract class AbstractGenerator
      * @return type
      * @throws ApplicationException
      */
-    protected function getInput($question, $options, $try = 3)
+    protected function getInput($question, $options, $try = 3, $keyIsAnswer = false)
     {
         $tryCount = 1;
         do {
@@ -342,9 +425,16 @@ abstract class AbstractGenerator
             $input = readline($inputLine . ' : ');
             if (!empty($input)) {
                 if (is_array($options)) {
-                    $optionsLowered = array_map('strtolower', $options);
-                    if (in_array(strtolower($input), $optionsLowered)) {
-                        return $input;
+
+                    if ($keyIsAnswer) {
+                        if (isset($options[$input])) {
+                            return $input;
+                        }
+                    } else {
+                        $optionsLowered = array_map('strtolower', $options);
+                        if (in_array(strtolower($input), $optionsLowered)) {
+                            return $input;
+                        }
                     }
                 } else if ($options === 'YN') {
                     if (in_array(strtolower($input), ['y', 'n'])) {
@@ -361,6 +451,25 @@ abstract class AbstractGenerator
             throw new ApplicationException('Operation terminated after'
                     . ' limit exceeded to get input.', null, null, 933008);
         }
+    }
+
+    /**
+     * Registers entity to collection.
+     * 
+     * @param string $class
+     */
+    protected function registerEntity(string $class)
+    {
+        $reflection = (new ReflectionClass(EntityCollection::class))
+                ->getProperty('collection');
+
+        $entityCollection = Nishchay::getEntityCollection();
+
+        $collections = $entityCollection->get();
+        $collections[$class] = true;
+
+        $reflection->setAccessible(true);
+        $reflection->setValue($entityCollection, $collections);
     }
 
     /**

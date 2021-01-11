@@ -40,6 +40,13 @@ class StructureProcessor extends Structure
     private $previousMatching = [];
 
     /**
+     * Valid controller and entity directory.
+     * 
+     * @var array
+     */
+    private $directorires = [];
+
+    /**
      * Initialization
      * 
      */
@@ -84,6 +91,10 @@ class StructureProcessor extends Structure
                     ViewCollection::store($path);
                 }
 
+                if (in_array($value['special'], ['controller', 'entity', 'form'])) {
+                    $this->directorires[$value['special']][str_replace([ROOT, DS], ['', '\\'], $path)] = $path;
+                }
+
                 $this->processRequiredDirectory($path, $value['depth_path']);
                 return $value['special'];
             }
@@ -91,6 +102,17 @@ class StructureProcessor extends Structure
 
         throw new InvalidStructureException('Path [' . $path . '] is not valid as'
                 . ' per structure definition. ' . $message, null, null, 925020);
+    }
+
+    /**
+     * Returns directories of given type.
+     * 
+     * @param string $type
+     * @return array
+     */
+    public function getDirectories($type): array
+    {
+        return $this->directorires[$type] ?? [];
     }
 
     /**

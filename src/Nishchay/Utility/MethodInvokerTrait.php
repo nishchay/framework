@@ -5,9 +5,11 @@ namespace Nishchay\Utility;
 use Nishchay\Exception\ApplicationException;
 
 /**
- * Description of MethodInvokerTrait
- *
- * @author bpatel
+ * Trait for invoking method.
+ * 
+ * @license     https://nishchay.io/license New BSD License
+ * @copyright   (c) 2020, Nishchay PHP Framework
+ * @author      Bhavik Patel
  */
 trait MethodInvokerTrait
 {
@@ -20,8 +22,12 @@ trait MethodInvokerTrait
      * @param array $parameter          Optional. Should be array.
      * @return mixed
      */
-    private function invokeMethod($method, $parameter = [])
+    private function invokeMethod($method, array $parameter = [])
     {
+        if ($method instanceof \Closure) {
+            return call_user_func_array($method, $parameter);
+        }
+
         if (is_string($method)) {
             $method = explode('::', $method);
         }

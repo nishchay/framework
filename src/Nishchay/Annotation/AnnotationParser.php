@@ -87,8 +87,8 @@ class AnnotationParser
      * @var array 
      */
     private $usable = [
-        'controller', 'service', 'entity', 'doc', 'event', 'secure',
-        'reflective', 'identity', 'handler', 'noservice'
+        'controller', 'service', 'doc', 'event', 'secure',
+        'reflective', 'identity', 'handler', 'noservice', 'form', 'container'
     ];
 
     /**
@@ -96,7 +96,7 @@ class AnnotationParser
      * 
      * @var array 
      */
-    private $multiple = ['beforechange', 'afterchange'];
+    private $multiple = ['beforechange', 'afterchange', 'validation'];
 
     /**
      * Current processing annotation name.

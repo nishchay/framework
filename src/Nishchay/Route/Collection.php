@@ -9,6 +9,7 @@ use Nishchay\Utility\ArrayUtility;
 use Nishchay\Route\Annotation\Placeholder;
 use Nishchay\Route\Annotation\Route;
 use Nishchay\Processor\AbstractCollection;
+use Nishchay\Route\Visibility;
 
 /**
  * Route collection class stores all route defined.
@@ -48,7 +49,7 @@ class Collection extends AbstractCollection
      * 
      * @var boolean 
      */
-    private $sorted = FALSE;
+    private $sorted = false;
 
     /**
      * Initialization
@@ -215,7 +216,7 @@ class Collection extends AbstractCollection
         if (Nishchay::isApplicationStageLive()) {
             System::setPersistent('routes', $this->collection);
         }
-
+        
         $this->sorted = true;
     }
 
@@ -250,7 +251,7 @@ class Collection extends AbstractCollection
             $method = Nishchay::getControllerCollection()
                     ->getMethod("{$route['object']->getClass()}::"
                     . "{$route['object']->getMethod()}");
-            if ($method->getService() !== FALSE) {
+            if ($method->getService() !== false) {
                 $services[] = $route['object'];
             }
         }
@@ -285,13 +286,13 @@ class Collection extends AbstractCollection
                 # Even if route string has been matched, we still need to match 
                 # request method if it is defined on route.
                 if ($all === false && !$this->isRequestAllowed(
-                                $requestMethod, $value['object']->getType()
+                                $requestMethod, $value['object']->getType(), $value['object']
                         )) {
                     continue;
                 }
 
-                # If route defintion has defined special segment in it. We will
-                # first find sepecial segemnt and then we will add it to method
+                # If route defintion has defined placeholder segment in it. We will
+                # first find placeholder segemnt and then we will add it to
                 # response.
                 $value['segment'] = [];
                 foreach ($match as $segment => $found) {
@@ -322,13 +323,28 @@ class Collection extends AbstractCollection
      * @param   array       $supportedType
      * @return  boolean
      */
-    protected function isRequestAllowed($currentType, $supportedType)
+    protected function isRequestAllowed(string $currentType, $supportedType, Route $route)
     {
+        if ($this->isVisible($route) === false) {
+            return false;
+        }
         if (is_array($supportedType) && !in_array($currentType, $supportedType)) {
             return false;
         }
 
+        if (!empty($route->getStage()) && !in_array(Nishchay::getApplicationStage(), $route->getStage())) {
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * Checks routes visibility.
+     */
+    private function isVisible(Route $route)
+    {
+        return Visibility::getInstance()->check($route);
     }
 
     /**

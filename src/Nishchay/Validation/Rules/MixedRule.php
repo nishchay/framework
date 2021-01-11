@@ -4,7 +4,6 @@ namespace Nishchay\Validation\Rules;
 
 use Exception;
 use Nishchay\Exception\ApplicationException;
-use Nishchay\Exception\NotSupportedException;
 use Nishchay\Utility\MethodInvokerTrait;
 
 /**

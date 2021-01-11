@@ -18,6 +18,26 @@ class Response extends BaseAnnotationDefinition
 {
 
     /**
+     * Response type view.
+     */
+    const VIEW_RESPONSE = 'view';
+
+    /**
+     * Response type JSON.
+     */
+    const JSON_RESPONSE = 'json';
+
+    /**
+     * Response type XML.
+     */
+    const XML_RESPONSE = 'xml';
+
+    /**
+     * Response type null.
+     */
+    const NULL_RESPONSE = 'null';
+
+    /**
      * All parameter of this annotation.
      * 
      * @var array 
@@ -32,6 +52,14 @@ class Response extends BaseAnnotationDefinition
     private $type = false;
 
     /**
+     * View name.
+     * Only applicable for abstract route.
+     * 
+     * @var string
+     */
+    private $view;
+
+    /**
      * 
      * @param   string      $class
      * @param   string      $method
@@ -42,11 +70,6 @@ class Response extends BaseAnnotationDefinition
         parent::__construct($class, $method);
         $this->parameter = $parameter;
         $this->setter($parameter, 'parameter');
-
-        if ($this->type === false) {
-            throw new InvalidAnnotationExecption('Annotation [response] requires paramter name [type].',
-                    $this->class, $this->method, 914018);
-        }
     }
 
     /**
@@ -65,7 +88,11 @@ class Response extends BaseAnnotationDefinition
      */
     protected function setType($type)
     {
-        $supported = ['view', 'json', 'xml', null];
+        if (is_string($type) && strlen($type) === 0) {
+            throw new InvalidAnnotationParameterException('Response type [' . $type . ']' .
+                    ' is not valid.', $this->class, $this->method, 914028);
+        }
+        $supported = [self::VIEW_RESPONSE, self::JSON_RESPONSE, self::XML_RESPONSE, null];
 
         if (!in_array(strtolower($type), $supported)) {
 
@@ -73,7 +100,30 @@ class Response extends BaseAnnotationDefinition
                     ' not supported.', $this->class, $this->method, 914019);
         }
 
-        $this->type = ($type === null ? 'NULL' : $type);
+        $this->type = ($type === null ? self::NULL_RESPONSE : $type);
+    }
+
+    /**
+     * Returns view name.
+     * 
+     * @return string|null
+     */
+    public function getView(): ?string
+    {
+        return $this->view;
+    }
+
+    /**
+     * Sets view name.
+     * 
+     * @param string $view
+     * @return $this
+     */
+    public function setView(string $view)
+    {
+        $this->type = self::VIEW_RESPONSE;
+        $this->view = $view;
+        return $this;
     }
 
 }

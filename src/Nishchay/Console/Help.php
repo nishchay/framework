@@ -14,6 +14,7 @@ class Help
 
     private $helps = [
         'route' => [
+            '{route-alias}' => 'r',
             '{no-params}' => 'To list all defined routes',
             'path' => 'Gives information of route',
             'path -run' => 'Executes route',
@@ -25,6 +26,7 @@ class Help
             'path -handler' => 'Lists error handler for route',
         ],
         'controller' => [
+            '{controller-alias}' => 'c',
             '{no-params}' => 'List all controller',
             'class' => 'Gives information of controller',
             'class -annotation' => 'Lists annotation defined on class',
@@ -34,12 +36,14 @@ class Help
             '-create name -template name' => 'Creates controller from template name'
         ],
         'event' => [
+            '{event-alias}' => 'ev',
             '{no-params}' => 'Lists all events',
             '-context name' => 'Lists events belongs to context',
             '-scope' => 'Lists events belongs to scope',
             '-global' => 'Lists global events'
         ],
         'entity' => [
+            '{entity-alias}' => 'e',
             '{no-params}' => 'Lists all entities',
             'name -property' => 'Lists entity properties',
             'name -derived' => 'Lists derived properties',
@@ -47,8 +51,25 @@ class Help
             'name -trigger' => 'Lists all trigger of entity',
             '-create name' => 'Creates entity with identity property only',
             '-create name -crud' => 'Creates entity crud related properties',
-            '-create name -template name' => 'Creates entity from template'
-        ]
+            '-create name -template name' => 'Creates entity from template',
+            '-generate -new' => 'Creates entity. Interactive command',
+            '-generate -db (?connectionName)' => 'Creates all or specific entities from DB. Do not pass connection name to use default database connection.',
+            '-generate -table name (?connectionName)' => 'Create entity for given table name. Do not pass connection name to use default database connection.'
+        ],
+        'form' => [
+            '{form-alias}' => 'f',
+            '-generate -entity name' => 'Generates form from entity class name'
+        ],
+        'prototype' => [
+            '{prototype-alias}' => 'p',
+            '-generate -new' => 'Generates new prototype based on interactive command',
+            '-generate -table name (?connectionName)' => 'Generates prototype from table. Do not pass connection name to use default database connection.'
+        ],
+        '' => [
+            'version' => 'Prints framework version information',
+            '-v' => 'Alias of version',
+            '-version' => 'Alias of version'
+        ],
     ];
 
     /**

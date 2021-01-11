@@ -50,11 +50,13 @@ class Event extends AbstractCommand
     public function printEvents($events)
     {
         $table = new Console_Table();
-        $table->setHeaders(['Type', 'TypeFor', 'When', 'Class', 'Method']);
+        $table->setHeaders(['Type', 'Type For', 'When', 'Class', 'Method']);
+        $count = 0;
         foreach ($events as $eventType => $event) {
             foreach ($event as $when => $whenEvent) {
                 if ($eventType === Names::TYPE_GLOBAL) {
                     foreach ($whenEvent as $eventClass) {
+                        $count++;
                         $table->addRow([$eventType, '-', $when, $eventClass->getClass(), $eventClass->getMethod()]);
                     }
                     continue;
@@ -63,10 +65,16 @@ class Event extends AbstractCommand
 
                 foreach ($whenEvent as $forType => $forTypeEvent) {
                     foreach ($forTypeEvent as $eventClass) {
+                        $count++;
                         $table->addRow([$eventType, $forType, $when, $eventClass->getClass(), $eventClass->getMethod()]);
                     }
                 }
             }
+        }
+
+        if ($count === 0) {
+            Printer::red('No events found.');
+            return false;
         }
         Printer::write($table->getTable());
     }

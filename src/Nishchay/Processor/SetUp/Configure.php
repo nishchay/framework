@@ -7,6 +7,7 @@ use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\AlreadyInstanciatedExecption;
 use Nishchay\Handler\Detail;
 use Nishchay\Processor\Facade;
+use Nishchay\Container\Container;
 
 /**
  * Sets connection for the Nishchay.

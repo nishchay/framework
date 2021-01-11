@@ -2,6 +2,7 @@
 
 namespace Nishchay\Controller;
 
+use Nishchay;
 use Nishchay\Persistent\System as SystemPersistent;
 use Nishchay\Processor\AbstractCollection;
 
@@ -83,6 +84,40 @@ class Collection extends AbstractCollection
         }
 
         return $this->collection[$class]['object'];
+    }
+
+    /**
+     * Returns TRUE if class exists as controller.
+     * 
+     * @param string $class
+     * @return bool
+     */
+    public function isExist(string $class): bool
+    {
+        return array_key_exists($class, $this->collection);
+    }
+    
+    /**
+     * Locates entity class from trailing class name.
+     * 
+     * @param string $name
+     * @return boolean|string
+     */
+    public function locate(string $name): ?string
+    {
+        if ($this->isExist($name)) {
+            return $name;
+        }
+
+        $directories = Nishchay::getStructureProcessor()->getDirectories('controller');
+
+        foreach ($directories as $namespace => $path) {
+            $class = $namespace . '\\' . $name;
+            if ($this->isExist($class)) {
+                return $class;
+            }
+        }
+        return null;
     }
 
     /**

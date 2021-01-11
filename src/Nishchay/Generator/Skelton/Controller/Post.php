@@ -44,7 +44,7 @@ class Post
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function viewPost($postId = '@Segment(index=postId)')
+    public function viewPost(int $postId)
     {
         
     }
@@ -56,7 +56,7 @@ class Post
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function likePost($postId = '@Segment(index=postId)')
+    public function likePost(int $postId)
     {
         
     }
@@ -68,18 +68,18 @@ class Post
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function editPost($postId = '@Segment(index=postId)')
+    public function editPost(int $postId)
     {
         
     }
 
     /**
      * 
-     * @Route(path='{postId}',type=DELETE)
+     * @Route(path='{postId}', type=DELETE)
      * @Placeholder(postId=number)
      * @Response(type=JSON)
      */
-    public function removePost($postId = '@Segment(index=postId)')
+    public function removePost(int $postId)
     {
         
     }
@@ -91,7 +91,7 @@ class Post
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function viewComments($postId = '@Segment(index=postId)')
+    public function viewComments(int $postId)
     {
         
     }
@@ -103,7 +103,7 @@ class Post
      * @Placeholder(postId=number)
      * @Response(type=VIEW)
      */
-    public function addComment($postId = '@Segment(index=postId)')
+    public function addComment(int $postId)
     {
         
     }
@@ -115,8 +115,7 @@ class Post
      * @Placeholder(postId=number,commentId=number)
      * @Response(type=VIEW)
      */
-    public function likeComment($postId = '@Segment(index=postId)',
-            $commentId = '@Segment(index=commentId)')
+    public function likeComment(int $postId, int $commentId)
     {
         
     }
@@ -128,8 +127,7 @@ class Post
      * @Placeholder(postId=number,commentId=number)
      * @Response(type=VIEW)
      */
-    public function editComment($postId = '@Segment(index=postId)',
-            $commentId = '@Segment(index=commentId)')
+    public function editComment(int $postId, int $commentId)
     {
         
     }
@@ -141,11 +139,9 @@ class Post
      * @Placeholder(postId=number,commentId=number)
      * @Response(type=VIEW)
      */
-    public function removeComment($postId = '@Segment(index=postId)',
-            $commentId = '@Segment(index=commentId)')
+    public function removeComment(int $postId, int $commentId)
     {
         
     }
 
-    
 }

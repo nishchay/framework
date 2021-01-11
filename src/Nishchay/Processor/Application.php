@@ -19,6 +19,9 @@ use Nishchay\Event\Collection as EventCollection;
 use Nishchay\Mail\Collection as MailCollection;
 use Nishchay\Cache\Collection as CacheCollection;
 use Nishchay\Security\Encrypt\Collection as EncryptCollection;
+use Nishchay\Container\Collection as ContainerCollection;
+use Nishchay\Route\Pattern\Collection as PatternCollection;
+use Nishchay\Route\ScopeCollection;
 use Nishchay\Handler\Dispatcher;
 use Nishchay\Processor\Structure\StructureProcessor;
 use Nishchay\Persistent\System as SystemPersistent;
@@ -37,15 +40,17 @@ use Nishchay\Lang\Lang;
 final class Application
 {
 
+    use FetchSingletonTrait;
+
     /**
      * Nishchay framework version number.
      */
-    const VERSION = '1.0';
+    const VERSION = '1.1';
 
     /**
      * Nishchay framework version name.
      */
-    const VERSION_NAME = 'Namaste';
+    const VERSION_NAME = 'Naman';
 
     /**
      * Nishchay framework name.
@@ -101,7 +106,7 @@ final class Application
      * 
      * @var object 
      */
-    private $applicationName = FALSE;
+    private $applicationName = false;
 
     /**
      * Author Name of application.
@@ -140,7 +145,7 @@ final class Application
      * 
      * @var string 
      */
-    private $landingRoute = NULL;
+    private $landingRoute = null;
 
     /**
      * Configuration Loader instance.
@@ -154,13 +159,6 @@ final class Application
      * @var \Nishchay\Processor\Structure\StructureProcessor 
      */
     private $structureProcessor;
-
-    /**
-     * All registered instances.
-     * 
-     * @var array 
-     */
-    private $registered = [];
 
     /**
      * Initialization.
@@ -284,25 +282,9 @@ final class Application
         if (file_exists(SETTINGS . 'constants.php')) {
             require_once SETTINGS . 'constants.php';
         }
-        $this->register('exceptionHandler', new Dispatcher());
+
         $this->configurationLoader->deepRequired(SETTINGS . 'functions');
         $this->setApplicationInformation();
-        $this->register('routeCollection', new RouteCollection());
-        $this->register('controllerCollection', new ControllerCollection());
-        $this->register('entityCollection', new EntityCollection);
-        $this->register('handlerCollection', new HandlerCollection());
-        $this->register('eventCollection', new EventCollection());
-    }
-
-    /**
-     * Register instance with given name.
-     * 
-     * @param type $name
-     * @param type $instance
-     */
-    private function register($name, $instance)
-    {
-        $this->registered[$name] = $instance;
     }
 
     /**
@@ -316,10 +298,8 @@ final class Application
             throw new ApplicationException('Logger is disabled. To enable set'
                     . ' enable = true in logger.php file.', null, null, 925026);
         }
-        if (array_key_exists('logger', $this->registered) === false) {
-            $this->register('logger', new Logger());
-        }
-        return $this->registered['logger'];
+
+        return $this->getInstance(Logger::class);
     }
 
     /**
@@ -329,7 +309,7 @@ final class Application
      */
     public function getRouteCollection()
     {
-        return $this->registered['routeCollection'];
+        return $this->getInstance(RouteCollection::class);
     }
 
     /**
@@ -339,7 +319,7 @@ final class Application
      */
     public function getControllerCollection()
     {
-        return $this->registered['controllerCollection'];
+        return $this->getInstance(ControllerCollection::class);
     }
 
     /**
@@ -349,7 +329,7 @@ final class Application
      */
     public function getExceptionHandler()
     {
-        return $this->registered['exceptionHandler'];
+        return $this->getInstance(Dispatcher::class);
     }
 
     /**
@@ -359,7 +339,7 @@ final class Application
      */
     public function getEntityCollection()
     {
-        return $this->registered['entityCollection'];
+        return $this->getInstance(EntityCollection::class);
     }
 
     /**
@@ -369,7 +349,7 @@ final class Application
      */
     public function getHandlerCollection()
     {
-        return $this->registered['handlerCollection'];
+        return $this->getInstance(HandlerCollection::class);
     }
 
     /**
@@ -379,7 +359,7 @@ final class Application
      */
     public function getEventCollection()
     {
-        return $this->registered['eventCollection'];
+        return $this->getInstance(EventCollection::class);
     }
 
     /**
@@ -390,11 +370,48 @@ final class Application
      */
     public function getEnv($name)
     {
-        if (array_key_exists($name, $this->registered) == false) {
+        return $this->getInstance(EnvironmentVariables::class)->get($name);
+    }
 
-            $this->register('environmentVariable', EnvironmentVariables::getInstance());
-        }
-        return $this->registered['environmentVariable']->get($name);
+    /**
+     * Returns instance of container collection.
+     * 
+     * @return \Nishchay\Container\Collection
+     */
+    public function getContainerCollection()
+    {
+        return $this->getInstance(ContainerCollection::class);
+    }
+
+    /**
+     * Returns container.
+     * 
+     * @param string $class
+     * @return type
+     */
+    public function getContainer(string $class)
+    {
+        return $this->getContainerCollection()->get($class);
+    }
+
+    /**
+     * Returns instance  pattern collection.
+     * 
+     * @return PatternCollection
+     */
+    public function getRoutePatternCollection()
+    {
+        return $this->getInstance(PatternCollection::class);
+    }
+
+    /**
+     * Returns instance of scope collection.
+     * 
+     * @return ScopeCollection
+     */
+    public function getScopeCollection()
+    {
+        return $this->getInstance(ScopeCollection::class);
     }
 
     /**
@@ -521,7 +538,11 @@ final class Application
                 }
             }
         }
-        $this->landingRoute = $this->getConfig('config.landingRoute');
+        
+        $this->landingRoute = $this->getSetting('routes.landing');
+        if ($this->landingRoute === false) {
+            $this->landingRoute = $this->getConfig('config.landingRoute');
+        }
         if ($this->landingRoute === false || empty($this->landingRoute)) {
             throw new InvalidStructureException('Please spcify landing route'
                     . ' in application configuration setting.', null, null, 925028);

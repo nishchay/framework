@@ -40,11 +40,11 @@ class Employee
      * @Route(path='{employeeId}', type=GET)
      * @Placeholder(employeeId=number)
      */
-    public function view($employeeId = '@Segment(index=employeeId)')
+    public function view(int $employeeId)
     {
         # TODO: Display employee detail.
     }
-    
+
     /**
      * Add employee.
      * 
@@ -61,7 +61,7 @@ class Employee
      * @Route(path='{employeeId}', type=PUT)
      * @Placeholder(employeeId=number)
      */
-    public function update($employeeId = '@Segment(index=employeeId)')
+    public function update(int $employeeId)
     {
         # TODO: Update employee detail
     }
@@ -72,7 +72,7 @@ class Employee
      * @Route(path='{employeeId}', type=DELETE)
      * @Placeholder(employeeId=number)
      */
-    public function remove($employeeId = '@Segment(index=employeeId)')
+    public function remove(int $employeeId)
     {
         # TODO: Remove employee
     }

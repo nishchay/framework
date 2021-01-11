@@ -37,7 +37,7 @@ class Attendance
      * @Route(path='attendance/{year}/{month}', type=GET)
      * @Placeholder(year=number, month=number)
      */
-    public function monthAttendance($year = '@Segment(index=year)', $month = '@Segment(index=month)')
+    public function monthAttendance(int $year, int $month)
     {
         # TODO: Display employee's attendance of requested month and year
     }
@@ -83,7 +83,7 @@ class Attendance
      * @Route(path='attendance/request/{requestId}', type=POST)
      * @Placeholder(requestId=number)
      */
-    public function viewRequest($requestId = '@Segment(index=requestId)')
+    public function viewRequest(int $requestId)
     {
         # TODO: Implement business to respond attedance request.
     }
@@ -94,7 +94,7 @@ class Attendance
      * @Route(path='attendance/request/{requestId}/respond', type=POST)
      * @Placeholder(requestId=number)
      */
-    public function responseRequest($requestId = '@Segment(index=requestId)')
+    public function responseRequest(int $requestId)
     {
         # TODO: Implement business to respond attedance request.
     }

@@ -93,4 +93,38 @@ class Service
         );
     }
 
+    /**
+     * Returns payload form OAuth2 token.
+     * 
+     * @return \stdClass
+     */
+    public function getPayload()
+    {
+        return ServicePreProcess::getPayload();
+    }
+
+    /**
+     * Returns userId from OAuth2 token.
+     * 
+     * @return int|bool
+     */
+    public function getUserId()
+    {
+        $payload = $this->getPayload();
+
+        return $payload->uu ?? false;
+    }
+
+    /**
+     * Returns scope from OAuth2 token.
+     * 
+     * @return array|null
+     */
+    public function getScope(): ?array
+    {
+        $payload = $this->getPayload();
+
+        return $payload->scope ?? null;
+    }
+
 }

@@ -554,7 +554,7 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Returns name of identity column.
+     * Returns name of identity property.
      * 
      * @return string
      */
@@ -724,7 +724,7 @@ class EntityClass extends AbstractEntityStore
      * Processes property.
      * 
      * @param   ReflectionProperty $propertyReflection
-     * @return  NULL
+     * @return  null
      */
     private function processProperty(ReflectionProperty $propertyReflection)
     {
@@ -746,6 +746,25 @@ class EntityClass extends AbstractEntityStore
         if ($dataProperty->isDerived() === false &&
                 $dataProperty->getDatatype() === false) {
             return;
+        }
+
+        # Let's reslove class name if from is class name or chain of class name and property.
+        if ($dataProperty->isDerived()) {
+            $derived = $dataProperty->getDerived();
+            if ($derived->isFrom() && $this->getProperty($derived->getFrom()) === false) {
+                $from = $derived->getFrom();
+                $fromArray = explode('.', $from);
+
+                foreach ($fromArray as $index => $from) {
+                    if ($this->isEntity($from) === false) {
+                        $from = $this->getReflectionClass()->getNamespaceName() . '\\' . $from;
+                        if ($this->isEntity($from)) {
+                            $fromArray[$index] = $from;
+                        }
+                    }
+                }
+                $derived->setFrom(implode('.', $fromArray));
+            }
         }
 
         $this->addProperty($dataProperty, $propertyReflection->name);
@@ -1138,7 +1157,7 @@ class EntityClass extends AbstractEntityStore
                 return true;
             }
             throw new ApplicationException('Property [' . $this->class . '::' .
-                    $property->getPropertyName() . '] can not be null as its relative to [' .
+                    $property->getPropertyName() . '] can not be null or empty as its relative to [' .
                     $relative->getTo() . '].', $this->class, null, 911042);
         }
 
@@ -1277,14 +1296,17 @@ class EntityClass extends AbstractEntityStore
      */
     public function executeBeforeChange($old, $new, $mode, $updatedNames)
     {
+        $eventCalled = 0;
         $name = 'isFor' . ucfirst(strtolower($mode));
         foreach ($this->beforechange as $trigger) {
             if ($this->isCallable($trigger, $name)) {
+                $eventCalled++;
                 if ($this->executeCallback($trigger->getCallback(), [$old, $new, $mode, $updatedNames]) === false) {
                     return false;
                 }
             }
         }
+        return $eventCalled;
     }
 
     /**

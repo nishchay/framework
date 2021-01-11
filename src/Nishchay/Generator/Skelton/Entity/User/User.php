@@ -6,7 +6,7 @@ namespace Nishchay\Generator\Skelton\Entity\User;
  * User entity class.
  *
  * #ANN_START
- * @license     http:#Nishchay.io/license New BSD License
+ * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel
@@ -22,51 +22,56 @@ class User
      * @Identity
      * @DataType(type=int,readonly=TRUE) 
      */
-    public $id;
+    public $userId;
 
     /**
-     *
+     * First name of user.
+     * 
      * @DataType(type=string,length=50,required=true,encrypt=true) 
      */
     public $firstName;
 
     /**
-     *
+     * Last name of user.
+     * 
      * @DataType(type=string,length=50,required=true,encrypt=true) 
      */
     public $lastName;
 
     /**
-     *
-     * @DataType(type=string,value=[male,female],required=true,encrypt=true) 
+     * Gender.
+     * 
+     * @DataType(type=string,length=10,value=[male,female],encrypt=true) 
      */
     public $gender;
-    
+
     /**
-     *
+     * Email of user.
      * @DataType(type=string,length=100,required=true,encrypt=true)
      */
     public $email;
-    
+
     /**
      * User password.
      * 
      * @DataType(type=string,length=200,required=true)
      */
     public $password;
-    
-    /**
-     *
-     * @DataType(type=int)
-     */
-    public $isActive;
 
     /**
-     *
+     * Birth date.
+     * 
      * @DataType(type=date,encrypt=true) 
      */
     public $birthDate;
-    
+
+    /**
+     * Is user active.
+     * 
+     * @DataType(type=boolean)
+     */
+    public $isActive;
+
     /**
      * Is user verified.
      * 

@@ -57,6 +57,8 @@ class MysqlBuilder extends AbstractBuilder
      */
     protected function processDBCreationColumns($columns, $alter)
     {
+        $primaryKey = $alter === false ?
+                $this->getDBManagerData('primaryKey') : false;
         foreach ($columns as $config) {
 
             # We can not find wheather to add or change column but data type of 
@@ -94,6 +96,10 @@ class MysqlBuilder extends AbstractBuilder
                         substr($default, 1) : "'$default'");
             }
 
+            if ($primaryKey === $name) {
+                $statement .= ' AUTO_INCREMENT';
+            }
+
             $comment = $config['comment'];
             $statement .= strlen($comment) > 0 ? 'COMMENT "' . $comment . '"' : '';
             $this->dbManagerStatement[] = ($alter ? $reflect : '') . $statement;
@@ -105,11 +111,11 @@ class MysqlBuilder extends AbstractBuilder
      * 
      * @param   string      $column
      * @param   boolean     $alter
-     * @return  NULL
+     * @return  null
      */
     protected function processDBPrimaryKey($column, $alter)
     {
-        if ($column === NULL) {
+        if ($column === null) {
             return;
         }
 
@@ -332,6 +338,16 @@ class MysqlBuilder extends AbstractBuilder
      * @return string
      */
     protected function getTypeOfBoolean()
+    {
+        return $this->getTypeOfInt(1);
+    }
+
+    /**
+     * Returns type of bool for DB.
+     * 
+     * @return string
+     */
+    protected function getTypeOfBool()
     {
         return $this->getTypeOfInt(1);
     }
