@@ -66,11 +66,18 @@ class Form
     private $validator;
 
     /**
-     * Reserverd methods.
+     * Reserved methods.
      * 
      * @var array 
      */
     private static $reserved = ['method'];
+
+    /**
+     * Instance of ReflectionClass class on form class.
+     * 
+     * @var ReflectionClass
+     */
+    private $reflection;
 
     /**
      * Initialization.
@@ -301,9 +308,17 @@ class Form
         return false;
     }
 
+    /**
+     * Returns instance of ReflectionClass on form class.
+     * 
+     * @return ReflectionClass
+     */
     private function getReflection()
     {
-        return $this->getInstance(ReflectionClass::class, [static::class]);
+        if ($this->reflection !== null) {
+            return $this->reflection;
+        }
+        return $this->reflection = new ReflectionClass(static::class);
     }
 
     /**
