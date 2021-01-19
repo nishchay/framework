@@ -145,6 +145,7 @@ class Processor
                 SystemPersistent::setPersistent('entities', Nishchay::getEntityCollection()->get());
                 SystemPersistent::setPersistent('cfigs', ['APP' => APP]);
                 SystemPersistent::setPersistent('views', ViewCollection::get());
+                SystemPersistent::setPersistent('containers', Nishchay::getContainerCollection()->getAll());
             }
         } else {
             $constants = SystemPersistent::getPersistent('cfigs');

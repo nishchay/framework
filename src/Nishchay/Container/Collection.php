@@ -56,6 +56,13 @@ class Collection extends AbstractCollection
         $this->collection[$class] = new Container($class);
     }
 
+    /**
+     * Returns container.
+     * 
+     * @param string $class
+     * @return type
+     * @throws NotSupportedException
+     */
     public function get(string $class)
     {
         if (array_key_exists($class, $this->collection) === false) {
@@ -63,6 +70,16 @@ class Collection extends AbstractCollection
         }
 
         return $this->collection[$class];
+    }
+
+    /**
+     * Returns all containers.
+     * 
+     * @return type
+     */
+    public function getAll()
+    {
+        return $this->collection;
     }
 
     /**
