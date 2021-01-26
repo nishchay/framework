@@ -18,8 +18,7 @@ use Nishchay\Processor\AbstractSingleton;
  * @version     1.0
  * @author      Bhavik Patel
  */
-class OAuth2 extends AbstractSingleton
-{
+class OAuth2 extends AbstractSingleton {
 
     /**
      * OAuth configuration name.
@@ -37,17 +36,43 @@ class OAuth2 extends AbstractSingleton
     const OAUTH_IMPLEMENTATON_VERSION = 1;
 
     /**
+     * Private key.
+     * 
+     * @var string
+     */
+    private $privateKey;
+
+    /**
+     * Public key.
+     * 
+     * @var string
+     */
+    private $publicKey;
+
+    /**
+     * App Id.
+     * 
+     * @var string
+     */
+    private $appId;
+
+    /**
+     * App secret.
+     * 
+     * @var string
+     */
+    private $appSecret;
+
+    /**
      * Return header.
      * 
      * @return string
      */
-    private function getHeader(): string
-    {
+    private function getHeader(): string {
         return json_encode(['typ' => 'JWT', 'alg' => 'RS256']);
     }
 
-    protected function onCreateInstance()
-    {
+    protected function onCreateInstance() {
         
     }
 
@@ -58,8 +83,7 @@ class OAuth2 extends AbstractSingleton
      * @return boolean
      * @throws BadRequestException
      */
-    private function validateGenerateScope(?array $scope)
-    {
+    private function validateGenerateScope(?array $scope) {
         if ($scope === null) {
             return true;
         }
@@ -80,8 +104,7 @@ class OAuth2 extends AbstractSingleton
      * @param type $scope
      * @return type
      */
-    private function getPayload($userId = null, $scope = null)
-    {
+    private function getPayload($userId = null, $scope = null) {
         $this->validateGenerateScope($scope);
         $time = time();
         return json_encode([
@@ -102,8 +125,7 @@ class OAuth2 extends AbstractSingleton
      * @param int $userId
      * @return array
      */
-    public function generateUserCredentialToken($userId, ?array $scope = null): array
-    {
+    public function generateUserCredentialToken($userId, ?array $scope = null): array {
         $header = $this->urlSafeBase64Encode($this->getHeader());
         $payload = $this->urlSafeBase64Encode($this->getPayload($userId, $scope));
         openssl_sign($header . self::SEPARATOR . $payload . self::SEPARATOR . $this->getAppSecret(), $signature, $this->getPrivateKey(), OPENSSL_ALGO_SHA256);
@@ -126,8 +148,7 @@ class OAuth2 extends AbstractSingleton
      * @param string $data
      * @return string
      */
-    public function urlSafeBase64Encode($data)
-    {
+    public function urlSafeBase64Encode($data) {
         return str_replace(['+', '/', "\r", "\n", '='],
                 ['-', '_'],
                 base64_encode($data));
@@ -139,29 +160,58 @@ class OAuth2 extends AbstractSingleton
      * @param string $string
      * @return string
      */
-    private function urlSafeBase64Decode($string)
-    {
+    private function urlSafeBase64Decode($string) {
         return base64_decode(str_replace(['-', '_'], ['+', '/'], $string));
     }
 
     /**
-     * Returns client Id.
+     * Returns app Id.
      * 
      * @return string
      */
-    private function getAppId(): string
-    {
+    private function getAppId(): string {
+
+        if ($this->appId !== null) {
+            return $this->appId;
+        }
+
         return Nishchay::getSetting(self::CONFIG_NAME . '.credential.appId');
     }
 
     /**
-     * Returns client secret.
+     * Returns app secret.
      * 
      * @return string
      */
-    private function getAppSecret(): string
-    {
+    private function getAppSecret(): string {
+
+        if ($this->appSecret !== null) {
+            return $this->appSecret;
+        }
+
         return Nishchay::getSetting(self::CONFIG_NAME . '.credential.appSecret');
+    }
+
+    /**
+     * Sets app Id.
+     * 
+     * @param string $appId
+     * @return $this
+     */
+    public function setAppId(string $appId) {
+        $this->appId = $appId;
+        return $this;
+    }
+
+    /**
+     * Sets app secret.
+     * 
+     * @param string $appSecret
+     * @return $this
+     */
+    public function setAppSecret(string $appSecret) {
+        $this->appSecret = $appSecret;
+        return $this;
     }
 
     /**
@@ -169,8 +219,7 @@ class OAuth2 extends AbstractSingleton
      * 
      * @return int
      */
-    private function getExpiry(): int
-    {
+    private function getExpiry(): int {
         return (int) Nishchay::getSetting(self::CONFIG_NAME . '.expiry');
     }
 
@@ -180,8 +229,7 @@ class OAuth2 extends AbstractSingleton
      * @param string $token
      * @return boolean
      */
-    public function verify($token)
-    {
+    public function verify($token) {
         $token = explode(self::SEPARATOR, $token);
         if (count($token) !== 3) {
             return false;
@@ -225,8 +273,7 @@ class OAuth2 extends AbstractSingleton
      * @return boolean
      * @throws AuthorizationFailedException
      */
-    private function isValidScope($payload)
-    {
+    private function isValidScope($payload) {
         $currentScope = Processor::getStageDetail('scopeName');
 
         if ($currentScope === false) {
@@ -249,8 +296,11 @@ class OAuth2 extends AbstractSingleton
      * 
      * @return string
      */
-    private function getPrivateKey()
-    {
+    private function getPrivateKey() {
+
+        if ($this->privateKey !== null) {
+            return $this->privateKey;
+        }
         $path = Nishchay::getSetting(self::CONFIG_NAME . '.privateKey');
 
         if (file_exists($path) === false) {
@@ -264,8 +314,12 @@ class OAuth2 extends AbstractSingleton
      * 
      * @return string
      */
-    private function getPublicKey()
-    {
+    private function getPublicKey() {
+
+        if ($this->publicKey !== null) {
+            return $this->privateKey;
+        }
+
         $path = Nishchay::getSetting(self::CONFIG_NAME . '.publicKey');
 
         if (file_exists($path) === false) {
@@ -273,6 +327,28 @@ class OAuth2 extends AbstractSingleton
         }
 
         return file_get_contents($path);
+    }
+
+    /**
+     * Sets private key.
+     * 
+     * @param string $privateKey
+     * @return $this
+     */
+    public function setPrivateKey(string $privateKey) {
+        $this->privateKey = $privateKey;
+        return $this;
+    }
+
+    /**
+     * Sets public key.
+     * 
+     * @param string $publicKey
+     * @return $this
+     */
+    public function setPublicKey(string $publicKey) {
+        $this->publicKey = $publicKey;
+        return $this;
     }
 
 }
