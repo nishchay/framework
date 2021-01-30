@@ -45,7 +45,7 @@ class Placeholder extends BaseAnnotationDefinition
      * @var array 
      */
     private $supported = [
-        'string' => '([a-zA-Z0-9_-]+)',
+        'string' => '([a-zA-Z0-9\._-]+)',
         'number' => '([0-9]+)',
         'int' => '([0-9]+)',
         'alphanum' => '([a-zA-Z0-9]+)',
