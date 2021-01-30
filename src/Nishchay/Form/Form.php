@@ -66,6 +66,13 @@ class Form
     private $validator;
 
     /**
+     * Fields array.
+     * 
+     * @var array
+     */
+    private $fields = [];
+
+    /**
      * Reserved methods.
      * 
      * @var array 
@@ -408,9 +415,11 @@ class Form
      * @param string $type
      * @return Button
      */
-    protected function newButton(string $name, string $type): Button
-    {
-        return (new Button($name, $type, $this->getMethod()));
+    protected function newButton(string $name, string $type): Button {
+        if (isset($this->fields[$name])) {
+            return $this->fields[$name];
+        }
+        return $this->fields[$name] = (new Button($name, $type, $this->getMethod()));
     }
 
     /**
@@ -420,9 +429,11 @@ class Form
      * @param string $type
      * @return Input
      */
-    protected function newInput(string $name, string $type): Input
-    {
-        return (new Input($name, $type, $this->getMethod()));
+    protected function newInput(string $name, string $type): Input {
+        if (isset($this->fields[$name])) {
+            return $this->fields[$name];
+        }
+        return $this->fields[$name] = (new Input($name, $type, $this->getMethod()));
     }
 
     /**
@@ -432,9 +443,11 @@ class Form
      * @param string $type
      * @return InputChoice
      */
-    protected function newInputChoice(string $name, string $type): InputChoice
-    {
-        return (new InputChoice($name, $type, $this->getMethod()));
+    protected function newInputChoice(string $name, string $type): InputChoice {
+        if (isset($this->fields[$name])) {
+            return $this->fields[$name];
+        }
+        return $this->fields[$name] = (new InputChoice($name, $type, $this->getMethod()));
     }
 
     /**
@@ -444,21 +457,26 @@ class Form
      * @param string $type
      * @return Select
      */
-    protected function newSelect(string $name): Select
-    {
-        return (new Select($name, $this->getMethod()));
+    protected function newSelect(string $name): Select {
+        if (isset($this->fields[$name])) {
+            return $this->fields[$name];
+        }
+        return $this->fields[$name] = (new Select($name, $this->getMethod()));
     }
 
     /**
-     * Returns new textarea field.
+     * Returns new text area field.
      * 
      * @param string $name
      * @param string $type
      * @return TextArea
      */
-    protected function newTextArea(string $name): TextArea
-    {
-        return (new TextArea($name, $this->getMethod()));
+    protected function newTextArea(string $name): TextArea {
+        if (isset($this->fields[$name])) {
+            return $this->fields[$name];
+        }
+
+        return $this->fields[$name] = (new TextArea($name, $this->getMethod()));
     }
 
 }
