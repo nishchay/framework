@@ -19,8 +19,7 @@ use Nishchay\Processor\FetchSingletonTrait;
  * @version     1.0
  * @author      Bhavik Patel
  */
-class Container
-{
+class Container {
 
     use FetchSingletonTrait;
 
@@ -71,8 +70,7 @@ class Container
      * 
      * @param string $containerClass
      */
-    public function __construct(string $containerClass)
-    {
+    public function __construct(string $containerClass) {
         $this->init($containerClass);
     }
 
@@ -81,9 +79,11 @@ class Container
      * 
      * @return ReflectionClass
      */
-    private function getReflection(): ReflectionClass
-    {
-        return $this->getInstance(ReflectionClass::class, [$this->containerClass]);
+    private function getReflection(): ReflectionClass {
+        if ($this->reflection !== null) {
+            return $this->reflection;
+        }
+        return $this->reflection = new ReflectionClass($this->containerClass);
     }
 
     /**
@@ -91,8 +91,7 @@ class Container
      * 
      * @return object
      */
-    private function getContainerInstance()
-    {
+    private function getContainerInstance() {
         if ($this->instance !== null) {
             return $this->instance;
         }
@@ -104,8 +103,7 @@ class Container
      * 
      * @return type
      */
-    private function getDI()
-    {
+    private function getDI() {
         if ($this->di !== null) {
             return $this->di;
         }
@@ -118,8 +116,7 @@ class Container
      * 
      * @param string $containerClass
      */
-    public function init(string $containerClass)
-    {
+    public function init(string $containerClass) {
         $this->containerClass = $containerClass;
 
         if ($this->getReflection()->hasProperty('resolveList')) {
@@ -129,8 +126,8 @@ class Container
 
             if (is_array($resolveList) === false) {
                 throw new ApplicationException('Property [' .
-                        $this->containerClass . '::resolveList' . '] must'
-                        . ' be array.', $this->containerClass, null, 934002);
+                                $this->containerClass . '::resolveList' . '] must'
+                                . ' be array.', $this->containerClass, null, 934002);
             }
 
             $this->getDI()->set($resolveList);
@@ -157,8 +154,7 @@ class Container
      * @return boolean
      * @throws ApplicationException
      */
-    private function storeMethod(ReflectionMethod $method)
-    {
+    private function storeMethod(ReflectionMethod $method) {
         # Method must be public and it should start with get keyword.
         if ($method->isPublic() === false || strpos($method->name, 'get') !== 0) {
             return false;
@@ -174,11 +170,10 @@ class Container
      * @return boolean
      * @throws ApplicationException
      */
-    public function __call($name, $arguments)
-    {
+    public function __call($name, $arguments) {
         if (strpos($name, 'get') !== 0 || array_key_exists($name, $this->methods) === false) {
             throw new ApplicationException('Method [' . $this->containerClass . '::' . $name . '] does'
-                    . ' not exists in container.', $this->containerClass, null, 934003);
+                            . ' not exists in container.', $this->containerClass, null, 934003);
         }
 
         return $this->getMethodInstance($name, ...$arguments);
@@ -191,8 +186,7 @@ class Container
      * @param bool $new
      * @return object
      */
-    private function getMethodInstance(string $name, bool $new = false)
-    {
+    private function getMethodInstance(string $name, bool $new = false) {
         if ($new === false && isset($this->methodInstances[$name])) {
             return $this->methodInstances[$name];
         }
@@ -226,8 +220,7 @@ class Container
      * @param array $arguments
      * @return type
      */
-    private function createInstance(string $class, array $arguments)
-    {
+    private function createInstance(string $class, array $arguments) {
         return Nishchay::getEntityCollection()->isExist($class) ?
                 new EntityManager($class) :
                 $this->getDI()->create($class, $arguments);
