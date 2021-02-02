@@ -54,8 +54,8 @@ class ConstantProperty
         }
 
         throw new ApplicationException('Property [' . $name . '] of derived'
-                . ' property [' . $this->belongsToProperty . '] does not'
-                . ' exists.', null, null, 911057);
+                        . ' property [' . $this->belongsToProperty . '] does not'
+                        . ' exists.', null, null, 911057);
     }
 
     /**
@@ -78,6 +78,17 @@ class ConstantProperty
     public function __debugInfo()
     {
         return $this->constantProperties;
+    }
+
+    /**
+     * Returns TRUE if given key exists.
+     * 
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return array_key_exists($name, $this->constantProperties);
     }
 
 }
