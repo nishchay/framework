@@ -56,7 +56,7 @@ class Facade
 
         if (self::$instance !== NULL) {
             throw new AlreadyInstanciatedExecption('Class [' . __CLASS__ .
-                    '] already been instanciated.', null, null, 925030);
+                            '] already been instanciated.', null, null, 925030);
         }
 
 
@@ -87,8 +87,13 @@ class Facade
         }
 
         if (!method_exists($object, $name)) {
+
+            if (method_exists($object, '__call')) {
+                return call_user_func_array([$object, '__call'], [$name, $arguments]);
+            }
+
             throw new BadMethodCallException('Method [' . $callingClass .
-                    '::' . $name . '] does not exist in Facade class.', 925031);
+                            '::' . $name . '] does not exist in Facade class.', 925031);
         }
 
         return call_user_func_array([$object, $name], $arguments);
@@ -111,12 +116,12 @@ class Facade
         # Must be called using Facade class only.
         if (get_called_class() !== Facade::class) {
             throw new ApplicationException('Method [create] does not'
-                    . ' belogs to class [' . get_called_class() . '].', null, null, 925033);
+                            . ' belogs to class [' . get_called_class() . '].', null, null, 925033);
         }
 
         if (isset(self::$instances[$name])) {
             throw new ApplicationException('Facade alias [' . $name
-                    . '] already exist.', null, null, 925034);
+                            . '] already exist.', null, null, 925034);
         }
 
         # Will have to create instance if class name is string.
@@ -126,6 +131,25 @@ class Facade
         return $return ? self::$instances[$name] : true;
     }
 
+    /**
+     * Returns TRUE if facade with name exists.
+     * 
+     * @param string $name
+     * @return bool
+     */
+    public static function isExists(string $name): bool
+    {
+        return isset(self::$instances[$name]);
+    }
+
+    /**
+     * Creates instance.
+     * 
+     * @param string $class
+     * @param array $params
+     * @return mixed
+     * @throws ApplicationException
+     */
     private static function createInstnace($class, $params)
     {
         if (is_object($class)) {
@@ -140,7 +164,7 @@ class Facade
 
 
         throw new ApplicationException('First parameter must be'
-                . ' either string or object.', null, null, 925035);
+                        . ' either string or object.', null, null, 925035);
     }
 
     /**

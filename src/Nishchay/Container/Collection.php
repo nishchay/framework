@@ -3,9 +3,11 @@
 namespace Nishchay\Container;
 
 use Nishchay;
+use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Persistent\System;
+use Nishchay\Processor\Facade;
 
 /**
  * Container collection class.
@@ -26,11 +28,38 @@ class Collection extends AbstractCollection
     private $collection = [];
 
     /**
+     * Lists of facades for the container classes.
+     * 
+     * @var array
+     */
+    private $facades = [];
+
+    /**
      * Initialization
      */
     public function __construct()
     {
         $this->init();
+    }
+
+    /**
+     * Creates facade if not created.
+     * 
+     * @param string $class
+     * @return nulll
+     */
+    private function checkFacade(string $class): void
+    {
+        if (isset($this->facades[$class]) === false) {
+            return;
+        }
+
+        if (Facade::isExists($class)) {
+            return;
+        }
+
+        $instance = $this->facades[$class];
+        Facade::create($instance, $class);
     }
 
     /**
@@ -41,6 +70,7 @@ class Collection extends AbstractCollection
      */
     private function init()
     {
+        spl_autoload_register([$this, 'checkFacade']);
         if (Nishchay::isApplicationStageLive() && System::isPersisted('containers')) {
             $this->collection = System::getPersistent('containers');
         }
@@ -54,6 +84,16 @@ class Collection extends AbstractCollection
     public function store(string $class)
     {
         $this->collection[$class] = new Container($class);
+        $facade = $class . '::FACADE';
+        if (defined($facade)) {
+
+            $name = constant($facade);
+            if (isset($this->facades[$name]) || Facade::isExists($name)) {
+                throw new ApplicationException('Facade with name [' . $name . '] already exists.', $class, null, 934005);
+            }
+
+            $this->facades[$name] = $this->collection[$class];
+        }
     }
 
     /**
