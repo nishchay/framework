@@ -426,14 +426,14 @@ class Structure
                             '#', $rule, $matched)) {
                 unset($matched[3]);
                 $rule = array_slice($matched, 2);
-                if (strpos($rule[0], 'R') === FALSE) {
+                if (strpos($rule[0], 'R') === false) {
                     $rule[0] = 'R.' . $rule[0];
                 }
 
                 # Iterating over each depth number defined in rule to check
                 # for its validation.
                 $ruleToValid = substr($rule[0], 2);
-                if ($ruleToValid !== FALSE) {
+                if (!empty($ruleToValid)) {
                     foreach (explode('.', $ruleToValid) as $depth) {
                         if ($depth !== '*' && !is_numeric($depth)) {
                             throw new InvalidStructureException('Invalid'

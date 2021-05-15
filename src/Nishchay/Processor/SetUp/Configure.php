@@ -92,7 +92,7 @@ final class Configure
      * @param   int         $line
      * @return  boolean
      */
-    public function errorHandler($code, $message, $file, $line, $trace, $type = null)
+    public function errorHandler($code, $message, $file, $line, $trace = null, $type = null)
     {
         $types = [
             E_NOTICE => 'notice',

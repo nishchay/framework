@@ -159,8 +159,9 @@ class Controller
 
             # If the type hint is exist we will create instance by resolving 
             # dependency
-            if (($hinting = $param->getClass()) !== null) {
-                $parameters[$name] = $this->getResolvedHinting($hinting);
+            $paramType = ($type = $param->getType()) ? $type->getName() : null;
+            if ($paramType !== null) {
+                $parameters[$name] = $this->getResolvedHinting($paramType);
                 continue;
             }
 
@@ -170,7 +171,7 @@ class Controller
                 $value = $this->processRequiredProperty($param, $reflection, $placeholder);
             }
 
-            if ($param->getType() && $param->getType()->getName() === VariableType::DATA_ARRAY && is_array($value) === false) {
+            if ($paramType === VariableType::DATA_ARRAY && is_array($value) === false) {
                 $value = (array) $value;
             }
 
@@ -183,13 +184,13 @@ class Controller
      * Resolves type hint by creating new instance.
      * NOTE : need improvement. Controller class should not be there.
      * 
-     * @param   ReflectionClass $reflection
+     * @param   ReflectionClass $class
      * @return  object
      */
-    public function getResolvedHinting(ReflectionClass $reflection)
+    public function getResolvedHinting($class)
     {
         $this->DI = $this->DI ?? new DI();
-        return $this->DI->create($reflection->name);
+        return $this->DI->create($class);
     }
 
     /**
@@ -236,8 +237,8 @@ class Controller
                 }
 
                 throw new UnableToResolveException('Not able to find '
-                        . 'what to assign to [' . $name . ']'
-                        . ' parameter.', $reflection->class, $reflection->name, 914025);
+                                . 'what to assign to [' . $name . ']'
+                                . ' parameter.', $reflection->class, $reflection->name, 914025);
         }
         return $value;
     }
