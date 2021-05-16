@@ -21,8 +21,8 @@ use Nishchay\Http\View\Collection as ViewCollection;
 use Nishchay\Maintenance\Maintenance;
 use Nishchay\Persistent\System as SystemPersistent;
 use Nishchay\Processor\SetUp\Organizer;
-use Nishchay\Route\Annotation\Forwarder as ForwarderAnnotation;
-use Nishchay\Route\Annotation\Route;
+use Nishchay\Attributes\Controller\Method\Forwarder as ForwarderAnnotation;
+use Nishchay\Attributes\Controller\Method\Route;
 use Nishchay\Service\ServicePreProcess;
 use Nishchay\Http\Request\RequestForwarder;
 use Nishchay\Http\Request\RequestRedirector;
@@ -72,7 +72,7 @@ class Processor
     /**
      * Controller annotation instance of the calling controller(class).
      * 
-     * @var Nishchay\Controller\Annotation\Controller 
+     * @var Nishchay\Controller\ControllerClass 
      */
     private $currentClass = null;
 
@@ -654,7 +654,7 @@ class Processor
     private function getScopeName()
     {
         $scopeName = false;
-        if (($scope = $this->getCurrentMethod()->getNamedscope()) !== false) {
+        if (($scope = $this->getCurrentMethod()->getNamedscope()) !== null) {
             $scopeName = $scope->getName();
         }
         return $scopeName;
@@ -694,7 +694,7 @@ class Processor
     /**
      * Returns controller annotation instance of located route that is controller class.
      * 
-     * @return \Nishchay\Controller\Annotation\Controller
+     * @return \Nishchay\Controller\ControllerClass
      */
     public function getCurrentClass()
     {

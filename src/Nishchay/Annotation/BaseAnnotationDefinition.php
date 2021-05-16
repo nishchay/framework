@@ -4,6 +4,7 @@ namespace Nishchay\Annotation;
 
 use Nishchay\Exception\InvalidAnnotationExecption;
 use Nishchay\Exception\InvalidAnnotationParameterException;
+use Nishchay\Utility\MethodInvokerTrait;
 
 /**
  * Base annotation definition provide support for actual annotation. 
@@ -15,6 +16,8 @@ use Nishchay\Exception\InvalidAnnotationParameterException;
  */
 class BaseAnnotationDefinition
 {
+
+    use MethodInvokerTrait;
 
     /**
      * Class name in which annnotation is defined.
@@ -77,34 +80,48 @@ class BaseAnnotationDefinition
      */
     protected function setter($property, $type = '')
     {
-        if (!is_array($property))
-        {
+        if (!is_array($property)) {
             throw new InvalidAnnotationExecption('Parameter missing.',
-            $this->class, $this->method);
+                            $this->class, $this->method);
         }
 
-        foreach ($property as $key => $value)
-        {
+        foreach ($property as $key => $value) {
             $method = 'set' . ucfirst($key);
-            if (!method_exists($this, $method))
-            {
+            if (!method_exists($this, $method)) {
                 $message = 'Invalid annotation ' . $type . ' ' . $key;
 
                 # This method can be called from annotation class and annotation
                 # parameter class too.
-                if ($type !== '')
-                {
+                if ($type !== '') {
                     throw new InvalidAnnotationParameterException($message,
-                    $this->class, $this->method);
-                }
-                else
-                {
+                                    $this->class, $this->method);
+                } else {
                     throw new InvalidAnnotationExecption($message, $this->class,
-                    $this->method);
+                                    $this->method);
                 }
             }
 
             call_user_func([$this, $method], $value);
+        }
+    }
+
+    /**
+     * 
+     * @param array $annotations
+     */
+    protected function processAttributes(array $annotations)
+    {
+        foreach ($annotations as $attribute) {
+            $constantName = $attribute->getName() . '::NAME';
+            if (!defined($constantName)) {
+                continue;
+            }
+            $name = constant($constantName);
+            $method = 'set' . ucfirst($name);
+            if (!method_exists($this, $method)) {
+                continue;
+            }
+            $this->invokeMethod([$this, $method], [$attribute->newInstance()]);
         }
     }
 

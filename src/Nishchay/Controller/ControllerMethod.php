@@ -1,15 +1,14 @@
 <?php
 
-namespace Nishchay\Controller\Annotation\Method;
+namespace Nishchay\Controller;
 
 use Nishchay;
-use Nishchay\Annotation\BaseAnnotationDefinition;
 use Nishchay\Exception\InvalidAnnotationExecption;
 use Nishchay\Exception\InvalidAttributeException;
 use Nishchay\Utility\ArrayUtility;
 use Nishchay\Controller\Annotation\ExceptionHandler;
 use Nishchay\Utility\MethodInvokerTrait;
-use Nishchay\Controller\Annotation\Controller;
+use Nishchay\Attributes\AttributeTrait;
 use Nishchay\Attributes\Event\{
     AfterEvent,
     BeforeEvent
@@ -32,17 +31,17 @@ use Nishchay\Attributes\Controller\Method\{
 };
 
 /**
- * Description of MethodAnnotation
+ * Controller method class.
  *
  * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
- * @version     1.0
  * @author      Bhavik Patel
  */
-class Method extends BaseAnnotationDefinition
+class ControllerMethod
 {
 
-    use MethodInvokerTrait;
+    use MethodInvokerTrait,
+        AttributeTrait;
 
     /**
      * All annotation defined on method.
@@ -116,20 +115,20 @@ class Method extends BaseAnnotationDefinition
 
     /**
      *
-     * @var \Nishchay\Event\Annotation\BeforeEvent
+     * @var BeforeEvent
      */
     private $beforeEvent = false;
 
     /**
      *
-     * @var \Nishchay\Event\Annotation\AfterEvent 
+     * @var fterEvent 
      */
     private $afterEvent = false;
 
     /**
      * Forwarder annotation object.
      * 
-     * @var \Nishchay\Route\Annotation\Forwarder 
+     * @var Forwarder
      */
     private $forwarder;
 
@@ -169,7 +168,7 @@ class Method extends BaseAnnotationDefinition
     /**
      * Instance of controller class.
      * 
-     * @var Controller
+     * @var ControllerClass
      */
     private $controller;
 
@@ -187,9 +186,10 @@ class Method extends BaseAnnotationDefinition
      * @param   array       $annotation
      */
     public function __construct($class, $method, $annotation,
-            Controller $controller)
+            ControllerClass $controller)
     {
-        parent::__construct($class, $method);
+        $this->setClass($class)
+                ->setMethod($method);
         $this->annotation = ArrayUtility::customeKeySort($annotation,
                         ['route', 'special', 'service']);
         $this->controller = $controller;
@@ -579,7 +579,7 @@ class Method extends BaseAnnotationDefinition
      * 
      * @return \Nishchay\Event\Annotation\BeforeEvent
      */
-    public function getBeforeevent()
+    public function getBeforeEvent()
     {
         return $this->beforeEvent;
     }
@@ -588,7 +588,7 @@ class Method extends BaseAnnotationDefinition
      * 
      * @return \Nishchay\Event\Annotation\AfterEvent
      */
-    public function getAfterevent()
+    public function getAfterEvent()
     {
         return $this->afterEvent;
     }
@@ -598,7 +598,7 @@ class Method extends BaseAnnotationDefinition
      * 
      * @param BeforeEvent $beforeEvent
      */
-    protected function setBeforeevent(BeforeEvent $beforeEvent)
+    protected function setBeforeEvent(BeforeEvent $beforeEvent)
     {
         $this->beforeEvent = $beforeEvent
                 ->setClass($this->class)
@@ -610,7 +610,7 @@ class Method extends BaseAnnotationDefinition
      * 
      * @param AfterEvent $afterEvent
      */
-    protected function setAfterevent(AfterEvent $afterEvent)
+    protected function setAfterEvent(AfterEvent $afterEvent)
     {
         $this->afterEvent = $afterEvent
                 ->setClass($this->class)
@@ -656,6 +656,17 @@ class Method extends BaseAnnotationDefinition
     {
         $this->noservice = true;
         return $this;
+    }
+
+    /**
+     * 
+     * @param type $name
+     * @param type $arguments
+     * @throws ApplicationException
+     */
+    public function __call($name, $arguments)
+    {
+        throw new ApplicationException('Method [' . __CLASS__ . '::' . $name . '] does not exists.');
     }
 
 }

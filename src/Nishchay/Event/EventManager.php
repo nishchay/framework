@@ -6,8 +6,8 @@ use Nishchay;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\DI\DI;
 use Nishchay\Event\Annotation\Method\Method;
-use Nishchay\Controller\Annotation\Controller;
-use Nishchay\Controller\Annotation\Method\Method as ControllerMethod;
+use Nishchay\Controller\ControllerClass;
+use Nishchay\Controller\ControllerMethod;
 use Nishchay\Event\Annotation\Method\Fire;
 
 /**
@@ -61,18 +61,20 @@ class EventManager
     /**
      * Fires event to be execute before calling route.
      * 
-     * @param   \Nishchay\Controller\Annotation\Controller         $controller
-     * @param   \Nishchay\Controller\Annotation\Method\Method      $method
+     * @param   \Nishchay\Controller\ControllerClass    $controller
+     * @param   \Nishchay\Controller\ControllerMethod   $method
      * @return  mixed
      */
-    public function fireBeforeEvent(Controller $controller, ControllerMethod $method, $context, $scope)
+    public function fireBeforeEvent(ControllerClass $controller,
+            ControllerMethod $method, $context, $scope)
     {
-        $beforeController = $controller->getBeforeevent();
-        $beforeMethod = $method->getBeforeevent();
+        $beforeController = $controller->getBeforeEvent();
+        $beforeMethod = $method->getBeforeEvent();
         $response = $this->executeCallback($beforeController, $beforeMethod);
 
         if ($response === true) {
-            $order = array_merge($this->getOrder($beforeMethod), $this->getOrder($beforeController));
+            $order = array_merge($this->getOrder($beforeMethod),
+                    $this->getOrder($beforeController));
             $response = $this->fireEvent(Nishchay::getEventCollection()
                             ->getEvents(Fire::BEFORE, $context, $scope, $order));
         }
@@ -83,17 +85,19 @@ class EventManager
     /**
      * Fires event to be execute after called route.
      * 
-     * @param   \Nishchay\Controller\Annotation\Controller         $controller
-     * @param   \Nishchay\Controller\Annotation\Method\Method      $method
+     * @param   \Nishchay\Controller\ControllerClass    $controller
+     * @param   \Nishchay\Controller\ControllerMethod   $method
      * @return  mixed
      */
-    public function fireAfterEvent(Controller $controller, ControllerMethod $method, $context, $scope)
+    public function fireAfterEvent(ControllerClass $controller,
+            ControllerMethod $method, $context, $scope)
     {
-        $afterController = $controller->getAfterevent();
-        $afterMethod = $method->getAfterevent();
+        $afterController = $controller->getAfterEvent();
+        $afterMethod = $method->getAfterEvent();
         $response = $this->executeCallback($afterController, $afterMethod);
         if ($response === true) {
-            $order = array_merge($this->getOrder($afterMethod), $this->getOrder($afterController));
+            $order = array_merge($this->getOrder($afterMethod),
+                    $this->getOrder($afterController));
             $response = $this->fireEvent(Nishchay::getEventCollection()
                             ->getEvents(Fire::AFTER, $context, $scope, $order));
         }
@@ -148,7 +152,8 @@ class EventManager
             }
 
             $response = $this->di
-                    ->invoke($this->getInstance($annotation->getClass()), $annotation->getMethod());
+                    ->invoke($this->getInstance($annotation->getClass()),
+                    $annotation->getMethod());
             $annotation instanceof Method && $annotation->markFired();
             if ($response !== true) {
                 return $response;
@@ -169,8 +174,9 @@ class EventManager
         # event class.
         if ($callback[0] !== $class && !Nishchay::getEventCollection()->isExist($callback[0])) {
             throw new NotSupportedException('Invalid event callback [' .
-                    implode('::', $callback) . '].'
-                    . ' It should belongs to controller or any event class.', $class, null, 916009);
+                            implode('::', $callback) . '].'
+                            . ' It should belongs to controller or any event class.',
+                            $class, null, 916009);
         }
 
         return $this->di->invoke($this->getInstance($callback[0]), $callback[1]);

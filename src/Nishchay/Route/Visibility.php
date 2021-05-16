@@ -4,7 +4,7 @@ namespace Nishchay\Route;
 
 use Nishchay;
 use Nishchay\Exception\ApplicationException;
-use Nishchay\Route\Annotation\Route;
+use Nishchay\Attributes\Controller\Method\Route;
 use Nishchay\Utility\DateUtility;
 use Nishchay\Utility\Coding;
 use Nishchay\Processor\AbstractSingleton;
@@ -83,7 +83,7 @@ class Visibility extends AbstractSingleton
                     continue;
                 }
 
-                if ($method->getNamedscope() !== false && is_array($row->eligible->scope ?? false)) {
+                if ($method->getNamedscope() !== null && is_array($row->eligible->scope ?? false)) {
                     if (!empty(array_intersect($method->getNamedscope()->getName(), $row->eligible->scope))) {
                         return $this->checkVisibility($row->visible ?? false);
                     }

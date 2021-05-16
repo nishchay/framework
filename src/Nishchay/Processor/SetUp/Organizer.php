@@ -9,13 +9,14 @@ use Nishchay\Exception\NotSupportedException;
 use ReflectionClass;
 use AnnotationParser;
 use Nishchay\Processor\Structure\Structure;
-use Nishchay\Controller\Annotation\Controller as ControllerAnnotation;
+use Nishchay\Controller\ControllerClass;
 use Nishchay\Event\Annotation\Event as EventAnnotation;
 use Nishchay\Http\View\Collection as ViewCollection;
 use Nishchay\FileManager\SimpleDirectory;
 use Nishchay\Utility\StringUtility;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Processor\Annotation\ClassType;
+use Nishchay\Annotation\Controller\Controller as ControllerAnnotation;
 
 /**
  * Application class and view organizing according to their types.
@@ -132,7 +133,7 @@ class Organizer
 
         if (!class_exists($class) && !interface_exists($class)) {
             throw new InvalidStructureException('Class [' . $class . '] not'
-                    . ' found in file [' . $path . '].', null, null, 925005);
+                            . ' found in file [' . $path . '].', null, null, 925005);
         }
         return $class;
     }
@@ -237,7 +238,7 @@ class Organizer
     {
         $this->processDirectory($applicationPath);
         $directory = new SimpleDirectory($applicationPath);
-        $directory->walk(function($path) {
+        $directory->walk(function ($path) {
             if (strpos(basename($path), '.') === 0) {
                 return;
             }
@@ -247,7 +248,7 @@ class Organizer
                 $this->processFile($path);
             } else {
                 throw new Exception('Nishchay not able to detect file type'
-                        . ' for file [' . $path . '].', null, null, 925006);
+                                . ' for file [' . $path . '].', null, null, 925006);
             }
         }, [], true);
 
@@ -266,8 +267,7 @@ class Organizer
      */
     protected function processControllerClass($class, $annotation, $context)
     {
-
-        new ControllerAnnotation($class, $annotation, $context);
+        new ControllerClass($class, $annotation, $context);
     }
 
     /**
@@ -353,7 +353,7 @@ class Organizer
         # Last mode always special type so current type should be class.
         if (!$this->isClass()) {
             throw new InvalidStructureException('[' . $path . '] is'
-                    . ' not in namespace. Each class must have namespace.', null, null, 925008);
+                            . ' not in namespace. Each class must have namespace.', null, null, 925008);
         }
 
         $this->properRefactor($this->getClassName($path));
@@ -369,7 +369,7 @@ class Organizer
     {
         if ($this->isClass()) {
             throw new InvalidStructureException('Class file [' . $path .
-                    '] not allowed here as per Strucuture definition.', null, null, 925009);
+                            '] not allowed here as per Strucuture definition.', null, null, 925009);
         }
         return ViewCollection::store($this->currentContext);
     }
@@ -386,38 +386,56 @@ class Organizer
     {
         $reflection = new ReflectionClass($class);
 
-        $classAnnotation = AnnotationParser::getAnnotations($reflection->getDocComment());
+        $php8 = ['controller' => ControllerAnnotation::class];
 
-        if (!is_array($classAnnotation)) {
-            throw new InvalidStructureException('No annotation found on'
-                    . ' class [' . $class . '].', null, null, 925010);
-        }
-        $classType = $this->getClassType($classAnnotation);
+        if (isset($php8[$this->currentValidationMode])) {
+            $attributes = $reflection->getAttributes();
 
-        # Class type should be one kind of.
-        if (count($classType) > 1) {
-            throw new NotSupportedException('Class can only be any one '
-                    . 'but can not be [' . implode(',', $classType) . '] together.', $class, null, 925011);
-        }
+            if (empty($attributes)) {
+                throw new InvalidStructureException('No annotation found on'
+                                . ' class [' . $class . '].', null, null, 925010);
+            }
 
-        if (current($classType)) {
-            $this->currentType = current($classType);
-        } else if (!empty($classAnnotation) && !in_array($this->currentValidationMode, self::SPECIAL_CLASSES)) {
-            $classType = new ClassType($class, $classAnnotation);
-            $this->currentType = strtolower($classType->getClasstype());
+            $method = 'process' . ucfirst($this->currentValidationMode) . 'Class';
+            if (method_exists($this, $method)) {
+                $this->{$method}($class, $attributes, $this->currentContext);
+            }
         } else {
-            $this->currentType = 'class';
-        }
 
-        # Class type should be same as current class type mode
-        if (!$this->isValidClass()) {
-            throw new InvalidStructureException('File [' . $reflection->getFileName() .
-                    '] should be ' . $this->currentValidationMode . '. Add @' . ucfirst($this->currentValidationMode) . ' annotation on class.', null, null, 925047);
-        }
+            $classAnnotation = AnnotationParser::getAnnotations($reflection->getDocComment());
 
-        $method = 'process' . ucfirst($this->currentType) . 'Class';
-        if (method_exists($this, $method)) {
-            $this->{$method}($class, $classAnnotation, $this->currentContext);
+            if (!is_array($classAnnotation)) {
+                throw new InvalidStructureException('No annotation found on'
+                                . ' class [' . $class . '].', null, null, 925010);
+            }
+
+            $classType = $this->getClassType($classAnnotation);
+
+            # Class type should be one kind of.
+            if (count($classType) > 1) {
+                throw new NotSupportedException('Class can only be any one '
+                                . 'but can not be [' . implode(',', $classType) . '] together.', $class, null, 925011);
+            }
+
+            if (current($classType)) {
+                $this->currentType = current($classType);
+            } else if (!empty($classAnnotation) && !in_array($this->currentValidationMode, self::SPECIAL_CLASSES)) {
+                $classType = new ClassType($class, $classAnnotation);
+                $this->currentType = strtolower($classType->getClasstype());
+            } else {
+                $this->currentType = 'class';
+            }
+
+            # Class type should be same as current class type mode
+            if (!$this->isValidClass()) {
+                throw new InvalidStructureException('File [' . $reflection->getFileName() .
+                                '] should be ' . $this->currentValidationMode . '. Add @' . ucfirst($this->currentValidationMode) . ' annotation on class.', null, null, 925047);
+            }
+
+            $method = 'process' . ucfirst($this->currentType) . 'Class';
+            if (method_exists($this, $method)) {
+                $this->{$method}($class, $classAnnotation, $this->currentContext);
+            }
         }
     }
 

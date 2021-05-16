@@ -59,16 +59,16 @@ class Controller
     protected function processOnlyRequiredAnnotation($instance)
     {
         # Processing Only_get validation.
-        $this->requestParameterOnly($instance->getOnlyget(), Request::GET);
+        $this->requestParameterOnly($instance->getOnlyGet(), Request::GET);
 
         # Processing Only_post validation.
-        $this->requestParameterOnly($instance->getOnlypost(), Request::POST);
+        $this->requestParameterOnly($instance->getOnlyPost(), Request::POST);
 
         # Processing Required_get validation.
-        $this->requestParameterRequired($instance->getRequiredget(), Request::GET);
+        $this->requestParameterRequired($instance->getRequiredGet(), Request::GET);
 
         # Processing Required_post validation.
-        $this->requestParameterRequired($instance->getRequiredpost(), Request::POST);
+        $this->requestParameterRequired($instance->getRequiredPost(), Request::POST);
     }
 
     /**
@@ -81,14 +81,14 @@ class Controller
      * @param   instnace      $type
      * @return  NULL
      */
-    protected function requestParameterOnly($annotation, $type)
+    protected function requestParameterOnly($attribute, $type)
     {
-        if ($annotation === false) {
+        if (empty($attribute)) {
             return false;
         }
 
         # Requirement parameter as defined in annotation
-        $requirement = $annotation->getParameter();
+        $requirement = $attribute->getParameter();
         $received = array_keys($type === Request::GET ? Request::get() : Request::post());
 
         # Directly throwing error if receieved request parameter count differ from
@@ -112,7 +112,7 @@ class Controller
 
         if (!$found) {
             NOTFOUND:
-            $this->notRequestParameter($annotation->getParameters());
+            $this->notRequestParameter($attribute);
         }
     }
 
@@ -124,18 +124,18 @@ class Controller
      * @param object $type
      * @return NULL
      */
-    protected function requestParameterRequired($annotation, $type)
+    protected function requestParameterRequired($attribute, $type)
     {
-        if ($annotation === false) {
+        if (empty($attribute)) {
             return false;
         }
         $request = ($type === Request::GET) ? Request::get() : Request::post();
 
         # We are iterating over requirement parameter to find in received 
         # parameter. If any not found we process required action.
-        foreach ($annotation->getParameter() as $value) {
+        foreach ($attribute->getParameter() as $value) {
             if (!array_key_exists($value, $request)) {
-                $this->notRequestParameter($annotation->getParameters());
+                $this->notRequestParameter($attribute);
             }
         }
     }
@@ -159,8 +159,8 @@ class Controller
 
             # If the type hint is exist we will create instance by resolving 
             # dependency
-            $paramType = ($type = $param->getType()) ? $type->getName() : null;
-            if ($paramType !== null) {
+            $paramType = $param->getType()?->getName();
+            if ($paramType !== null && class_exists($paramType)) {
                 $parameters[$name] = $this->getResolvedHinting($paramType);
                 continue;
             }
@@ -302,13 +302,13 @@ class Controller
     /**
      * When request parameter not found
      * 
-     * @param array $parameter
+     * @param array $attribute
      * @return mixed
      */
-    private function notRequestParameter($parameter)
+    private function notRequestParameter($attribute)
     {
-        if (array_key_exists('redirect', $parameter)) {
-            Request::redirect($parameter['redirect']);
+        if ($attribute->getRedirect() !== null) {
+            Request::redirect($attribute->getRedirect());
         } else {
             throw new BadRequestException('Request could not be satisfied.', null, null, 914026);
         }

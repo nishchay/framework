@@ -1,6 +1,6 @@
 <?php
 
-namespace Nishchay\Controller\Annotation;
+namespace Nishchay\Controller;
 
 use Nishchay;
 use Exception;
@@ -35,7 +35,7 @@ use Nishchay\Attributes\Controller\{
  * @version     1.0
  * @author      Bhavik Patel
  */
-class Controller
+class ControllerClass
 {
 
     use AttributeTrait;

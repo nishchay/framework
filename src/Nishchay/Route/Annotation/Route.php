@@ -8,6 +8,7 @@ use Nishchay\Exception\InvalidAnnotationParameterException;
 use Nishchay\Utility\ArrayUtility;
 use Nishchay\Controller\Annotation\Controller;
 use Nishchay\Processor\Application;
+use Nishchay\Annotation\Controller\Method\Route as RouteAttribute;
 
 /**
  * Route annotation class.
@@ -113,13 +114,12 @@ class Route extends BaseAnnotationDefinition
      * 
      * @param   string      $class
      * @param   string      $method
-     * @param   array       $parameter
+     * @param   array       $route
      * @param   boolean     $placeholderExists
      */
-    public function __construct($class, $method, $parameter, Controller $controller, $placeholderExists, $isPatterned)
+    public function __construct($class, $method, RouteAttribute $route, Controller $controller, $placeholderExists, $isPatterned)
     {
         parent::__construct($class, $method);
-        $this->parameter = ArrayUtility::customeKeySort($parameter, ['see', 'route']);
 
         # Special annotation defined on same method.
         $this->placeholderAnnotation = $placeholderExists;
@@ -222,7 +222,7 @@ class Route extends BaseAnnotationDefinition
     {
         if ($this->path === false) {
             throw new InvalidAnnotationExecption('Annotation [route] requires'
-                    . ' at least one of [path] or [see] paraemter.', $this->class, $this->method, 926005);
+                            . ' at least one of [path] or [see] paraemter.', $this->class, $this->method, 926005);
         }
 
         # We wiil prefix annotation if controler class has @routing annotaiton
@@ -236,7 +236,7 @@ class Route extends BaseAnnotationDefinition
 
         if (empty($this->path)) {
             throw new InvalidAnnotationExecption('Annotation [route] paramter'
-                    . ' name [path] should not be empty.', $this->class, $this->method, 926006);
+                            . ' name [path] should not be empty.', $this->class, $this->method, 926006);
         }
 
         # We here now preg quoting path except curly bracket start & end and 
@@ -261,7 +261,7 @@ class Route extends BaseAnnotationDefinition
         # Path must be string.
         if (!is_string($this->path)) {
             throw new InvalidAnnotationParameterException('Annotation [route] paramter name [path] ' .
-                    ' should be string.', $this->class, $this->method, 926007);
+                            ' should be string.', $this->class, $this->method, 926007);
         }
 
         # Let's find if there any sepecial segment in route path.
@@ -272,7 +272,7 @@ class Route extends BaseAnnotationDefinition
         # annotation defined on same method.
         if (count($this->placeholder) > 0 && $this->placeholderAnnotation === false) {
             throw new InvalidAnnotationExecption('Placeholder value in route requires '
-                    . '[placeholder] annotation.', $this->class, $this->method, 926008);
+                            . '[placeholder] annotation.', $this->class, $this->method, 926008);
         }
     }
 
@@ -332,7 +332,7 @@ class Route extends BaseAnnotationDefinition
     {
         $type = (array) $type;
 
-        $this->type = array_map(function($value) {
+        $this->type = array_map(function ($value) {
             return strtoupper($value);
         }, $type);
     }

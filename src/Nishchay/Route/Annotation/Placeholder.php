@@ -12,7 +12,6 @@ use Nishchay\Annotation\BaseAnnotationDefinition;
  *
  * @license     http://www.Nishchaysource.com/license New BSD License
  * @copyright   (c) 2017, Nishchay Source
- * @version     1.0
  * @author      Bhavik Patel
  */
 class Placeholder extends BaseAnnotationDefinition

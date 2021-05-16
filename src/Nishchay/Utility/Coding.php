@@ -27,7 +27,8 @@ class Coding
     public static function createClassAlias($original, $name)
     {
         if (class_exists($name)) {
-            throw new ClassNotFoundException('Class [' . $name . '] already exists.', 1, null, 930001);
+            throw new ClassNotFoundException('Class [' . $name . '] already exists.',
+                            1, null, 930001);
         }
 
         eval("class {$name} extends $original {}");
@@ -231,8 +232,9 @@ class Coding
         if (is_array($method)) {
             if (!isset($method[0]) || !isset($method[1])) {
                 throw new ApplicationException('When first argument for method ['
-                        . __METHOD__ . '] is array it should contain class or object as'
-                        . ' first element and method name being second element.', 1, null, 930002);
+                                . __METHOD__ . '] is array it should contain class or object as'
+                                . ' first element and method name being second element.',
+                                1, null, 930002);
             }
             $method[0] = is_string($method[0]) ? new $method[0] : $method[0];
         }
@@ -273,7 +275,8 @@ class Coding
      * @param   string $json
      * @return  object
      */
-    public static function decodeJSON($json, $assoc = false, $depth = 512, $options = 0)
+    public static function decodeJSON($json, $assoc = false, $depth = 512,
+            $options = 0)
     {
         return json_decode($json, $assoc, $depth, $options);
     }
@@ -377,7 +380,7 @@ class Coding
         if ((int) $version === (int) $version) {
             $version = (int) $version;
         }
-        
+
         return version_compare($version, $start) >= 0 &&
                 version_compare($version, $end) <= 0;
     }

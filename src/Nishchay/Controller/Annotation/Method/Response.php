@@ -2,7 +2,6 @@
 
 namespace Nishchay\Controller\Annotation\Method;
 
-use Nishchay\Exception\InvalidAnnotationExecption;
 use Nishchay\Exception\InvalidAnnotationParameterException;
 use Nishchay\Annotation\BaseAnnotationDefinition;
 
@@ -11,7 +10,6 @@ use Nishchay\Annotation\BaseAnnotationDefinition;
  *
  * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
- * @version     1.0
  * @author      Bhavik Patel
  */
 class Response extends BaseAnnotationDefinition

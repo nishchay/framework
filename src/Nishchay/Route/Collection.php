@@ -6,8 +6,8 @@ use Nishchay;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Persistent\System;
 use Nishchay\Utility\ArrayUtility;
-use Nishchay\Route\Annotation\Placeholder;
-use Nishchay\Route\Annotation\Route;
+use Nishchay\Attributes\Controller\Method\Placeholder;
+use Nishchay\Attributes\Controller\Method\Route;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Route\Visibility;
 
@@ -116,7 +116,7 @@ class Collection extends AbstractCollection
         }
 
         $this->checkStoring();
-        if ((!$route instanceof Route) || (!is_bool($placeholder) && !$placeholder instanceof Placeholder)) {
+        if ((!$route instanceof Route) || ($placeholder !== null && !$placeholder instanceof Placeholder)) {
             throw new ApplicationException('First two paramter should be object.', null, null, 926010);
         }
 
@@ -153,7 +153,7 @@ class Collection extends AbstractCollection
      */
     private function storeDefinition(Route $route, $pattern, $path)
     {
-        if (($requestMethods = $route->getType()) === false) {
+        if (empty(($requestMethods = $route->getType()))) {
             $requestMethods = $route->getValidRequestMethods();
         }
 
@@ -328,7 +328,7 @@ class Collection extends AbstractCollection
         if ($this->isVisible($route) === false) {
             return false;
         }
-        if (is_array($supportedType) && !in_array($currentType, $supportedType)) {
+        if (!empty($supportedType) && !in_array($currentType, $supportedType)) {
             return false;
         }
 
