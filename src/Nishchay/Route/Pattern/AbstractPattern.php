@@ -76,7 +76,7 @@ abstract class AbstractPattern
      * 
      * @var bool|null 
      */
-    protected $annotations;
+    protected $attributes;
 
     /**
      * 
@@ -139,7 +139,7 @@ abstract class AbstractPattern
      */
     protected function isSet(string $name): bool
     {
-        return array_key_exists($name, $this->annotations);
+        return array_key_exists($name, $this->attributes);
     }
 
     /**
@@ -168,7 +168,7 @@ abstract class AbstractPattern
 
         $namedScopes = $this->getNamedscope();
         if (is_array($namedScopes)) {
-            $this->annotations[self::NAMEDSCOPE_NAME]['name'] = array_merge($namedScopes['name'] ?? $namedScopes, $this->annotations[self::NAMEDSCOPE_NAME] ?? []);
+            $this->attributes[self::NAMEDSCOPE_NAME]['name'] = array_merge($namedScopes['name'] ?? $namedScopes, $this->attributes[self::NAMEDSCOPE_NAME] ?? []);
         }
 
         return $this;
@@ -185,7 +185,7 @@ abstract class AbstractPattern
                 ->checkOverride(self::SERVICE_NAME);
 
         if (is_string($this->service)) {
-            $this->annotations[self::SERVICE_NAME] = array_merge([], $this->annotations[self::NAMEDSCOPE_NAME] ?? []);
+            $this->attributes[self::SERVICE_NAME] = array_merge([], $this->attributes[self::NAMEDSCOPE_NAME] ?? []);
         }
 
         return $this;
@@ -202,7 +202,7 @@ abstract class AbstractPattern
                 ->checkOverride(self::RESPONSE_NAME);
 
         if (is_array($this->response)) {
-            $this->annotations[self::RESPONSE_NAME] = array_merge(['type' => $this->response['type']], $this->annotations[self::RESPONSE_NAME] ?? []);
+            $this->attributes[self::RESPONSE_NAME] = array_merge(['type' => $this->response['type']], $this->attributes[self::RESPONSE_NAME] ?? []);
         }
 
         return $this;
@@ -259,13 +259,13 @@ abstract class AbstractPattern
     }
 
     /**
-     * Returns annotations.
+     * Returns attributes.
      * 
      * @return mixed
      */
-    public function getAnnotations()
+    public function getAttributes()
     {
-        return $this->annotations;
+        return $this->attributes;
     }
 
     /**
@@ -351,7 +351,7 @@ abstract class AbstractPattern
      */
     public function setAnnotations($annotation)
     {
-        $this->annotations = $annotation;
+        $this->attributes = $annotation;
         return $this;
     }
 

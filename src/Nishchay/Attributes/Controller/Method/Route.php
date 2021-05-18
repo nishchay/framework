@@ -121,7 +121,7 @@ class Route
         # We wiil prefix annotation if controler class has @routing annotaiton
         # and prefix parameter value is TRUE.
         # When prefix is FALSE, we ignore prefixing of route.
-        if ($controller->getRouting() !== false && $this->prefix === true) {
+        if ($controller->getRouting() !== null && $this->prefix === true) {
             $this->path = $controller->getRouting()->getPrefix() . '/' . $this->path;
         }
 
@@ -142,6 +142,8 @@ class Route
         # Let's find if there any sepecial segment in route path.
         preg_match_all('#(\{)+(\w+)+(\})#', $this->path, $match);
         $this->placeholder = $match[2];
+        
+        return $this;
     }
 
     /**

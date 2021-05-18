@@ -11,8 +11,6 @@ use ReflectionClass;
 use ReflectionMethod;
 use Nishchay\Utility\Coding;
 use Nishchay\Controller\ControllerMethod;
-use Nishchay\Route\Annotation\Routing;
-use Nishchay\Controller\Annotation\ExceptionHandler;
 use Nishchay\Attributes\Controller\Method\Response;
 use Nishchay\Attributes\Controller\Controller as ControllerAttribute;
 use Nishchay\Attributes\AttributeTrait;
@@ -24,7 +22,9 @@ use Nishchay\Attributes\Controller\{
     OnlyGet,
     OnlyPost,
     RequiredGet,
-    RequiredPost
+    RequiredPost,
+    ExceptionHandler,
+    Routing
 };
 
 /**
@@ -64,56 +64,56 @@ class ControllerClass
     /**
      * Routing annotation.
      * 
-     * @var \Nishchay\Route\Annotation\Routing 
+     * @var Routing 
      */
-    private $routing = false;
+    private $routing;
 
     /**
      * Only GET annotation.
      * 
-     * @var \Nishchay\Controller\Annotation\OnlyGet 
+     * @var OnlyGet 
      */
-    private $onlyget = false;
+    private $onlyget;
 
     /**
      * Only POST annotation.
      * 
-     * @var \Nishchay\Controller\Annotation\OnlyPost
+     * @var OnlyPost
      */
-    private $onlypost = false;
+    private $onlypost;
 
     /**
      * Required GET annotation.
      * 
-     * @var \Nishchay\Controller\Annotation\RequiredGet 
+     * @var RequiredGet 
      */
-    private $requiredget = false;
+    private $requiredget;
 
     /**
      * Required POST annotation.
      * 
-     * @var \Nishchay\Controller\Annotation\RequiredPost 
+     * @var RequiredPost 
      */
-    private $requiredpost = false;
+    private $requiredpost;
 
     /**
      *
-     * @var \Nishchay\Event\Annotation\BeforeEvent
+     * @var BeforeEvent
      */
-    private $beforeevent = false;
+    private $beforeevent;
 
     /**
      *
-     * @var \Nishchay\Event\Annotation\AfterEvent 
+     * @var AfterEvent 
      */
-    private $afterevent = false;
+    private $afterevent;
 
     /**
      * Exception handler annotation.
      * 
-     * @var \Nishchay\Controller\Annotation\ExceptionHandler 
+     * @var ExceptionHandler 
      */
-    private $exceptionhandler = false;
+    private $exceptionhandler;
 
     /**
      * 
@@ -211,12 +211,13 @@ class ControllerClass
     }
 
     /**
+     * Sets routing annotation.
      * 
-     * @param   array  $routing
+     * @param Routing   $routing
      */
-    protected function setRouting($routing)
+    protected function setRouting(Routing $routing)
     {
-        $this->routing = new Routing($this->class, $routing);
+        $this->routing = $routing->setClass($this->class);
     }
 
     /**
@@ -272,9 +273,9 @@ class ControllerClass
                                 $method->class, $method->name, $e->getCode());
             }
 
-            # Now here we are passing it to controller method annotation
-            # class so that it valid validates each annotation. Then we
-            # we will add this method annotation to this class registry.
+            # Now here we are passing it to controller method class so
+            # that it processes each attributes defined on controller method.
+            # Then we we will add this method attribute to this class registry.
             $controllerMethod = new ControllerMethod($method->class,
                     $method->name, $attributes, $this);
 
@@ -304,7 +305,7 @@ class ControllerClass
     }
 
     /**
-     * Sets Only GET annotation.
+     * Sets Only GET attribute.
      * 
      * @param OnlyGet $onlyGet
      */
@@ -315,7 +316,7 @@ class ControllerClass
     }
 
     /**
-     * Sets Only POST annotation.
+     * Sets Only POST attribute.
      * 
      * @param OnlyPost $onlyPost
      */
@@ -326,7 +327,7 @@ class ControllerClass
     }
 
     /**
-     * Sets required GET annotation.
+     * Sets required GET attribute.
      * 
      * @param RequiredGet $requiredGet
      */
@@ -337,7 +338,7 @@ class ControllerClass
     }
 
     /**
-     * Sets required  POST annotation.
+     * Sets required  POST attribute.
      * 
      * @param RequiredPost $requiredPost
      */
@@ -348,7 +349,7 @@ class ControllerClass
     }
 
     /**
-     * Returns exception handler annotation.
+     * Returns exception handler attribute.
      * 
      * @return \Nishchay\Controller\Annotation\ExceptionHandler
      */
@@ -358,14 +359,13 @@ class ControllerClass
     }
 
     /**
-     * Sets exception handler annotation.
+     * Sets exception handler attribute.
      * 
-     * @param array $exceptionhandler
+     * @param ExceptionHandler $exceptionhandler
      */
-    public function setExceptionhandler($exceptionhandler)
+    public function setExceptionhandler(ExceptionHandler $exceptionhandler)
     {
-        $this->exceptionhandler = new ExceptionHandler($this->class, null,
-                $exceptionhandler);
+        $this->exceptionhandler = $exceptionhandler->setClass($this->class);
     }
 
     /**

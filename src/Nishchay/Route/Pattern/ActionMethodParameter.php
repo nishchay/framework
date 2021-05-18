@@ -2,8 +2,13 @@
 
 namespace Nishchay\Route\Pattern;
 
+use Nishchay;
 use ReflectionMethod;
 use Nishchay\Processor\VariableType;
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder
+};
 
 /**
  * Action method route pattern.
@@ -31,12 +36,16 @@ class ActionMethodParameter extends ActionMethod
     public function processMethod(string $class, string $method)
     {
         $route = parent::processMethod($class, $method);
+        if (empty($route)) {
+            return null;
+        }
 
         $reflection = new ReflectionMethod($class, $method);
         $placeholders = $segments = [];
         foreach ($reflection->getParameters() as $parameter) {
             $type = $parameter->getType();
-            if ($type === null || in_array($type->getName(), [VariableType::STRING, VariableType::INT, VariableType::BOOL, VariableType::DATA_ARRAY]) === false) {
+            if ($type === null || in_array($type->getName(),
+                            [VariableType::STRING, VariableType::INT, VariableType::BOOL, VariableType::DATA_ARRAY]) === false) {
                 break;
             }
 
@@ -58,11 +67,13 @@ class ActionMethodParameter extends ActionMethod
             $placeholders[$parameter->getName()] = $placeholderValue;
             $segments[] = $optional . '{' . $parameter->getName() . '}';
         }
-
         if (count($placeholders) > 0) {
             $postfix = implode('/', $segments);
-            $route['path'] = trim($route['path'], '/') . $postfix;
-            $route = ['route' => $route, 'placeholder' => $placeholders];
+            $path = trim($route->getPath(), '/') . '/' . $postfix;
+            $newRoute = new Route($path, $route->getType(), $route->getPrefix(),
+                    $route->getIncoming(), $route->getStage());
+            $placeholder = new Placeholder($placeholders);
+            $route = ['route' => $newRoute, 'placeholder' => $placeholder];
         }
         return $route;
     }

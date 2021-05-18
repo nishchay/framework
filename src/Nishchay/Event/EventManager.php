@@ -44,7 +44,7 @@ class EventManager
      */
     private function getOrder($annotation)
     {
-        return $annotation === false ? [] : $annotation->getOrder();
+        return $annotation === null ? [] : $annotation->getOrder();
     }
 
     /**
@@ -55,7 +55,7 @@ class EventManager
      */
     private function getCallback($annotation)
     {
-        return $annotation === false ? false : $annotation->getCallback();
+        return $annotation === null ? false : $annotation->getCallback();
     }
 
     /**

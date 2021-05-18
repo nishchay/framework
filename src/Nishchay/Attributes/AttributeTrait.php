@@ -36,7 +36,8 @@ trait AttributeTrait
     protected function processAttributes(array $attributes)
     {
         foreach ($attributes as $attribute) {
-            $constantName = $attribute->getName() . '::NAME';
+            $isReflection = $attribute instanceof \ReflectionAttribute;
+            $constantName = ( $isReflection ? $attribute->getName() : $attribute::class) . '::NAME';
             if (!defined($constantName)) {
                 continue;
             }
@@ -45,7 +46,8 @@ trait AttributeTrait
             if (!method_exists($this, $method)) {
                 continue;
             }
-            $this->invokeMethod([$this, $method], [$attribute->newInstance()]);
+            $this->invokeMethod([$this, $method],
+                    [$isReflection ? $attribute->newInstance() : $attribute]);
         }
     }
 

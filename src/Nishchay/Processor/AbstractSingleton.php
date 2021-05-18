@@ -44,7 +44,7 @@ abstract class AbstractSingleton
      * 
      * @throws NotSupportedException
      */
-    private function __wakeup()
+    final public function __wakeup()
     {
         throw new NotSupportedException('Class [' . get_called_class() . '] is singleton.', null, null, 925025);
     }
