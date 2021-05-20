@@ -211,6 +211,8 @@ class ControllerMethod
         }
 
         $pattern = Nishchay::getRoutePatternCollection()->get($routing->getPattern());
+
+        # This returns route instance or (route and placeholder) annotation in an array.
         $route = $pattern->processMethod($this->class, $this->method);
 
         if ($route === false) {
@@ -218,17 +220,47 @@ class ControllerMethod
             return false;
         }
 
+        foreach ($attributes as $key => $value) {
+            $attributes[constant($value->getName() . '::NAME')] = $value;
+            unset($attributes[$key]);
+        }
+
         $attributes = $pattern->processConfig($attributes)->getAttributes();
         if ($route !== null) {
             $this->isPatterned = true;
+
+            # If route has been defined on method then we will remove placeholder returned from route.
+            if (isset($attributes['route']) && is_array($route) && $route['route']->getPath() !== null) {
+                $route = $route['route'];
+            }
+
+            if (isset($attributes['route'])) {
+                $patternRoute = is_array($route) ? $route['route'] : $route;
+                $definedRoute = $attributes['route']->newInstance();
+
+                $parameters = [
+                    $definedRoute->getPath() === false ? $patternRoute->getPath() : $definedRoute->getPath(),
+                    empty($definedRoute->getType()) ? $patternRoute->getType() : $definedRoute->getType(),
+                    $definedRoute->getPrefix() === true ? $patternRoute->getPrefix() : $definedRoute->getPrefix(),
+                    $definedRoute->getIncoming() === true ? $patternRoute->getIncoming() : $definedRoute->getIncoming(),
+                    empty($definedRoute->getStage()) ? $patternRoute->getStage() : $definedRoute->getStage()
+                ];
+                if (is_array($route)) {
+                    $route['route'] = new Route(...$parameters);
+                } else {
+                    $route = new Route(...$parameters);
+                }
+            }
+
             if (is_array($route)) {
-                $attributes[] = $route['route']->setClass($this->class)
+                $attributes['route'] = $route['route']->setClass($this->class)
                         ->setMethod($this->method)
                         ->refactorPath($this->controller);
-                $attributes[] = $route['placeholder']->setClass($this->class)
-                        ->setMethod($this->method);
+                $attributes['placeholder'] = $route['placeholder']->setClass($this->class)
+                        ->setMethod($this->method)
+                        ->setRoute($route['route']);
             } else {
-                $attributes[] = $route;
+                $attributes['route'] = $route;
             }
         }
     }

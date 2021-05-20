@@ -90,12 +90,12 @@ abstract class AbstractPattern
     /**
      * Processes route pattern config.
      * 
-     * @param array $annotations
+     * @param array $attribute
      * @return $this
      */
-    public function processConfig($annotations)
+    public function processConfig($attribute)
     {
-        $this->setAnnotations($annotations);
+        $this->setAnnotations($attribute);
         return $this->processRoute()
                         ->processService()
                         ->processNamedScope()
@@ -346,12 +346,12 @@ abstract class AbstractPattern
     /**
      * Sets annotation.
      * 
-     * @param type $annotation
+     * @param type $attributes
      * @return $this
      */
-    public function setAnnotations($annotation)
+    public function setAttributes($attributes)
     {
-        $this->attributes = $annotation;
+        $this->attributes = $attributes;
         return $this;
     }
 

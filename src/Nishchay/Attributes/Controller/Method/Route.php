@@ -51,7 +51,7 @@ class Route
      * @param bool $incoming
      * @param string|array $stage
      */
-    public function __construct(private bool|string $path,
+    public function __construct(private bool|string $path = false,
             private string|array $type = [], private bool $prefix = true,
             private bool $incoming = true, private string|array $stage = [])
     {
