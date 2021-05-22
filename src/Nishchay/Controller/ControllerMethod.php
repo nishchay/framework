@@ -234,6 +234,7 @@ class ControllerMethod
                 $route = $route['route'];
             }
 
+            # This is to override parameter in pattern route by route attribute on contorller method.
             if (isset($attributes['route'])) {
                 $patternRoute = is_array($route) ? $route['route'] : $route;
                 $definedRoute = $attributes['route']->newInstance();
