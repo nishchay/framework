@@ -18,7 +18,9 @@ use Nishchay\Processor\Application;
 class Route
 {
 
-    use AttributeTrait;
+    use AttributeTrait {
+        verify as parentVerify;
+    }
 
     const NAME = 'route';
 
@@ -55,8 +57,7 @@ class Route
             private string|array $type = [], private bool $prefix = true,
             private bool $incoming = true, private string|array $stage = [])
     {
-        $this->refactorType()
-                ->validateStage();
+        
     }
 
     /**
@@ -67,6 +68,14 @@ class Route
     public function isPatterned(): bool
     {
         return $this->isPatterned;
+    }
+
+    public function verify()
+    {
+        $this->parentVerify();
+
+        $this->refactorType()
+                ->validateStage();
     }
 
     /**
@@ -142,7 +151,7 @@ class Route
         # Let's find if there any sepecial segment in route path.
         preg_match_all('#(\{)+(\w+)+(\})#', $this->path, $match);
         $this->placeholder = $match[2];
-        
+
         return $this;
     }
 

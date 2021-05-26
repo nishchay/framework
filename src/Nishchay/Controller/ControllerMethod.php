@@ -399,9 +399,7 @@ class ControllerMethod
      */
     protected function setRoute(Route $route)
     {
-        $route->setClass($this->class)
-                ->setMethod($this->method)
-                ->refactorPath($this->controller);
+        $route->refactorPath($this->controller);
 
         $this->route = $route;
     }
@@ -420,9 +418,7 @@ class ControllerMethod
                             $this->class, $this->method, 914015);
         }
 
-        $this->placeholder = $placeholder
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->placeholder = $placeholder;
     }
 
     /**
@@ -432,9 +428,7 @@ class ControllerMethod
      */
     protected function setOnlyGet(OnlyGet $onlyGet)
     {
-        $this->onlyGet = $onlyGet
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->onlyGet = $onlyGet;
     }
 
     /**
@@ -444,9 +438,7 @@ class ControllerMethod
      */
     protected function setOnlyPost(OnlyPost $onlyPost)
     {
-        $this->onlyPost = $onlyPost
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->onlyPost = $onlyPost;
     }
 
     /**
@@ -456,9 +448,7 @@ class ControllerMethod
      */
     protected function setRequiredGet(RequiredGet $requiredGet)
     {
-        $this->requiredGet = $requiredGet
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->requiredGet = $requiredGet;
     }
 
     /**
@@ -468,9 +458,7 @@ class ControllerMethod
      */
     protected function setRequiredPost(RequiredPost $requiredPost)
     {
-        $this->requiredPost = $requiredPost
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->requiredPost = $requiredPost;
     }
 
     /**
@@ -490,9 +478,7 @@ class ControllerMethod
      */
     protected function setResponse(Response $response)
     {
-        $this->response = $response
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->response = $response;
         return $this;
     }
 
@@ -503,7 +489,9 @@ class ControllerMethod
      */
     protected function setDefaultResponse($response)
     {
-        $this->setResponse(new Response(...$response));
+        $this->setResponse((new Response(...$response))
+                        ->setClass($this->class)
+                        ->setMethod($this->method));
         return $this;
     }
 
@@ -514,9 +502,7 @@ class ControllerMethod
      */
     protected function setNamedscope(NamedScope $namedScope)
     {
-        $this->namedscope = $namedScope
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->namedscope = $namedScope;
         return $this;
     }
 
@@ -547,7 +533,9 @@ class ControllerMethod
      */
     protected function setDefaultForwarder($forwarder)
     {
-        $this->setForwarder(new Forwarder(...$forwarder));
+        $this->setForwarder((new Forwarder(...$forwarder))
+                        ->setClass($this->class)
+                        ->setMethod($this->method));
         return $this;
     }
 
@@ -578,7 +566,9 @@ class ControllerMethod
      */
     protected function setDefaultPriority($priority)
     {
-        $this->setPriority(new Priority(...$priority));
+        $this->setPriority((new Priority(...$priority))
+                        ->setClass($this->class)
+                        ->setMethod($this->method));
         return $this;
     }
 
@@ -599,9 +589,7 @@ class ControllerMethod
      */
     public function setExceptionhandler(ExceptionHandler $exceptionhandler)
     {
-        $this->exceptionHandler = $exceptionhandler
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->exceptionHandler = $exceptionhandler;
     }
 
     /**
@@ -629,9 +617,7 @@ class ControllerMethod
      */
     protected function setBeforeEvent(BeforeEvent $beforeEvent)
     {
-        $this->beforeEvent = $beforeEvent
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->beforeEvent = $beforeEvent;
     }
 
     /**
@@ -641,9 +627,7 @@ class ControllerMethod
      */
     protected function setAfterEvent(AfterEvent $afterEvent)
     {
-        $this->afterEvent = $afterEvent
-                ->setClass($this->class)
-                ->setMethod($this->method);
+        $this->afterEvent = $afterEvent;
     }
 
     /**

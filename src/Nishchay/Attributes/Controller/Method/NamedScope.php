@@ -17,12 +17,14 @@ class NamedScope
 
     const NAME = 'namedscope';
 
-    use AttributeTrait;
+    use AttributeTrait {
+        verify as parentVerify;
+    }
 
     public function __construct(private string|array $name,
             private ?string $default = null)
     {
-        $this->verifyName();
+        
     }
 
     /**
@@ -30,8 +32,9 @@ class NamedScope
      * 
      * @param string $name
      */
-    private function verifyName()
+    public function verify()
     {
+        $this->parentVerify();
         $this->name = (array) $this->name;
 
         foreach ($this->name as $value) {

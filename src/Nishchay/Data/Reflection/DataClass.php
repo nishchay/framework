@@ -5,8 +5,10 @@ namespace Nishchay\Data\Reflection;
 use Nishchay\Exception\ApplicationException;
 use ReflectionProperty;
 use Nishchay\Utility\Coding;
-use Nishchay\Data\Annotation\Property\Property;
-use Nishchay\Data\Annotation\Property\DataType;
+use Nishchay\Attributes\Entity\Property\{
+    Property,
+    DataType
+};
 use Nishchay\Data\AbstractEntityStore;
 
 /**
@@ -119,7 +121,8 @@ class DataClass extends AbstractEntityStore
         # Checking if property is bound to enitty or not.
         if ($entity === null) {
             throw new ApplicationException('You must bind property to'
-                    . ' entity before adding extra property.', null, null, 911059);
+                            . ' entity before adding extra property.', null,
+                            null, 911059);
         }
 
         # New property name should not be same as class's existing properties
@@ -128,13 +131,15 @@ class DataClass extends AbstractEntityStore
                 $entity->isPropertyExist($propertyName) ||
                 $entity->isExtraPropertyExists($propertyName)) {
             throw new ApplicationException('Property [' . $entity->getEntityName() . '::' .
-                    $propertyName . '] already exists.', null, null, 911060);
+                            $propertyName . '] already exists.', null, null,
+                            911060);
         }
 
         # Remove config which are not required for data type.
         unset($config['propertyName']);
         unset($config['entity']);
-        $dataType = new DataType($entity->getEntityName(), null, $propertyName, $config);
+        $dataType = new DataType($entity->getEntityName(), null, $propertyName,
+                $config);
 
         # Adding property to entity.
         # We first creating property reflection so that we can 

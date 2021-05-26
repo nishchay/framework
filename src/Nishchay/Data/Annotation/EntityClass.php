@@ -3,24 +3,27 @@
 namespace Nishchay\Data\Annotation;
 
 use Nishchay;
-use Nishchay\Exception\InvalidAnnotationExecption;
+use Nishchay\Exception\InvalidAttributeException;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
-use AnnotationParser;
 use Nishchay\Data\AbstractEntityStore;
 use Nishchay\Data\Connection\Connection;
 use Nishchay\Data\Annotation\Method\EntityMethod;
-use Nishchay\Data\Annotation\Property\Property as DataProperty;
-use Nishchay\Data\Annotation\Property\Derived;
-use Nishchay\Data\Annotation\Property\Relative;
+use Nishchay\Attributes\Entity\Property\{
+    Derived,
+    Relative,
+    Property as DataProperty
+};
 use Nishchay\Data\Annotation\Trigger\AfterChange;
 use Nishchay\Data\Annotation\Trigger\BeforeChange;
 use Nishchay\Data\Property\ResolvedJoin;
-use Nishchay\Data\Property\Join\FromProperty;
-use Nishchay\Data\Property\Join\CustomJoin;
+use Nishchay\Data\Property\Join\{
+    FromProperty,
+    CustomJoin
+};
 use Nishchay\Data\Meta\MetaTable;
 use Nishchay\Data\DatabaseManager;
 use Nishchay\Data\Query;
@@ -28,6 +31,9 @@ use Nishchay\Utility\Coding;
 use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\Security\Encrypt\EncryptTrait;
 use Nishchay\Utility\StringUtility;
+use Nishchay\Attributes\AttributeTrait;
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Connect;
 
 /**
  * Entity Class.
@@ -41,7 +47,8 @@ class EntityClass extends AbstractEntityStore
 {
 
     use MethodInvokerTrait,
-        EncryptTrait;
+        EncryptTrait,
+        AttributeTrait;
 
     /**
      * Class name of entity.
@@ -51,28 +58,28 @@ class EntityClass extends AbstractEntityStore
     protected $class;
 
     /**
-     * Entity annotation.
+     * Entity attribute.
      * 
-     * @var \Nishchay\Data\Annotation\Entity 
+     * @var bool
      */
     private $entity = true;
 
     /**
-     * Connect annotation.
+     * Connect attribute.
      * 
      * @var string 
      */
     private $connect = false;
 
     /**
-     * After change trigger annotation.
+     * After change trigger attribute.
      * 
      * @var array
      */
     private $afterchange = [];
 
     /**
-     * Before change trigger annotation.
+     * Before change trigger attribute.
      * 
      * @var array
      */
@@ -85,7 +92,7 @@ class EntityClass extends AbstractEntityStore
     private $reflection;
 
     /**
-     * All properties which has annotation defined within entity class.
+     * All properties which has attribute defined within entity class.
      * 
      * @var array 
      */
@@ -111,7 +118,7 @@ class EntityClass extends AbstractEntityStore
     private $propertyTypes = [
         'fetch' => [],
         'join' => [],
-        'join_from' => [],
+        'joinFrom' => [],
         'callback' => [],
         'derivedProperty' => [],
     ];
@@ -183,12 +190,12 @@ class EntityClass extends AbstractEntityStore
      * 
      * @param   string      $class
      * @param   string      $method
-     * @param   array       $annotations
+     * @param   array       $attributes
      */
-    public function __construct($class, $annotations)
+    public function __construct($class, $attributes)
     {
         $this->class = $class;
-        $this->setter($annotations);
+        $this->processAttributes($attributes);
         $this->init();
     }
 
@@ -204,7 +211,7 @@ class EntityClass extends AbstractEntityStore
 
     /**
      * 
-     * @param \Nishchay\Data\Annotation\EntityClass  $entity
+     * @param EntityClass  $entity
      */
     private function refactor()
     {
@@ -217,7 +224,7 @@ class EntityClass extends AbstractEntityStore
      * Refactors table extra column property. It will create if doest not 
      * exist in table. It will not refactor if Disabled from configuration.
      * 
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      */
     private function refactorCoulumn()
     {
@@ -364,18 +371,19 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Setter method to set value of annotation.
+     * Setter method to set value of attribute.
      * 
      * @param   array                          $property
-     * @throws  InvalidAnnotationExecption
+     * @throws  InvalidAttributeException
      */
     protected function setter($property, $type = '')
     {
         foreach ($property as $key => $value) {
             $method = 'set' . ucfirst($key);
             if ($this->isCallbackExist([$this, $method]) === false) {
-                throw new InvalidAnnotationExecption('Invalid annotation [' .
-                        $type . ' ' . $key . '].', $this->class, null, 911034);
+                throw new InvalidAttributeException('Invalid attribute [' .
+                                $type . ' ' . $key . '].', $this->class, null,
+                                911034);
             }
 
             $this->invokeMethod([$this, $method], [$value]);
@@ -383,9 +391,9 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Returns entity annotation.
+     * Returns entity attribute.
      * 
-     * @return \Nishchay\Data\Annotation\Entity
+     * @return Entity
      */
     public function getEntity()
     {
@@ -393,7 +401,7 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Returns connect annotation.
+     * Returns connect attribute.
      * 
      * @return string
      */
@@ -415,31 +423,30 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Sets entity annotation.
+     * Sets entity attribute.
      * 
      * @param array $entity
      */
-    protected function setEntity($entity)
+    protected function setEntity(Entity $entity)
     {
-        $this->entity = new Entity($this->class, null, $entity);
+        $this->entity = $entity;
     }
 
     /**
-     * Sets connect annotation.
+     * Sets connect attribute.
      * 
-     * @param string $name
+     * @param string $connect
      */
-    protected function setConnect($name)
+    protected function setConnect(Connect $connect)
     {
-        $connection = new Connect($this->class, null, $name);
-        $this->connect = $connection->getName();
+        $this->connect = $connect->getName();
     }
 
     /**
      * Sets property.
      * 
      * @param   string  $name
-     * @return  \Nishchay\Data\Annotation\Property\Property
+     * @return  DataProperty
      */
     public function getProperty($name)
     {
@@ -449,7 +456,7 @@ class EntityClass extends AbstractEntityStore
     /**
      * Returns property instance of class identity.
      * 
-     * @return \Nishchay\Data\Annotation\Property\Property
+     * @return DataProperty
      */
     public function getIdentityProperty()
     {
@@ -501,7 +508,7 @@ class EntityClass extends AbstractEntityStore
      */
     public function getJoinFromProperties()
     {
-        return $this->propertyTypes['join_from'];
+        return $this->propertyTypes['joinFrom'];
     }
 
     /**
@@ -526,7 +533,8 @@ class EntityClass extends AbstractEntityStore
     {
         if (array_key_exists($name, $this->propertyTypes['derivedProperty']) === false) {
             throw new ApplicationException('Derived property [' . $this->class
-                    . '::' . $name . '] is does not exist.', $this->class, null, 911035);
+                            . '::' . $name . '] is does not exist.',
+                            $this->class, null, 911035);
         }
         return $this->propertyTypes['derivedProperty'][$name];
     }
@@ -660,7 +668,7 @@ class EntityClass extends AbstractEntityStore
     private function init()
     {
         # Letting developer be to free from declaring default 
-        # connnection on entity. This makes connect annotation optional.
+        # connnection on entity. This makes connect attribute optional.
         if ($this->connect === false) {
             $this->connect = Connection::getDefaultConnectionName();
         }
@@ -674,7 +682,12 @@ class EntityClass extends AbstractEntityStore
         # There should be atleast one property in entity class.
         if (empty($this->properties) && empty($this->staticProperties)) {
             throw new NotSupportedException('Entity class [' . $this->class . '] requires atleast'
-                    . ' one property.', $this->class, null, 911036);
+                            . ' one property.', $this->class, null, 911036);
+        }
+
+        if ($this->identity === false) {
+            throw new ApplicationException('Identity property is required for entity',
+                            $this->class);
         }
 
         # Iterating over each method to find events for the entity.
@@ -683,16 +696,18 @@ class EntityClass extends AbstractEntityStore
                 continue;
             }
 
-            $annotations = AnnotationParser::getAnnotations($method
-                                    ->getDocComment());
+            $attributes = $method->getAttributes();
 
-            if (empty($annotations)) {
+            if (empty($attributes)) {
                 continue;
             }
 
-            $entityMethod = new EntityMethod($this->class, $method->name, $annotations);
-            $this->beforechange = array_merge($this->beforechange, $entityMethod->getBeforechange());
-            $this->afterchange = array_merge($this->afterchange, $entityMethod->getAfterchange());
+            $entityMethod = new EntityMethod($this->class, $method->name,
+                    $attributes);
+            $this->beforechange = array_merge($this->beforechange,
+                    $entityMethod->getBeforechange());
+            $this->afterchange = array_merge($this->afterchange,
+                    $entityMethod->getAfterchange());
         }
 
         $this->refactor();
@@ -733,20 +748,22 @@ class EntityClass extends AbstractEntityStore
             return;
         }
 
-        # Ignoring if no annotation defined on property.
-        $annotation = AnnotationParser::getAnnotations($propertyReflection->getDocComment());
-        if (empty($annotation)) {
+        # Ignoring if no attribute defined on property.
+        $attributes = $propertyReflection->getAttributes();
+        if (empty($attributes)) {
             return;
         }
 
         $dataProperty = new
-                DataProperty($this->class, NULL, $propertyReflection->name, $annotation);
+                DataProperty($this->class, $propertyReflection->name,
+                $attributes);
 
         # Ignoring property if @Derived or @DataType not defined.
         if ($dataProperty->isDerived() === false &&
                 $dataProperty->getDatatype() === false) {
             return;
         }
+
 
         # Let's reslove class name if from is class name or chain of class name and property.
         if ($dataProperty->isDerived()) {
@@ -778,7 +795,7 @@ class EntityClass extends AbstractEntityStore
     /**
      * Adds Property to registry.
      * 
-     * @param   \Nishchay\Data\Annotation\Property\Property      $property
+     * @param   DataProperty      $property
      * @param   string                                          $name
      */
     private function addProperty(DataProperty $property, $name)
@@ -796,15 +813,16 @@ class EntityClass extends AbstractEntityStore
      * Sets identity property name.
      * 
      * @param   string                          $name
-     * @throws  InvalidAnnotationExecption
+     * @throws  InvalidAttributeException
      */
     private function setIdentityProperty($name)
     {
         if ($this->identity !== false) {
-            throw new InvalidAnnotationExecption('Property [' . $this->class .
-                    '::' . $name . '] can not be identity as another'
-                    . ' property [' . $this->identity . '] is already identity.'
-                    . ' There must be only one entity per class.', $this->class, null, 911037);
+            throw new InvalidAttributeException('Property [' . $this->class .
+                            '::' . $name . '] can not be identity as another'
+                            . ' property [' . $this->identity . '] is already identity.'
+                            . ' There must be only one entity per class.',
+                            $this->class, null, 911037);
         }
 
         $this->identity = $name;
@@ -861,14 +879,15 @@ class EntityClass extends AbstractEntityStore
 
             # Below process is to validate property names and registering
             # their actual enity class along with their data type to @derived
-            # annotation.
+            # attribute.
             foreach ($properties as $index => $name) {
                 $exploded = explode('.', $name);
                 if (count($exploded) !== 2 ||
                         !$custom->isAliasExist($exploded[0])) {
-                    throw new InvalidAnnotationExecption('Invalid'
-                            . ' property name in [Derived]'
-                            . ' annotation for property [' . $this->class . '::' . $propertyName . '].', $this->class, null, 911038);
+                    throw new InvalidAttributeException('Invalid'
+                                    . ' property name in [Derived]'
+                                    . ' attribute for property [' . $this->class . '::' . $propertyName . '].',
+                                    $this->class, null, 911038);
                 }
 
                 list($alias, $name) = $exploded;
@@ -879,10 +898,11 @@ class EntityClass extends AbstractEntityStore
                 $this->propertyTypes['derivedProperty'][$propertyName][] = $name;
                 $property = $this->entity($className)->getProperty($name);
                 if ($property === false) {
-                    throw new InvalidAnnotationExecption('Property to fetch [' .
-                            $name . '] is does not exist in parent class for'
-                            . ' property [' . $this->class . '::' .
-                            $propertyName . '].', $this->class, null, 911039);
+                    throw new InvalidAttributeException('Property to fetch [' .
+                                    $name . '] is does not exist in parent class for'
+                                    . ' property [' . $this->class . '::' .
+                                    $propertyName . '].', $this->class, null,
+                                    911039);
                 }
                 $derived->registerDataType($name, $property->getDatatype());
                 if ($derived->getHold() === ResolvedJoin::HOLD_TYPE_ARRAY) {
@@ -899,7 +919,7 @@ class EntityClass extends AbstractEntityStore
 
     /**
      * 
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      */
     private function resolveFromTypeDependecy()
     {
@@ -919,10 +939,12 @@ class EntityClass extends AbstractEntityStore
                 $properties = $fromType->getLastAlias();
             } else {
                 $lastEntity = $this->entity($fromType->getLastEntity());
-                $properties = $this->getPropertyNames($propertyName, $derived, $lastEntity);
+                $properties = $this->getPropertyNames($propertyName, $derived,
+                        $lastEntity);
 
                 foreach ($properties as $index => $name) {
-                    $resolved->addPropertyClass($name, $fromType->getLastEntity());
+                    $resolved->addPropertyClass($name,
+                            $fromType->getLastEntity());
 
                     if ($derived->getHold() === ResolvedJoin::HOLD_TYPE_ARRAY) {
                         unset($properties[$index]);
@@ -951,12 +973,13 @@ class EntityClass extends AbstractEntityStore
     /**
      * 
      * @param   string                                          $propertyName
-     * @param   \Nishchay\Data\Annotation\Property\Derived      $derived
-     * @param   \Nishchay\Data\Annotation\EntityClass           $parent
+     * @param   Derived      $derived
+     * @param   EntityClass           $parent
      * @return  array
-     * @throws  \Nishchay\Exception\InvalidAnnotationExecption
+     * @throws  InvalidAttributeException
      */
-    private function getPropertyNames($propertyName, Derived $derived, EntityClass $parent)
+    private function getPropertyNames($propertyName, Derived $derived,
+            EntityClass $parent)
     {
         $properties = $derived->getProperty();
         $propertyNames = [];
@@ -964,21 +987,23 @@ class EntityClass extends AbstractEntityStore
 
             # Checking if property exist in parent class or not.
             if ($parent->getProperty($name) === false) {
-                throw new InvalidAnnotationExecption('Property to fetch [' .
-                        $name . '] for [' . $derived->getPropertyName() . '] is does'
-                        . ' not exist in parent class [' . $parent->getClass() .
-                        '].', $derived->getClass(), null, 911040);
+                throw new InvalidAttributeException('Property to fetch [' .
+                                $name . '] for [' . $derived->getPropertyName() . '] is does'
+                                . ' not exist in parent class [' . $parent->getClass() .
+                                '].', $derived->getClass(), null, 911040);
             }
 
             # We do not allow proeprty to derived from proeprty which derived
             # property of another class.
             if ($parent->getProperty($name)->isDerived()) {
                 throw new NotSupportedException('Property [' . $this->class .
-                        '::' . $propertyName . '] can not derive property which is '
-                        . 'derived property of another class.', $this->class, null, 911041);
+                                '::' . $propertyName . '] can not derive property which is '
+                                . 'derived property of another class.',
+                                $this->class, null, 911041);
             }
 
-            $derived->registerDataType($name, $parent->getProperty($name)->getDataType());
+            $derived->registerDataType($name,
+                    $parent->getProperty($name)->getDataType());
             $propertyNames[] = $name;
             $this->propertyTypes['derivedProperty'][$propertyName][] = $name;
         }
@@ -990,7 +1015,8 @@ class EntityClass extends AbstractEntityStore
      * 
      * @return NULL
      */
-    private function preparePropertiesToSelect($unfetchable = [], $query = null, $join = false)
+    private function preparePropertiesToSelect($unfetchable = [], $query = null,
+            $join = false)
     {
         $properties = [];
         foreach ($this->getFetchableProperties() as $name) {
@@ -1108,7 +1134,8 @@ class EntityClass extends AbstractEntityStore
      * 
      * @param type $instance
      */
-    public function validateEntityRecord($instance, $fetchedInstance, $skipRelativeValidation = false)
+    public function validateEntityRecord($instance, $fetchedInstance,
+            $skipRelativeValidation = false)
     {
         $passed = [];
         foreach ($this->getProperties() as $name) {
@@ -1129,7 +1156,8 @@ class EntityClass extends AbstractEntityStore
             $property->validate($fetchedInstance, $value);
 
             if ($skipRelativeValidation === false) {
-                $property->getRelative() && $this->validateRelative($property, $value);
+                $property->getRelative() && $this->validateRelative($property,
+                                $value);
             }
 
             $value !== null && $passed[$name] = $value;
@@ -1149,7 +1177,7 @@ class EntityClass extends AbstractEntityStore
      */
     public function validateRelative(DataProperty $property, $value)
     {
-        # Relative annotation.
+        # Relative attribute.
         $relative = $property->getRelative();
         if (empty($value)) {
             # Allowing null if type is loose.
@@ -1157,8 +1185,9 @@ class EntityClass extends AbstractEntityStore
                 return true;
             }
             throw new ApplicationException('Property [' . $this->class . '::' .
-                    $property->getPropertyName() . '] can not be null or empty as its relative to [' .
-                    $relative->getTo() . '].', $this->class, null, 911042);
+                            $property->getPropertyName() . '] can not be null or empty as its relative to [' .
+                            $relative->getTo() . '].', $this->class, null,
+                            911042);
         }
 
         # Now we will first get the relative class and then execute query
@@ -1174,9 +1203,9 @@ class EntityClass extends AbstractEntityStore
                 ->count();
         if ($exist === 0) {
             throw new ApplicationException('Value of relative property [' .
-                    $this->class . '::' . $property->getPropertyName() . '] must'
-                    . ' belongs to relative property [' . $relative->getTo() . '::' .
-                    $relativeProperty . '].', $this->class, null, 911043);
+                            $this->class . '::' . $property->getPropertyName() . '] must'
+                            . ' belongs to relative property [' . $relative->getTo() . '::' .
+                            $relativeProperty . '].', $this->class, null, 911043);
         }
     }
 
@@ -1213,8 +1242,8 @@ class EntityClass extends AbstractEntityStore
      * 
      * @param   string                                          $from
      * @param   string                                          $propertyName
-     * @return  \Nishchay\Data\Annotation\Property
-     * @throws  \Nishchay\Exception\InvalidAnnotationExecption
+     * @return  InvalidAttributeExceptionProperty
+     * @throws  InvalidAttributeException
      */
     public function getRelativePropertyName($propertyName)
     {
@@ -1237,13 +1266,14 @@ class EntityClass extends AbstractEntityStore
             return $relativePropertyName;
         }
 
-        throw new InvalidAnnotationExecption('Not able to find relative'
-                . ' property either in same class or relative class for'
-                . ' [' . $this->class . '::' . $propertyName . '].', $this->class, null, 911044);
+        throw new InvalidAttributeException('Not able to find relative'
+                        . ' property either in same class or relative class for'
+                        . ' [' . $this->class . '::' . $propertyName . '].',
+                        $this->class, null, 911044);
     }
 
     /**
-     * Returns after change trigger annotation.
+     * Returns after change trigger attribute.
      * 
      * @return array
      */
@@ -1253,7 +1283,7 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Returns before change trigger annotation.
+     * Returns before change trigger attribute.
      * 
      * @return array
      */
@@ -1270,7 +1300,8 @@ class EntityClass extends AbstractEntityStore
     protected function setAfterchange($afterchange)
     {
         foreach ($afterchange as $parameter) {
-            $this->afterchange[] = new AfterChange($this->class, NULL, $parameter);
+            $this->afterchange[] = new AfterChange($this->class, NULL,
+                    $parameter);
         }
     }
 
@@ -1282,7 +1313,8 @@ class EntityClass extends AbstractEntityStore
     protected function setBeforechange($beforechange)
     {
         foreach ($beforechange as $parameter) {
-            $this->beforechange[] = new BeforeChange($this->class, NULL, $parameter);
+            $this->beforechange[] = new BeforeChange($this->class, NULL,
+                    $parameter);
         }
     }
 
@@ -1301,7 +1333,8 @@ class EntityClass extends AbstractEntityStore
         foreach ($this->beforechange as $trigger) {
             if ($this->isCallable($trigger, $name)) {
                 $eventCalled++;
-                if ($this->executeCallback($trigger->getCallback(), [$old, $new, $mode, $updatedNames]) === false) {
+                if ($this->executeCallback($trigger->getCallback(),
+                                [$old, $new, $mode, $updatedNames]) === false) {
                     return false;
                 }
             }
@@ -1350,7 +1383,8 @@ class EntityClass extends AbstractEntityStore
         $name = 'isFor' . ucfirst(strtolower($mode));
         foreach ($this->afterchange as $trigger) {
             if ($this->isCallable($trigger, $name)) {
-                $this->executeCallback($trigger->getCallback(), [$old, $new, $mode, $updatedNames]);
+                $this->executeCallback($trigger->getCallback(),
+                        [$old, $new, $mode, $updatedNames]);
             }
         }
     }

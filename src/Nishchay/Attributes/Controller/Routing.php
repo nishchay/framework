@@ -17,22 +17,25 @@ use Attribute;
 class Routing
 {
 
-    use AttributeTrait;
+    use AttributeTrait {
+        verify as parentVerify;
+    }
 
     const NAME = 'routing';
 
     public function __construct(private ?string $prefix = null,
             private ?string $case = null, private ?string $pattern = null)
     {
-        $this->refactorPrefix();
+        
     }
 
     /**
      * Sets prefix.
      * 
      */
-    protected function refactorPrefix()
+    public function verify()
     {
+        $this->parentVerify();
         $callback = ['lower' => 'strtolower', 'upper' => 'strtoupper', 'camel' => 'lcfirst'];
         if ($this->prefix === 'this.base') {
             $this->prefix = StringUtility::getExplodeLast('\\', $this->class);

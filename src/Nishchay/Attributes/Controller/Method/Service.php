@@ -18,7 +18,9 @@ use Attribute;
 class Service
 {
 
-    use AttributeTrait;
+    use AttributeTrait {
+        verify as parentVerify;
+    }
 
     const NAME = 'service';
 
@@ -26,9 +28,7 @@ class Service
             private ?bool $token = null, private bool|array $supported = false,
             private array $always = [])
     {
-        if ($this->token === null) {
-            $this->token = (bool) Nishchay::getSetting('service.token.enable');
-        }
+        
     }
 
     /**
@@ -37,8 +37,14 @@ class Service
      * @param   boolean|string|array    $supported
      * @return  \Nishchay\Service\Annotation\Service
      */
-    public function verifySupported()
+    public function verify()
     {
+        $this->parentVerify();
+
+        if ($this->token === null) {
+            $this->token = (bool) Nishchay::getSetting('service.token.enable');
+        }
+
         if (is_bool($this->supported)) {
             $this->supported = false;
             return;

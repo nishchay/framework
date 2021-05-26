@@ -31,6 +31,12 @@ trait AttributeTrait
 
     /**
      * 
+     * @var type
+     */
+    protected $verified = false;
+
+    /**
+     * 
      * @param array $attributes
      */
     protected function processAttributes(array $attributes)
@@ -46,9 +52,23 @@ trait AttributeTrait
             if (!method_exists($this, $method)) {
                 continue;
             }
-            $this->invokeMethod([$this, $method],
-                    [$isReflection ? $attribute->newInstance() : $attribute]);
+            $instance = $isReflection ? $attribute->newInstance() : $attribute;
+            $instance->setClass($this->class)
+                    ->setMethod($this->method);
+            $this->invokeMethod([$this, $method], [$instance]);
+
+            if (method_exists($instance, 'verify')) {
+                $instance->verify();
+            }
         }
+    }
+
+    public function verify()
+    {
+        if ($this->verified) {
+            throw new ApplicationException('Attribute already been verified');
+        }
+        $this->verified = true;
     }
 
     public function getClass()

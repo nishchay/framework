@@ -16,7 +16,6 @@ use Nishchay\FileManager\SimpleDirectory;
 use Nishchay\Utility\StringUtility;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Processor\Annotation\ClassType;
-use Nishchay\Annotation\Controller\Controller as ControllerAnnotation;
 
 /**
  * Application class and view organizing according to their types.
@@ -133,7 +132,8 @@ class Organizer
 
         if (!class_exists($class) && !interface_exists($class)) {
             throw new InvalidStructureException('Class [' . $class . '] not'
-                            . ' found in file [' . $path . '].', null, null, 925005);
+                            . ' found in file [' . $path . '].', null, null,
+                            925005);
         }
         return $class;
     }
@@ -181,7 +181,8 @@ class Organizer
      */
     protected function isFileSupported($file)
     {
-        return in_array(StringUtility::getExplodeLast('.', $file), $this->getSupportedFile());
+        return in_array(StringUtility::getExplodeLast('.', $file),
+                $this->getSupportedFile());
     }
 
     /**
@@ -248,7 +249,8 @@ class Organizer
                 $this->processFile($path);
             } else {
                 throw new Exception('Nishchay not able to detect file type'
-                                . ' for file [' . $path . '].', null, null, 925006);
+                                . ' for file [' . $path . '].', null, null,
+                                925006);
             }
         }, [], true);
 
@@ -333,7 +335,8 @@ class Organizer
         $detail = $this->structureProcessor->isValidFile($path);
         $this->currentValidationMode = $detail['special'];
         if ($this->isFileSupported($path) === false) {
-            throw new InvalidStructureException('File [' . $path . '] not supported.', null, null, 925007);
+            throw new InvalidStructureException('File [' . $path . '] not supported.',
+                            null, null, 925007);
         }
 
         $this->setContext($path, $detail['node']);
@@ -353,7 +356,8 @@ class Organizer
         # Last mode always special type so current type should be class.
         if (!$this->isClass()) {
             throw new InvalidStructureException('[' . $path . '] is'
-                            . ' not in namespace. Each class must have namespace.', null, null, 925008);
+                            . ' not in namespace. Each class must have namespace.',
+                            null, null, 925008);
         }
 
         $this->properRefactor($this->getClassName($path));
@@ -369,7 +373,8 @@ class Organizer
     {
         if ($this->isClass()) {
             throw new InvalidStructureException('Class file [' . $path .
-                            '] not allowed here as per Strucuture definition.', null, null, 925009);
+                            '] not allowed here as per Strucuture definition.',
+                            null, null, 925009);
         }
         return ViewCollection::store($this->currentContext);
     }
@@ -386,9 +391,9 @@ class Organizer
     {
         $reflection = new ReflectionClass($class);
 
-        $php8 = ['controller' => ControllerAnnotation::class];
+        $php8 = ['controller', 'entity'];
 
-        if (isset($php8[$this->currentValidationMode])) {
+        if (in_array($this->currentValidationMode, $php8)) {
             $attributes = $reflection->getAttributes();
 
             if (empty($attributes)) {
@@ -414,12 +419,14 @@ class Organizer
             # Class type should be one kind of.
             if (count($classType) > 1) {
                 throw new NotSupportedException('Class can only be any one '
-                                . 'but can not be [' . implode(',', $classType) . '] together.', $class, null, 925011);
+                                . 'but can not be [' . implode(',', $classType) . '] together.',
+                                $class, null, 925011);
             }
 
             if (current($classType)) {
                 $this->currentType = current($classType);
-            } else if (!empty($classAnnotation) && !in_array($this->currentValidationMode, self::SPECIAL_CLASSES)) {
+            } else if (!empty($classAnnotation) && !in_array($this->currentValidationMode,
+                            self::SPECIAL_CLASSES)) {
                 $classType = new ClassType($class, $classAnnotation);
                 $this->currentType = strtolower($classType->getClasstype());
             } else {
@@ -429,7 +436,8 @@ class Organizer
             # Class type should be same as current class type mode
             if (!$this->isValidClass()) {
                 throw new InvalidStructureException('File [' . $reflection->getFileName() .
-                                '] should be ' . $this->currentValidationMode . '. Add @' . ucfirst($this->currentValidationMode) . ' annotation on class.', null, null, 925047);
+                                '] should be ' . $this->currentValidationMode . '. Add @' . ucfirst($this->currentValidationMode) . ' annotation on class.',
+                                null, null, 925047);
             }
 
             $method = 'process' . ucfirst($this->currentType) . 'Class';

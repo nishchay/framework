@@ -8,7 +8,7 @@ use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\Data\AbstractEntityStore;
 use Nishchay\Data\Annotation\Entity;
-use Nishchay\Data\Annotation\Property\Property;
+use Nishchay\Attributes\Entity\Property\Property;
 use Nishchay\Data\Annotation\Property\Relative;
 use Nishchay\Data\EntityQuery;
 use Nishchay\Data\Meta\MetaTable;
@@ -609,7 +609,7 @@ class EntityManager extends AbstractEntityStore
 
             # Will not process if property does not exist or 
             # property is derived.
-            if ($property === false || $property->getDerived() !== false) {
+            if ($property === false || $property->getDerived() !== null) {
                 continue;
             }
 
@@ -727,7 +727,7 @@ class EntityManager extends AbstractEntityStore
      * @param   string                                            $propertyName
      * @param   array                                             $derivedProperties
      * @param   \stdClass                                         $row
-     * @param   \Nishchay\Data\Annotation\Property\Property        $property
+     * @param   Property        $property
      * @param   \Nishchay\Data\Property\ResolvedJoin               $joinTable
      */
     private function setDerivedPropertyValues($selfPropertyName, $derivedProperties, $row, $property, $joinTable)

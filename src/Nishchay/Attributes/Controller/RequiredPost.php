@@ -20,7 +20,9 @@ class RequiredPost
 
     const NAME = 'requiredPost';
 
-    use AttributeTrait;
+    use AttributeTrait {
+        verify as parentVerify;
+    }
 
     /**
      * 
@@ -29,15 +31,16 @@ class RequiredPost
     public function __construct(private array $parameter,
             private ?string $redirect = null)
     {
-        $this->verifyParameter();
+        
     }
 
     /**
      * 
      * @throws InvalidAttributeException
      */
-    private function verifyParameter()
+    public function verify()
     {
+        $this->parentVerify();
         foreach ($this->parameter as $name) {
             if (!is_string($name)) {
                 throw new InvalidAttributeException('List of all parameter '

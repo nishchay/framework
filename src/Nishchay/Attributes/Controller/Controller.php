@@ -3,6 +3,7 @@
 namespace Nishchay\Attributes\Controller;
 
 use Attribute;
+use Nishchay\Attributes\AttributeTrait;
 
 /**
  * Controller attribute class.
@@ -15,6 +16,8 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS)]
 class Controller
 {
+
+    use AttributeTrait;
 
     const NAME = 'controller';
 

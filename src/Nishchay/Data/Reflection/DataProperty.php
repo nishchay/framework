@@ -2,8 +2,10 @@
 
 namespace Nishchay\Data\Reflection;
 
-use Nishchay\Data\Annotation\Property\Property;
-use Nishchay\Data\Annotation\Property\DataType;
+use Nishchay\Attributes\Entity\Property\{
+    Property,
+    DataType
+};
 use Nishchay\Data\AbstractEntityStore;
 
 /**
@@ -34,7 +36,7 @@ class DataProperty extends AbstractEntityStore
     /**
      * Instance of property annotation.
      * 
-     * @var Nishchay\Data\Annotation\Property\Property 
+     * @var Property 
      */
     private $property;
 

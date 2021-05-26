@@ -1,6 +1,6 @@
 <?php
 
-namespace Nishchay\Data\Annotation\Property;
+namespace Nishchay\Attributes\Entity\Property;
 
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;

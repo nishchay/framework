@@ -126,6 +126,9 @@ class ControllerClass
         $this->setClass($class);
         $this->attributes = $attributes;
         $this->processAttributes($this->attributes);
+        if ($this->controller === false) {
+            throw new ApplicationException('[' . $class . '] must be controller.', $class);
+        }
         Nishchay::getControllerCollection()->store($class, $this, $parent);
         $this->extractRoute();
     }
@@ -217,7 +220,7 @@ class ControllerClass
      */
     protected function setRouting(Routing $routing)
     {
-        $this->routing = $routing->setClass($this->class);
+        $this->routing = $routing;
     }
 
     /**
@@ -311,8 +314,7 @@ class ControllerClass
      */
     protected function setOnlyGet(OnlyGet $onlyGet)
     {
-        $this->onlyget = $onlyGet
-                ->setClass($this->class);
+        $this->onlyget = $onlyGet;
     }
 
     /**
@@ -322,8 +324,7 @@ class ControllerClass
      */
     protected function setOnlyPost(OnlyPost $onlyPost)
     {
-        $this->onlypost = $onlyPost
-                ->setClass($this->class);
+        $this->onlypost = $onlyPost;
     }
 
     /**
@@ -333,8 +334,7 @@ class ControllerClass
      */
     protected function setRequiredGet(RequiredGet $requiredGet)
     {
-        $this->requiredget = $requiredGet
-                ->setClass($this->class);
+        $this->requiredget = $requiredGet;
     }
 
     /**
@@ -344,8 +344,7 @@ class ControllerClass
      */
     protected function setRequiredpost(RequiredPost $requiredPost)
     {
-        $this->requiredpost = $requiredPost
-                ->setClass($this->class);
+        $this->requiredpost = $requiredPost;
     }
 
     /**
@@ -365,7 +364,7 @@ class ControllerClass
      */
     public function setExceptionhandler(ExceptionHandler $exceptionhandler)
     {
-        $this->exceptionhandler = $exceptionhandler->setClass($this->class);
+        $this->exceptionhandler = $exceptionhandler;
     }
 
     /**
@@ -393,7 +392,7 @@ class ControllerClass
      */
     protected function setBeforeEvent(BeforeEvent $beforeEvent)
     {
-        $this->beforeevent = $beforeEvent->setClass($this->class);
+        $this->beforeevent = $beforeEvent;
     }
 
     /**
@@ -403,7 +402,7 @@ class ControllerClass
      */
     protected function setAfterEvent(AfterEvent $afterEvent)
     {
-        $this->afterevent = $afterEvent->setClass($this->class);
+        $this->afterevent = $afterEvent;
     }
 
 }

@@ -16,7 +16,9 @@ use Nishchay\Exception\InvalidAttributeException;
 class Response
 {
 
-    use AttributeTrait;
+    use AttributeTrait {
+        verify as parentVerify;
+    }
 
     const NAME = 'response';
 
@@ -49,7 +51,6 @@ class Response
     public function __construct(private ?string $type,
             private ?string $view = null)
     {
-        $this->verifyType();
         $this->view !== null ?? $this->setView();
     }
 
@@ -67,8 +68,10 @@ class Response
      * 
      * @param string $type
      */
-    protected function verifyType()
+    public function verify()
     {
+        $this->parentVerify();
+        
         if (empty($this->type) && $this->type !== null) {
             throw new InvalidAttributeException('Response type [' . $this->type . ']' .
                             ' is not valid.', $this->class, $this->method,

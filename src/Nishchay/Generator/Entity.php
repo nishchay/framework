@@ -15,7 +15,7 @@ use Nishchay\Utility\SystemUtility;
 use Nishchay\Processor\VariableType;
 use Nishchay\Data\Meta\MetaTable;
 use Nishchay\Data\Meta\MetaConnection;
-use Nishchay\Data\Annotation\Property\Property;
+use Nishchay\Attributes\Entity\Property\Property;
 use Nishchay\Data\EntityManager;
 
 /**

@@ -4,10 +4,12 @@ namespace Nishchay\Data\Property\Join;
 
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
-use Nishchay\Data\Annotation\Property\Derived;
 use Nishchay\Data\AbstractEntityStore;
 use Nishchay\Data\Annotation\EntityClass;
-use Nishchay\Data\Annotation\Property\Property;
+use Nishchay\Attributes\Entity\Property\{
+    Property,
+    Derived
+};
 use Nishchay\Data\Query;
 
 /**
@@ -24,7 +26,7 @@ class FromProperty extends AbstractEntityStore
     /**
      * Entity class instance.
      * 
-     * @var \Nishchay\Data\Annotation\EntityClass 
+     * @var EntityClass 
      */
     private $entity;
 
@@ -102,7 +104,8 @@ class FromProperty extends AbstractEntityStore
      * 
      * @param \Nishchay\Data\Annotation\EntityClass  $entity
      */
-    public function __construct(EntityClass $entity, string $propertyName, Derived $derived)
+    public function __construct(EntityClass $entity, string $propertyName,
+            Derived $derived)
     {
         $this->entity = $entity;
         $this->fromProperty = explode('.', $derived->getFrom());
@@ -166,8 +169,9 @@ class FromProperty extends AbstractEntityStore
 
         if (count(array_flip($this->joinConnection)) > 1) {
             throw new NotSupportedException('You should not derive property'
-                    . ' using more than one database connection for [' .
-                    $this->entity->getClass() . '::' . $this->propertyName . '].', $this->entity->getClass(), null, 911052);
+                            . ' using more than one database connection for [' .
+                            $this->entity->getClass() . '::' . $this->propertyName . '].',
+                            $this->entity->getClass(), null, 911052);
         }
     }
 
@@ -283,10 +287,10 @@ class FromProperty extends AbstractEntityStore
     /**
      * Returns relative property.
      * 
-     * @param   \Nishchay\Data\Annotation\EntityClass            $entity
+     * @param   EntityClass            $entity
      * @param   string                                          $from
-     * @return  \Nishchay\Data\Annotation\Property\Relative
-     * @throws  \Nishchay\Exception\InvalidAnnotationExecption
+     * @return  Relative
+     * @throws  InvalidAnnotationExecption
      */
     private function getRelativeProperty(EntityClass $entity, $from)
     {
@@ -302,8 +306,9 @@ class FromProperty extends AbstractEntityStore
         }
 
         throw new ApplicationException('[' . $from . '] should be valid'
-                . ' property of self class or it should be entity for derived property'
-                . ' [' . $this->entity->getClass() . '::' . $this->propertyName . '].', $this->entity->getClass(), null, 911053);
+                        . ' property of self class or it should be entity for derived property'
+                        . ' [' . $this->entity->getClass() . '::' . $this->propertyName . '].',
+                        $this->entity->getClass(), null, 911053);
     }
 
     /**
@@ -321,7 +326,8 @@ class FromProperty extends AbstractEntityStore
         }
 
         throw new ApplicationException('Property [' . $self->getClass() . '::' . $self->getPropertyName() .
-                '] is not relative to any class.', $self->getClass(), null, 911054);
+                        '] is not relative to any class.', $self->getClass(),
+                        null, 911054);
     }
 
 }
