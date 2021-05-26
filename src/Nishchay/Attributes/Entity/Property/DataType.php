@@ -45,7 +45,7 @@ class DataType
     const NAME = 'dataType';
 
     public function __construct(private string $type,
-            private ?int $length = null, private bool $required = false,
+            private ?float $length = null, private bool $required = false,
             private bool $readOnly = false, private bool $encrypt = false,
             private array $values = [], private $default = null)
     {
@@ -63,6 +63,7 @@ class DataType
         }
 
         $this->propertyName = $propertyName;
+        return $this;
     }
 
     public function verify()

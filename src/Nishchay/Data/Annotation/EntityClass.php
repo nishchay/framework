@@ -685,11 +685,6 @@ class EntityClass extends AbstractEntityStore
                             . ' one property.', $this->class, null, 911036);
         }
 
-        if ($this->identity === false) {
-            throw new ApplicationException('Identity property is required for entity',
-                            $this->class);
-        }
-
         # Iterating over each method to find events for the entity.
         foreach ($this->getReflectionClass()->getMethods() as $method) {
             if (Coding::isIgnorable($method, $this->class)) {
@@ -856,7 +851,7 @@ class EntityClass extends AbstractEntityStore
         # join parameter to set property value.
         foreach ($this->getJoinProperties() as $propertyName) {
             $derived = $this->getProperty($propertyName)->getDerived();
-
+            
             $custom = new CustomJoin($this, $propertyName);
 
             # Join Table rule.
@@ -871,7 +866,7 @@ class EntityClass extends AbstractEntityStore
             $properties = $derived->getProperty();
 
             # When property name is not exist, considering property to be object.
-            if ($properties === false) {
+            if (empty($properties)) {
                 $resolved->addPropertyClass(0, $custom->getLastClass());
                 $properties = $custom->getLastAlias();
                 goto SKIP_POINT_FOR_LAZY_PROPERTY;
@@ -934,7 +929,7 @@ class EntityClass extends AbstractEntityStore
             $properties = [];
 
             $resolved = new ResolvedJoin();
-            if ($derived->getProperty() === false) {
+            if (empty($derived->getProperty())) {
                 $resolved->addPropertyClass(0, $fromType->getLastEntity());
                 $properties = $fromType->getLastAlias();
             } else {
@@ -1055,7 +1050,7 @@ class EntityClass extends AbstractEntityStore
 
             $property = $this->getProperty($propertyName);
             $derived = $property->getDerived();
-            if ($derived->getProperty() === false) {
+            if (empty($derived->getProperty())) {
                 continue;
             }
 
@@ -1143,7 +1138,7 @@ class EntityClass extends AbstractEntityStore
             # Derived property is not updateable so we will not do any 
             # validation on it.
             $property = $this->getProperty($name);
-            if ($property->getDerived() !== false) {
+            if ($property->getDerived() !== null) {
                 continue;
             }
 
@@ -1196,7 +1191,7 @@ class EntityClass extends AbstractEntityStore
 
         # If relative annotaiton not have defined relative property name we will
         # use identity of relative class.
-        $relativeProperty = ($relative->getName() === false ?
+        $relativeProperty = ($relative->getName() === null ?
                 $entity->getIdentity() : $relative->getName());
         $exist = $entity->getQuery()
                 ->setCondition($relativeProperty, $value)
@@ -1226,9 +1221,9 @@ class EntityClass extends AbstractEntityStore
 
             # We will conisder property which relative to another class's 
             # property.
-            if ($relative !== false && $relative->getTo() === $class) {
+            if ($relative !== null && $relative->getTo() === $class) {
                 # Consdering property which is relative to class's identity property only.
-                if ($relative->getName() !== false && $relative->getName() !== $identity) {
+                if ($relative->getName() !== null && $relative->getName() !== $identity) {
                     continue;
                 }
                 return $this->getProperty($name);
@@ -1248,11 +1243,12 @@ class EntityClass extends AbstractEntityStore
     public function getRelativePropertyName($propertyName)
     {
         $from = $this->getProperty($propertyName)->getDerived()->getFrom();
-        if ($from === false) {
+        if ($from === null) {
             return $this->getIdentity();
         }
 
         list($fromPropertyName) = explode('.', $from);
+        
         $relativePropertyName = false;
         $parent = $this;
         if (($property = $parent->getProperty($fromPropertyName)) instanceof DataProperty) {

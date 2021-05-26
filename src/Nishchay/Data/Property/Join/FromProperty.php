@@ -152,7 +152,7 @@ class FromProperty extends AbstractEntityStore
                     $entity->getIdentity()
                 ];
             } else {
-                $relativeName = $relative->getName() === false ?
+                $relativeName = $relative->getName() === null ?
                         $parent->getIdentity() : $relative->getName();
                 $joinRule = [
                     $relativeName => $previousAlias . '.' .
@@ -321,7 +321,7 @@ class FromProperty extends AbstractEntityStore
     private function getRelative($self)
     {
         $relative = $self->getRelative();
-        if ($relative !== false) {
+        if ($relative !== null) {
             return $relative;
         }
 

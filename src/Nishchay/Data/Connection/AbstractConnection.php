@@ -216,7 +216,8 @@ abstract class AbstractConnection
                     $this->connectionName . '] is offline.', null, null, 911049);
         }
 
-        var_dump($query);
+//        echo PHP_EOL.PHP_EOL;
+//        echo($query);
         $statement = $this->pdo->prepare($query);
         $statement->execute($bind);
         $method = $this->getAfterExecutionMethodName(explode(' ', $query));

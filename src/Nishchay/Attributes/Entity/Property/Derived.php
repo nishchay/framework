@@ -62,6 +62,11 @@ class Derived
     {
         ;
     }
+    
+    public function getProperty()
+    {
+        return $this->property;
+    }
 
     /**
      * 
@@ -101,7 +106,7 @@ class Derived
         }
         $this->derivedType = 'join';
 
-        if (method_exists($this->class, $this->join)) {
+        if (method_exists($this->class, $this->join) === false) {
             throw new InvalidAttributeException('Join callback [' .
                             $this->class . '::' . $this->join . '] does exist for property [' .
                             $this->class . '::' . $this->propertyName . '].',
@@ -137,8 +142,11 @@ class Derived
      */
     private function refactorCallback()
     {
-        if (!method_exists($this->class, $this->callback)) {
-            throw new InvalidAnnotationParameterException('Callback [' .
+        if (empty($this->callback)) {
+            return $this;
+        }
+        if (method_exists($this->class, $this->callback) === false) {
+            throw new InvalidAttributeException('Callback [' .
                             $this->callback . '] for derived property [' . $this->class .
                             '::' . $this->propertyName . ' ] does not exist.',
                             $this->class, null, 911018);
@@ -157,7 +165,7 @@ class Derived
         ];
 
         if (!array_key_exists($this->hold, $allowedHold)) {
-            throw new InvalidAnnotationParameterException('Invalid hold type'
+            throw new InvalidAttributeException('Invalid hold type'
                             . ' for property [' . $this->class . '::' .
                             $this->propertyName . '].', $this->class, null,
                             911020);

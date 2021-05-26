@@ -138,8 +138,12 @@ class DataClass extends AbstractEntityStore
         # Remove config which are not required for data type.
         unset($config['propertyName']);
         unset($config['entity']);
-        $dataType = new DataType($entity->getEntityName(), null, $propertyName,
-                $config);
+        
+        $dataType = new DataType(type: $config['type'],
+                length: $config['length'], readOnly: $config['readonly'],
+                required: $config['required']);
+        $dataType->setClass($entity->getEntityName())
+                ->setPropertyName($propertyName);
 
         # Adding property to entity.
         # We first creating property reflection so that we can 

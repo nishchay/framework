@@ -77,7 +77,7 @@ class Property
      * 
      * @var \Nishchay\Data\Annotation\Property\Relative 
      */
-    private $relative = false;
+    private $relative;
 
     /**
      * Validation annotation.

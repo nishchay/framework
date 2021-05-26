@@ -79,6 +79,7 @@ class DefaultHandler
         $code = $code > 0 ? ('(' . $code . ') ') : '';
         Printer::write($code . $errorString . PHP_EOL . ' in file ' . $file . PHP_EOL . ' at line ' . $line, Printer::RED_COLOR);
         Printer::write(PHP_EOL);
+        print_r($trace);
     }
 
     /**

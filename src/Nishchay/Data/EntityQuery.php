@@ -238,6 +238,9 @@ class EntityQuery extends AbstractEntityStore
      */
     public function setProperty($properties)
     {
+        if (empty($properties)) {
+            debug_print_backtrace();
+        }
         foreach ((array) $properties as $key => $name) {
             $assignTo = null;
 
@@ -291,7 +294,7 @@ class EntityQuery extends AbstractEntityStore
                     . ' query is yet to develop');
         }
 
-        if ($property->getDerived()->getProperty() === false) {
+        if (empty($property->getDerived()->getProperty())) {
             throw new ApplicationException('Deriving whole entity for entity'
                     . ' query is yet to develop');
         }

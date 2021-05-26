@@ -74,6 +74,7 @@ class Relative
         }
 
         $this->propertyName = $propertyName;
+        return $this;
     }
 
     /**
