@@ -188,7 +188,7 @@ class ResolvedJoin
      * Returns classes of properties of single class if property name is passed.
      * 
      * @param type $propertyName
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      */
     public function getPropertyClass($propertyName = null)
     {

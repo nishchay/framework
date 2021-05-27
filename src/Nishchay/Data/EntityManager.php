@@ -1635,7 +1635,7 @@ class EntityManager extends AbstractEntityStore
     /**
      * Returns Entity Annotation Class instance.
      * 
-     * @return  \Nishchay\Data\Annotation\EntityClass
+     * @return  EntityClass
      */
     private function getThisEntity($name = null)
     {

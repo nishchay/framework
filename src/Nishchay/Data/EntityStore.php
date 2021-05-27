@@ -6,7 +6,6 @@ use Nishchay;
 use Exception;
 use AnnotationParser;
 use ReflectionClass;
-use Nishchay\Data\Annotation\EntityClass;
 
 /**
  * Description of Entity Store.
@@ -29,7 +28,7 @@ abstract class EntityStore
     /**
      * 
      * @param type $class
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      * @throws Exception
      */
     protected function entity($class)

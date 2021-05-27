@@ -5,7 +5,7 @@ namespace Nishchay\Data\Property\Join;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\Exception\InvalidAnnotationExecption;
-use Nishchay\Data\Annotation\EntityClass;
+use Nishchay\Data\EntityClass;
 use Nishchay\Data\AbstractEntityStore;
 
 /**

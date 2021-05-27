@@ -8,7 +8,6 @@ use Nishchay\Exception\ApplicationException;
 use AnnotationParser;
 use ReflectionClass;
 use Nishchay\Persistent\System;
-use Nishchay\Data\Annotation\EntityClass;
 
 /**
  * Description of Entity Store.
@@ -31,7 +30,7 @@ abstract class AbstractEntityStore
     /**
      * 
      * @param type $class
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      * @throws Exception
      */
     protected function entity($class)
@@ -67,7 +66,7 @@ abstract class AbstractEntityStore
      * Stores entity class instance into collection.
      * 
      * @param string $class
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      */
     private function instanciate($class)
     {
@@ -109,7 +108,7 @@ abstract class AbstractEntityStore
      * Returns instance of Entity class.
      * 
      * @param string $class
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      */
     private function getInstance($class)
     {

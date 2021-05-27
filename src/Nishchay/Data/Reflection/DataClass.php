@@ -29,7 +29,7 @@ class DataClass extends AbstractEntityStore
 
     /**
      *
-     * @var Nishchay\Data\Annotation\EntityClass 
+     * @var EntityClass 
      */
     private $entityClass;
 

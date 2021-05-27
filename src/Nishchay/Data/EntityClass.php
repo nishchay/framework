@@ -1,6 +1,6 @@
 <?php
 
-namespace Nishchay\Data\Annotation;
+namespace Nishchay\Data;
 
 use Nishchay;
 use Nishchay\Exception\InvalidAttributeException;
@@ -11,14 +11,16 @@ use ReflectionMethod;
 use ReflectionProperty;
 use Nishchay\Data\AbstractEntityStore;
 use Nishchay\Data\Connection\Connection;
-use Nishchay\Data\Annotation\Method\EntityMethod;
+use Nishchay\Data\EntityMethod;
 use Nishchay\Attributes\Entity\Property\{
     Derived,
     Relative,
     Property as DataProperty
 };
-use Nishchay\Data\Annotation\Trigger\AfterChange;
-use Nishchay\Data\Annotation\Trigger\BeforeChange;
+use Nishchay\Attributes\Entity\Event\{
+    AfterChange,
+    BeforeChange
+};
 use Nishchay\Data\Property\ResolvedJoin;
 use Nishchay\Data\Property\Join\{
     FromProperty,
@@ -76,14 +78,14 @@ class EntityClass extends AbstractEntityStore
      * 
      * @var array
      */
-    private $afterchange = [];
+    private $afterChange = [];
 
     /**
      * Before change trigger attribute.
      * 
      * @var array
      */
-    private $beforechange = [];
+    private $beforeChange = [];
 
     /**
      *
@@ -224,7 +226,7 @@ class EntityClass extends AbstractEntityStore
      * Refactors table extra column property. It will create if doest not 
      * exist in table. It will not refactor if Disabled from configuration.
      * 
-     * @return EntityClass
+     * @return self
      */
     private function refactorCoulumn()
     {
@@ -699,10 +701,10 @@ class EntityClass extends AbstractEntityStore
 
             $entityMethod = new EntityMethod($this->class, $method->name,
                     $attributes);
-            $this->beforechange = array_merge($this->beforechange,
-                    $entityMethod->getBeforechange());
-            $this->afterchange = array_merge($this->afterchange,
-                    $entityMethod->getAfterchange());
+            $this->beforeChange = array_merge($this->beforeChange,
+                    $entityMethod->getBeforeChange());
+            $this->afterChange = array_merge($this->afterChange,
+                    $entityMethod->getAfterChange());
         }
 
         $this->refactor();
@@ -851,7 +853,7 @@ class EntityClass extends AbstractEntityStore
         # join parameter to set property value.
         foreach ($this->getJoinProperties() as $propertyName) {
             $derived = $this->getProperty($propertyName)->getDerived();
-            
+
             $custom = new CustomJoin($this, $propertyName);
 
             # Join Table rule.
@@ -914,7 +916,7 @@ class EntityClass extends AbstractEntityStore
 
     /**
      * 
-     * @return EntityClass
+     * @return self
      */
     private function resolveFromTypeDependecy()
     {
@@ -1248,7 +1250,7 @@ class EntityClass extends AbstractEntityStore
         }
 
         list($fromPropertyName) = explode('.', $from);
-        
+
         $relativePropertyName = false;
         $parent = $this;
         if (($property = $parent->getProperty($fromPropertyName)) instanceof DataProperty) {
@@ -1269,49 +1271,23 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Returns after change trigger attribute.
-     * 
-     * @return array
-     */
-    public function getAfterchange()
-    {
-        return $this->afterchange;
-    }
-
-    /**
-     * Returns before change trigger attribute.
-     * 
-     * @return array
-     */
-    public function getBeforechange()
-    {
-        return $this->beforechange;
-    }
-
-    /**
      * Sets after change trigger.
      * 
-     * @param array $afterchange
+     * @param array $afterChange
      */
-    protected function setAfterchange($afterchange)
+    private function setAfterChange(AfterChange $afterChange)
     {
-        foreach ($afterchange as $parameter) {
-            $this->afterchange[] = new AfterChange($this->class, NULL,
-                    $parameter);
-        }
+        $this->afterChange[] = $afterChange;
     }
 
     /**
      * Sets before change trigger.
      *  
-     * @param array $beforechange
+     * @param array $beforeChange
      */
-    protected function setBeforechange($beforechange)
+    private function setBeforeChange(BeforeChange $beforeChange)
     {
-        foreach ($beforechange as $parameter) {
-            $this->beforechange[] = new BeforeChange($this->class, NULL,
-                    $parameter);
-        }
+        $this->beforeChange[] = $beforeChange;
     }
 
     /**
@@ -1326,7 +1302,7 @@ class EntityClass extends AbstractEntityStore
     {
         $eventCalled = 0;
         $name = 'isFor' . ucfirst(strtolower($mode));
-        foreach ($this->beforechange as $trigger) {
+        foreach ($this->beforeChange as $trigger) {
             if ($this->isCallable($trigger, $name)) {
                 $eventCalled++;
                 if ($this->executeCallback($trigger->getCallback(),
@@ -1339,18 +1315,18 @@ class EntityClass extends AbstractEntityStore
     }
 
     /**
-     * Returns true current before change event is callbable.
+     * Returns true if current before change event is callbable.
      * 
-     * @param type $trigger
+     * @param type $event
      * @param type $name
      * @return type
      */
-    private function isCallable($trigger, $name)
+    private function isCallable($event, $name)
     {
-        return $this->invokeMethod([$trigger, $name]) &&
+        return $this->invokeMethod([$event, $name]) &&
                 $this->isCallbackExist([
-                    $trigger->getCallbackClass(),
-                    $trigger->getCallbackMethod()
+                    $event->getCallbackClass(),
+                    $event->getCallbackMethod()
         ]);
     }
 
@@ -1377,7 +1353,7 @@ class EntityClass extends AbstractEntityStore
     public function executeAfterChangeEvent($old, $new, $mode, $updatedNames)
     {
         $name = 'isFor' . ucfirst(strtolower($mode));
-        foreach ($this->afterchange as $trigger) {
+        foreach ($this->afterChange as $trigger) {
             if ($this->isCallable($trigger, $name)) {
                 $this->executeCallback($trigger->getCallback(),
                         [$old, $new, $mode, $updatedNames]);

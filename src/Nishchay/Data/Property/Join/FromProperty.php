@@ -5,7 +5,7 @@ namespace Nishchay\Data\Property\Join;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\Data\AbstractEntityStore;
-use Nishchay\Data\Annotation\EntityClass;
+use Nishchay\Data\EntityClass;
 use Nishchay\Attributes\Entity\Property\{
     Property,
     Derived
@@ -102,7 +102,7 @@ class FromProperty extends AbstractEntityStore
 
     /**
      * 
-     * @param \Nishchay\Data\Annotation\EntityClass  $entity
+     * @param EntityClass  $entity
      */
     public function __construct(EntityClass $entity, string $propertyName,
             Derived $derived)
