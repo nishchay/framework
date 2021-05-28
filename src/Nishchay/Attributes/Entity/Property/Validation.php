@@ -2,9 +2,10 @@
 
 namespace Nishchay\Attributes\Entity\Property;
 
+use Attribute;
 use Nishchay\Exception\InvalidAttributeException;
 use Nishchay\Attributes\AttributeTrait;
-use \Nishchay\Utility\MethodInvokerTrait;
+use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\Validation\Rules\{
     MixedRule,
     DateRule,
@@ -17,7 +18,7 @@ use Nishchay\Validation\Rules\{
  *
  * @author bhavik
  */
-#[\Attribute]
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 class Validation
 {
 

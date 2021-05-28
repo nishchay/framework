@@ -5,6 +5,8 @@ namespace Nishchay\Data;
 use Nishchay;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Persistent\System;
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Exception\ApplicationException;
 
 /**
  * Entity collection class.
@@ -42,8 +44,20 @@ class Collection extends AbstractCollection
      * 
      * @param string $class
      */
-    public function register(string $class): void
+    public function register(string $class, array $attributes): void
     {
+        $isEntity = false;
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() === Entity::class) {
+                $isEntity = true;
+            }
+        }
+
+        if ($isEntity === false) {
+            throw new ApplicationException('[' . $class . '] must be entity.',
+                            $class);
+        }
+
         $this->checkStoring();
         $this->collection[$class] = false;
     }

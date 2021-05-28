@@ -5,7 +5,6 @@ namespace Nishchay\Data;
 use Nishchay;
 use Exception;
 use Nishchay\Exception\ApplicationException;
-use AnnotationParser;
 use ReflectionClass;
 use Nishchay\Persistent\System;
 

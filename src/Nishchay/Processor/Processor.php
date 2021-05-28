@@ -366,8 +366,8 @@ class Processor
     private function prepare()
     {
         $method = $this->getCurrentMethod()->getMethod();
-        $this->controller->classAnnotation($this->getCurrentClass());
-        $this->controller->methodAnnotation($this->getCurrentMethod());
+        $this->controller->processClassAttributes($this->getCurrentClass());
+        $this->controller->processMethodAttributes($this->getCurrentMethod());
 
         $eventResponse = $this->eventManager
                 ->fireBeforeEvent($this->getCurrentClass(), $this->getCurrentMethod(), $this->getContext(), $this->getScope());

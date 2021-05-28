@@ -289,9 +289,9 @@ class Organizer
      * 
      * @param string $class
      */
-    protected function processEntityClass($class)
+    protected function processEntityClass($class, $attributes)
     {
-        Nishchay::getEntityCollection()->register($class);
+        Nishchay::getEntityCollection()->register($class, $attributes);
     }
 
     /**
@@ -397,7 +397,7 @@ class Organizer
             $attributes = $reflection->getAttributes();
 
             if (empty($attributes)) {
-                throw new InvalidStructureException('No annotation found on'
+                throw new InvalidStructureException('No attribute found on'
                                 . ' class [' . $class . '].', null, null, 925010);
             }
 

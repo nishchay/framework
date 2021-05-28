@@ -47,14 +47,15 @@ class BeforeChange
      */
     private function refactorCallback()
     {
-        if (empty($this->callback)) {
-            return $this;
-        }
 
         # Ignoring callback parameter while annotation defined on method. This
         # method will be considered as callback.
         if ($this->method !== null) {
             $this->callback = $this->method;
+        }
+
+        if (empty($this->callback)) {
+            return $this;
         }
 
         if (is_array($this->callback)) {

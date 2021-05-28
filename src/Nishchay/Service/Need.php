@@ -2,7 +2,7 @@
 
 namespace Nishchay\Service;
 
-use Nishchay\Controller\Annotation\Method\Method;
+use Nishchay\Controller\ControllerMethod;
 use Nishchay\Http\Request\Request;
 use Nishchay\Service\Annotation\Service as ServiceAnnotation;
 
@@ -26,9 +26,9 @@ class Need
     /**
      * Instance of controller method annotations.
      * 
-     * @param Method $method
+     * @param ControllerMethod $method
      */
-    public function __construct(Method $method)
+    public function __construct(ControllerMethod $method)
     {
         $this->service = $method->getService();
     }

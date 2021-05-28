@@ -124,7 +124,7 @@ abstract class Resolver extends InstanceList
                     # Let's create new object if there is type hinting for 
                     # parameter. $param->getClass() returns type hinted class 
                     # name or it returns NULL if there is no type hint.
-                    if (($class = $param->getClass()) === null) {
+                    if ($param->getType() === null) {
                         throw new ApplicationException($ex->getMessage(), null, null, 915015);
                     }
                     $value = $this->getResolvedObject($class->name, $params);

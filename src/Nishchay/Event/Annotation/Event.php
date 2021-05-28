@@ -2,9 +2,8 @@
 
 namespace Nishchay\Event\Annotation;
 
-use AnnotationParser;
 use Nishchay\Annotation\BaseAnnotationDefinition;
-use Nishchay\Exception\InvalidAnnotationExecption;
+use Nishchay\Exception\InvalidAttributeException;
 use ReflectionClass;
 use ReflectionMethod;
 use Nishchay\Event\Annotation\Method\Method as MethodAnnotation;
@@ -68,7 +67,7 @@ class Event extends BaseAnnotationDefinition
     {
         if ($event !== false) {
             throw new InvalidAnnotationExecption('Annotation [event] does not support'
-                    . ' paramters.', $this->class, $this->method, 916006);
+                            . ' paramters.', $this->class, $this->method, 916006);
         }
         $this->event = true;
     }
@@ -76,8 +75,7 @@ class Event extends BaseAnnotationDefinition
     /**
      * Iterate over all methods to find events.
      * 
-     * @param   string                          $context
-     * @throws  InvalidAnnotationExecption
+     * @throws  InvalidAttributeException
      */
     protected function iterateMethods()
     {
@@ -90,18 +88,19 @@ class Event extends BaseAnnotationDefinition
             }
 
             try {
-                $annotation = AnnotationParser::getAnnotations($method->getDocComment());
+                $attributes = $method->getAttributes();
 
                 # Ignoring methods which does not have annotation on them.
-                if (empty($annotation)) {
+                if (empty($attributes)) {
                     continue;
                 }
 
                 # Creating just instnace and it will parses event method and
                 # stores it into event collection.
-                new MethodAnnotation($this->class, $method->name, $annotation);
+                new MethodAnnotation($this->class, $method->name, $attributes);
             } catch (Exception $ex) {
-                throw new InvalidAnnotationExecption($ex->getMessage(), $this->class, $method->name, 916007);
+                throw new InvalidAttributeException($ex->getMessage(),
+                                $this->class, $method->name, 916007);
             }
         }
     }
