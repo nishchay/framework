@@ -10,7 +10,7 @@ use ReflectionClass;
 use AnnotationParser;
 use Nishchay\Processor\Structure\Structure;
 use Nishchay\Controller\ControllerClass;
-use Nishchay\Event\Annotation\Event as EventAnnotation;
+use Nishchay\Event\EventClass;
 use Nishchay\Http\View\Collection as ViewCollection;
 use Nishchay\FileManager\SimpleDirectory;
 use Nishchay\Utility\StringUtility;
@@ -276,12 +276,12 @@ class Organizer
      * Process event class.
      * 
      * @param   string      $class
-     * @param   array       $annotation
+     * @param   array       $attributes
      */
-    protected function processEventClass($class, $annotation)
+    protected function processEventClass($class, $attributes)
     {
         Nishchay::getEventCollection()->register($class);
-        new EventAnnotation($class, $annotation);
+        new EventClass($class, $attributes);
     }
 
     /**
@@ -356,7 +356,7 @@ class Organizer
         # Last mode always special type so current type should be class.
         if (!$this->isClass()) {
             throw new InvalidStructureException('[' . $path . '] is'
-                            . ' not in namespace. Each class must have namespace.',
+                            . ' not in namespace. Each class must need namespace.',
                             null, null, 925008);
         }
 
@@ -391,7 +391,7 @@ class Organizer
     {
         $reflection = new ReflectionClass($class);
 
-        $php8 = ['controller', 'entity'];
+        $php8 = ['controller', 'entity', 'event'];
 
         if (in_array($this->currentValidationMode, $php8)) {
             $attributes = $reflection->getAttributes();
@@ -399,6 +399,15 @@ class Organizer
             if (empty($attributes)) {
                 throw new InvalidStructureException('No attribute found on'
                                 . ' class [' . $class . '].', null, null, 925010);
+            }
+
+
+            if (!empty($attributes) && !in_array($this->currentValidationMode,
+                            self::SPECIAL_CLASSES)) {
+                $classType = new ClassType($class, $attributes);
+                $this->currentType = strtolower($classType->getClasstype());
+            } else {
+                $this->currentType = Structure::FILE_TYPE_CLASS;
             }
 
             $method = 'process' . ucfirst($this->currentValidationMode) . 'Class';

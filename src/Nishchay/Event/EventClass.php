@@ -1,13 +1,14 @@
 <?php
 
-namespace Nishchay\Event\Annotation;
+namespace Nishchay\Event;
 
-use Nishchay\Annotation\BaseAnnotationDefinition;
 use Nishchay\Exception\InvalidAttributeException;
+use Nishchay\Exception\ApplicationException;
 use ReflectionClass;
 use ReflectionMethod;
-use Nishchay\Event\Annotation\Method\Method as MethodAnnotation;
 use Nishchay\Utility\Coding;
+use Nishchay\Attributes\AttributeTrait;
+use Nishchay\Attributes\Event\Event;
 
 /**
  * Event Annotation of event type class.
@@ -17,15 +18,10 @@ use Nishchay\Utility\Coding;
  * @version     1.0
  * @author      Bhavik Patel
  */
-class Event extends BaseAnnotationDefinition
+class EventClass
 {
 
-    /**
-     * Annotations.
-     * 
-     * @var array 
-     */
-    private $annotation;
+    use AttributeTrait;
 
     /**
      * Event annotation.
@@ -37,13 +33,18 @@ class Event extends BaseAnnotationDefinition
     /**
      * 
      * @param   string      $class
-     * @param   array       $annotation
+     * @param   array       $attributes
      */
-    public function __construct($class, $annotation)
+    public function __construct($class, $attributes)
     {
-        parent::__construct($class, null);
-        $this->annotation = $annotation;
-        $this->setter($annotation);
+        $this->setClass($class);
+        $this->processAttributes($attributes);
+
+        if ($this->event === null) {
+            throw new ApplicationException('[' . $class . '] must be event.',
+                            $class);
+        }
+
         $this->iterateMethods();
     }
 
@@ -63,12 +64,8 @@ class Event extends BaseAnnotationDefinition
      * @param   boolean                         $event
      * @throws  InvalidAnnotationExecption
      */
-    protected function setEvent($event)
+    protected function setEvent(Event $event)
     {
-        if ($event !== false) {
-            throw new InvalidAnnotationExecption('Annotation [event] does not support'
-                            . ' paramters.', $this->class, $this->method, 916006);
-        }
         $this->event = true;
     }
 
@@ -88,16 +85,14 @@ class Event extends BaseAnnotationDefinition
             }
 
             try {
-                $attributes = $method->getAttributes();
-
                 # Ignoring methods which does not have annotation on them.
-                if (empty($attributes)) {
+                if (empty($method->getAttributes())) {
                     continue;
                 }
 
                 # Creating just instnace and it will parses event method and
                 # stores it into event collection.
-                new MethodAnnotation($this->class, $method->name, $attributes);
+                new EventMethod($method);
             } catch (Exception $ex) {
                 throw new InvalidAttributeException($ex->getMessage(),
                                 $this->class, $method->name, 916007);

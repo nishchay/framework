@@ -14,7 +14,7 @@ use Nishchay\Controller\ControllerMethod;
 use Nishchay\Attributes\Controller\Method\Response;
 use Nishchay\Attributes\Controller\Controller as ControllerAttribute;
 use Nishchay\Attributes\AttributeTrait;
-use Nishchay\Attributes\Event\{
+use Nishchay\Attributes\Controller\Event\{
     AfterEvent,
     BeforeEvent
 };

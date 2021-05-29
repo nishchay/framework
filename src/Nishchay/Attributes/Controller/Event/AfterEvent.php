@@ -1,6 +1,6 @@
 <?php
 
-namespace Nishchay\Attributes\Event;
+namespace Nishchay\Attributes\Controller\Event;
 
 use Nishchay\Attributes\AttributeTrait;
 use Attribute;

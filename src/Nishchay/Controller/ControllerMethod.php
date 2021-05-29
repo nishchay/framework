@@ -5,10 +5,9 @@ namespace Nishchay\Controller;
 use Nishchay;
 use Nishchay\Exception\InvalidAnnotationExecption;
 use Nishchay\Exception\InvalidAttributeException;
-use Nishchay\Utility\ArrayUtility;
 use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\Attributes\AttributeTrait;
-use Nishchay\Attributes\Event\{
+use Nishchay\Attributes\Controller\Event\{
     AfterEvent,
     BeforeEvent
 };
@@ -29,7 +28,6 @@ use Nishchay\Attributes\Controller\Method\{
     NoService,
     Forwarder
 };
-use ReflectionAttribute;
 
 /**
  * Controller method class.

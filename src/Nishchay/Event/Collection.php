@@ -91,15 +91,15 @@ class Collection extends AbstractCollection
     /**
      * Stores scope or context event.
      * 
-     * @param   \Nishchay\Event\Annotation\Method\Method         $annotation
+     * @param   \Nishchay\Event\Annotation\Method\Method         $attribute
      * @param   string                                          $value
      * @param   array                                           $callback
      */
-    public function store($annotation, $value)
+    public function store($attribute, $value)
     {
-        if ($this->isExist($annotation->getClass())) {
-            $this->collection[$annotation->getIntended()->getType()]
-                    [$annotation->getFire()->getWhen()][$value][] = $annotation;
+        if ($this->isExist($attribute->getClass())) {
+            $this->collection[$attribute->getEventConfig()->getType()]
+                    [$attribute->getEventConfig()->getWhen()][$value][] = $attribute;
         }
     }
 
@@ -107,12 +107,12 @@ class Collection extends AbstractCollection
      * Stores global event.
      * 
      * @param   string      $when
-     * @param   \Nishchay\Event\Annotation\Method\Method      $annotation
+     * @param   \Nishchay\Event\Annotation\Method\Method      $attribute
      */
-    public function storeGlobal($annotation)
+    public function storeGlobal($attribute)
     {
-        if ($this->isExist($annotation->getClass())) {
-            $this->collection[Names::TYPE_GLOBAL][$annotation->getFire()->getWhen()][] = $annotation;
+        if ($this->isExist($attribute->getClass())) {
+            $this->collection[Names::TYPE_GLOBAL][$attribute->getEventConfig()->getWhen()][] = $attribute;
         }
     }
 

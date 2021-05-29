@@ -5,7 +5,7 @@ namespace Nishchay\Event;
 use Nishchay;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\DI\DI;
-use Nishchay\Event\Annotation\Method\Method;
+use Nishchay\Event\EventMethod;
 use Nishchay\Controller\ControllerClass;
 use Nishchay\Controller\ControllerMethod;
 use Nishchay\Event\Annotation\Method\Fire;
@@ -120,18 +120,18 @@ class EventManager
     /**
      * Fires event.
      * 
-     * @param instance $annotation
+     * @param instance $attribute
      * @param array $callback
      * @return boolean
      */
-    private function fire($annotation, $callback)
+    private function fire($attribute, $callback)
     {
         if ($callback === false) {
             return true;
         }
-        if (!($annotation->getOnce() && $annotation->isFired())) {
-            $annotation->markFired();
-            return $this->invokeCallback($callback, $annotation->getClass());
+        if (!($attribute->getOnce() && $attribute->isFired())) {
+            $attribute->markFired();
+            return $this->invokeCallback($callback, $attribute->getClass());
         }
         return true;
     }
@@ -144,17 +144,17 @@ class EventManager
      */
     private function fireEvent($events)
     {
-        foreach ($events as $annotation) {
-            if ($annotation instanceof Method &&
-                    $annotation->getFire()->getOnce() &&
-                    $annotation->isFired()) {
+        foreach ($events as $attribute) {
+            if ($attribute instanceof EventMethod &&
+                    $attribute->getEventConfig()->getOnce() &&
+                    $attribute->isFired()) {
                 continue;
             }
 
             $response = $this->di
-                    ->invoke($this->getInstance($annotation->getClass()),
-                    $annotation->getMethod());
-            $annotation instanceof Method && $annotation->markFired();
+                    ->invoke($this->getInstance($attribute->getClass()),
+                    $attribute->getMethod());
+            $attribute instanceof EventMethod && $attribute->markFired();
             if ($response !== true) {
                 return $response;
             }
@@ -172,7 +172,7 @@ class EventManager
     {
         # We allow callback of class where annotation is defined or registered
         # event class.
-        if ($callback[0] !== $class && !Nishchay::getEventCollection()->isExist($callback[0])) {
+        if ($callback[0] !== $class && Nishchay::getEventCollection()->isExist($callback[0]) === false) {
             throw new NotSupportedException('Invalid event callback [' .
                             implode('::', $callback) . '].'
                             . ' It should belongs to controller or any event class.',

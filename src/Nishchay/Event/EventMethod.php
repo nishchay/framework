@@ -1,11 +1,14 @@
 <?php
 
-namespace Nishchay\Event\Annotation\Method;
+namespace Nishchay\Event;
 
 use Nishchay;
+use ReflectionMethod;
 use Nishchay\Annotation\BaseAnnotationDefinition;
-use Nishchay\Exception\ApplicationException;
+use Nishchay\Exception\InvalidAttributeException;
 use Nishchay\Processor\Names;
+use Nishchay\Attributes\AttributeTrait;
+use Nishchay\Attributes\Event\EventConfig;
 
 /**
  * Event Method annotation
@@ -15,22 +18,24 @@ use Nishchay\Processor\Names;
  * @version     1.0
  * @author      Bhavik Patel
  */
-class Method extends BaseAnnotationDefinition
+class EventMethod
 {
+
+    use AttributeTrait;
 
     /**
      * Intended annotation.
      * 
      * @var \Nishchay\Event\Annotation\Method\Intended 
      */
-    private $intended = false;
+    private $intended;
 
     /**
      * Fire annotation.
      * 
      * @var \Nishchay\Event\Annotation\Method\Fire 
      */
-    private $fire = false;
+    private $fire;
 
     /**
      * Is event fired or not.
@@ -41,20 +46,35 @@ class Method extends BaseAnnotationDefinition
 
     /**
      * 
+     * @var EventConfig
+     */
+    private $eventConfig;
+
+    /**
+     * 
      * @param   string  $class
      * @param   string  $method
-     * @param   array   $annotation
+     * @param   array   $attributes
      */
-    public function __construct($class, $method, $annotation)
+    public function __construct(ReflectionMethod $reflection)
     {
-        parent::__construct($class, $method);
+        $this->setClass($reflection->class)
+                ->setMethod($reflection->name);
 
-        #Annotation array is not used in many places so no need to store.
-        $this->setter($annotation);
-        if ($this->intended === false || $this->fire === false) {
-            throw new ApplicationException('Event method requires both '
-                    . 'intended and fire annotation.', $this->class, $this->method, 916005);
+        $this->process($reflection);
+    }
+
+    public function process(ReflectionMethod $reflection)
+    {
+        $attribute = current($reflection->getAttributes(EventConfig::class));
+
+        if ($attribute->getName() !== EventConfig::class) {
+            return;
         }
+        $this->eventConfig = $attribute->newInstance()
+                ->setClass($this->class)
+                ->setMethod($this->method)
+                ->verify();
         $this->storeEvent();
     }
 
@@ -63,10 +83,10 @@ class Method extends BaseAnnotationDefinition
      */
     public function storeEvent()
     {
-        $type = $this->intended->getType();
+        $type = $this->eventConfig->getType();
         if ($type !== Names::TYPE_GLOBAL) {
             return Nishchay::getEventCollection()
-                            ->store($this, $this->intended->getName());
+                            ->store($this, $this->eventConfig->getName());
         }
         Nishchay::getEventCollection()->storeGlobal($this);
     }
