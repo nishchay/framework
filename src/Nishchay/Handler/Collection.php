@@ -53,12 +53,12 @@ class Collection extends AbstractCollection
     /**
      * 
      * @param type $class
-     * @param type $annotation
+     * @param type $attributes
      */
-    public function store($class, $annotation)
+    public function store($class, $attributes)
     {
         $this->checkStoring();
-        $handler = (new HandlerClass($class, $annotation))->getHandler();
+        $handler = (new HandlerClass($class, $attributes))->getHandler();
 
         switch ($handler->getType()) {
             case Names::TYPE_CONTEXT:

@@ -8,6 +8,8 @@ use Nishchay\Exception\NotSupportedException;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Persistent\System;
 use Nishchay\Processor\Facade;
+use ReflectionClass;
+use Nishchay\Attributes\Container\Container as ContainerAttribute;
 
 /**
  * Container collection class.
@@ -81,15 +83,28 @@ class Collection extends AbstractCollection
      * 
      * @param string $class
      */
-    public function store(string $class)
+    public function store(string $class, array $attribtues)
     {
+        $isContainer = false;
+        foreach ($attribtues as $attribute) {
+            if ($attribute->getName() === ContainerAttribute::class) {
+                $isContainer = true;
+            }
+        }
+
+        if ($isContainer === false) {
+            throw new ApplicationException('[' . $class . '] must be container.',
+                            $class);
+        }
+
         $this->collection[$class] = new Container($class);
         $facade = $class . '::FACADE';
         if (defined($facade)) {
 
             $name = constant($facade);
             if (isset($this->facades[$name]) || Facade::isExists($name)) {
-                throw new ApplicationException('Facade with name [' . $name . '] already exists.', $class, null, 934005);
+                throw new ApplicationException('Facade with name [' . $name . '] already exists.',
+                                $class, null, 934005);
             }
 
             $this->facades[$name] = $this->collection[$class];
@@ -106,7 +121,8 @@ class Collection extends AbstractCollection
     public function get(string $class)
     {
         if (array_key_exists($class, $this->collection) === false) {
-            throw new NotSupportedException('Class [' . $class . '] is not container.', null, null, 934001);
+            throw new NotSupportedException('Class [' . $class . '] is not container.',
+                            null, null, 934001);
         }
 
         return $this->collection[$class];

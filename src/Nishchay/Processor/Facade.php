@@ -7,7 +7,6 @@ use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\AlreadyInstanciatedExecption;
 use ReflectionClass;
 use Nishchay\Utility\Coding;
-use Nishchay\Annotation\AnnotationParser;
 
 /**
  * Base Facade class.
@@ -39,9 +38,7 @@ class Facade
      * 
      * @var array 
      */
-    private $primary = [
-        AnnotationParser::class => 'AnnotationParser'
-    ];
+    private $primary = [];
 
     /**
      * Creates primary facades.
@@ -77,7 +74,8 @@ class Facade
         $callingClass = get_called_class();
 
         if (!array_key_exists($callingClass, self::$instances)) {
-            throw new ApplicationException('Facade not created.', null, null, 925032);
+            throw new ApplicationException('Facade not created.', null, null,
+                            925032);
         }
 
         $object = self::$instances[$callingClass];
@@ -89,11 +87,13 @@ class Facade
         if (!method_exists($object, $name)) {
 
             if (method_exists($object, '__call')) {
-                return call_user_func_array([$object, '__call'], [$name, $arguments]);
+                return call_user_func_array([$object, '__call'],
+                        [$name, $arguments]);
             }
 
             throw new BadMethodCallException('Method [' . $callingClass .
-                            '::' . $name . '] does not exist in Facade class.', 925031);
+                            '::' . $name . '] does not exist in Facade class.',
+                            925031);
         }
 
         return call_user_func_array([$object, $name], $arguments);
@@ -116,7 +116,8 @@ class Facade
         # Must be called using Facade class only.
         if (get_called_class() !== Facade::class) {
             throw new ApplicationException('Method [create] does not'
-                            . ' belogs to class [' . get_called_class() . '].', null, null, 925033);
+                            . ' belogs to class [' . get_called_class() . '].',
+                            null, null, 925033);
         }
 
         if (isset(self::$instances[$name])) {

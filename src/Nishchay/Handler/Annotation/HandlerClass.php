@@ -2,45 +2,50 @@
 
 namespace Nishchay\Handler\Annotation;
 
-use Nishchay\Annotation\BaseAnnotationDefinition;
-use Nishchay\Handler\Annotation\Handler;
+use Nishchay\Exception\ApplicationException;
+use Nishchay\Attributes\Handler\Handler;
+use Nishchay\Attributes\AttributeTrait;
 
 /**
  * Description of HandlerClass
  *
  * @author Bhavik Patel
  */
-class HandlerClass extends BaseAnnotationDefinition
+class HandlerClass
 {
+
+    use AttributeTrait;
 
     /**
      *
-     * @var \Nishchay\Handler\Annotation\Handler 
+     * @var Handler 
      */
     private $handler;
 
-    public function __construct($class, $annotations)
+    /**
+     * 
+     * @param string $class
+     * @param array $attributes
+     * @throws ApplicationException
+     */
+    public function __construct(string $class, array $attributes)
     {
-        parent::__construct($class, null);
-        $this->setter($annotations);
+        $this->setClass($class);
+        $this->processAttributes($attributes);
+
+        if ($this->handler === null) {
+            throw new ApplicationException('[' . $class . '] must be handler',
+                            $class);
+        }
     }
 
     /**
      * 
-     * @return \Nishchay\Handler\Annotation\Handler 
+     * @param Handler $handler
      */
-    public function getHandler()
+    public function setHandler(Handler $handler)
     {
-        return $this->handler;
-    }
-
-    /**
-     * 
-     * @param type $handler
-     */
-    public function setHandler($handler)
-    {
-        $this->handler = new Handler($this->class, $handler);
+        $this->handler = $handler;
     }
 
 }

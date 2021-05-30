@@ -29,8 +29,6 @@ class Help
             '{controller-alias}' => 'c',
             '{no-params}' => 'List all controller',
             'class' => 'Gives information of controller',
-            'class -annotation' => 'Lists annotation defined on class',
-            'class -annotation -method method' => 'Lists annotation defined on controller method',
             '-create name' => 'Creates empty controller',
             '-create name -crud' => 'Creates contrller with crud routes',
             '-create name -template name' => 'Creates controller from template name'
