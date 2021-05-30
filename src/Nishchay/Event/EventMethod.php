@@ -4,8 +4,6 @@ namespace Nishchay\Event;
 
 use Nishchay;
 use ReflectionMethod;
-use Nishchay\Annotation\BaseAnnotationDefinition;
-use Nishchay\Exception\InvalidAttributeException;
 use Nishchay\Processor\Names;
 use Nishchay\Attributes\AttributeTrait;
 use Nishchay\Attributes\Event\EventConfig;
@@ -64,6 +62,11 @@ class EventMethod
         $this->process($reflection);
     }
 
+    /**
+     * 
+     * @param ReflectionMethod $reflection
+     * @return type
+     */
     public function process(ReflectionMethod $reflection)
     {
         $attribute = current($reflection->getAttributes(EventConfig::class));
@@ -89,46 +92,6 @@ class EventMethod
                             ->store($this, $this->eventConfig->getName());
         }
         Nishchay::getEventCollection()->storeGlobal($this);
-    }
-
-    /**
-     * Returns intended annotation.
-     * 
-     * @return \Nishchay\Event\Annotation\Method\Intended
-     */
-    public function getIntended()
-    {
-        return $this->intended;
-    }
-
-    /**
-     * Returns file annotation.
-     * 
-     * @return \Nishchay\Event\Annotation\Method\Fire
-     */
-    public function getFire()
-    {
-        return $this->fire;
-    }
-
-    /**
-     * Sets intended annotation.
-     * 
-     * @param   array   $intended
-     */
-    protected function setIntended($intended)
-    {
-        $this->intended = new Intended($this->class, $this->method, $intended);
-    }
-
-    /**
-     * Sets fire annotation.
-     * 
-     * @param   array   $fire
-     */
-    protected function setFire($fire)
-    {
-        $this->fire = new Fire($this->class, $this->method, $fire);
     }
 
     /**
