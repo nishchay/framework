@@ -2,6 +2,13 @@
 
 namespace Nishchay\Generator\Skelton\Controller\Hostel;
 
+use Nishchay\Attributes\Controller\Controller;
+use Nishchay\Attributes\Controller\Routing;
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder
+};
+
 /**
  * Hostel controller class.
  *
@@ -13,17 +20,18 @@ namespace Nishchay\Generator\Skelton\Controller\Hostel;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Controller
- * @Routing(prefix='hostel')
+ * 
  */
+#[Controller]
+#[Routing(prefix: 'hostel')]
 class Hostel
 {
 
     /**
      * List of hostels.
      * 
-     * @Route(path='/', type=GET)
      */
+    #[Route(path: '/', type: 'GET')]
     public function index()
     {
         # Display list of hostels or you can create dashboard
@@ -33,10 +41,9 @@ class Hostel
      * View hostel detail.
      * You may list fees, building, room, furniture, mess and student.
      * 
-     * 
-     * @Route(path='{hostelId}', type=GET)
-     * @Placeholder(hostelId=number)
      */
+    #[Route(path: '{hostelId}', type: 'GET')]
+    #[Placeholder(['hostelId' => 'int'])]
     public function view(int $hostelId)
     {
         # Display hostel detail
@@ -45,8 +52,8 @@ class Hostel
     /**
      * Add hostel.
      * 
-     * @Route(path='/', type=POST)
      */
+    #[Route(path: '/', type: 'POST')]
     public function create()
     {
         # Create new hostel
@@ -55,9 +62,9 @@ class Hostel
     /**
      * Edit hostel detail.
      * 
-     * @Route(path='{hostelId}', type=PUT)
-     * @Placeholder(hostelId=number)
      */
+    #[Route(path: '{hostelId}', type: 'PUT')]
+    #[Placeholder(['hostelId' => 'int'])]
     public function update(int $hostelId)
     {
         # Update hostel detail
@@ -66,9 +73,9 @@ class Hostel
     /**
      * Remove hostel.
      * 
-     * @Route(path='{hostelId}', type=DELETE)
-     * @Placeholder(hostelId=number)
      */
+    #[Route(path: '{hostelId}', type: 'DELETE')]
+    #[Placeholder(['hostelId' => 'int'])]
     public function remove(int $hostelId)
     {
         # Remove hostel

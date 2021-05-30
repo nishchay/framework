@@ -6,6 +6,13 @@ use Nishchay\Prototype\Crud;
 use Nishchay\Form\Form;
 use Nishchay\Generator\Entity;
 use Nishchay\Processor\FetchSingletonTrait;
+use Nishchay\Attributes\Controller\Controller;
+use Nishchay\Attributes\Controller\Routing;
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder,
+    Response
+};
 
 /**
  * {ProtoCrudClassDescription}
@@ -18,9 +25,9 @@ use Nishchay\Processor\FetchSingletonTrait;
  * {authorName}
  * {versionNumber}
  * 
- * @Controller
- * @Routing(prefix='#routeName#')
  */
+#[Controller]
+#[Routing(prefix: '#routeName#')]
 class ProtoCrud
 {
 
@@ -39,9 +46,9 @@ class ProtoCrud
     /**
      * Used for listing.
      * 
-     * @Route(path='/', type=GET)
-     * @Response(type=json)
      */
+    #[Route(path: '/', type: 'GET')]
+    #[Response(type: 'json')]
     public function index()
     {
         return $this->getPrototype()
@@ -51,9 +58,9 @@ class ProtoCrud
     /**
      * Used for inserting record.
      * 
-     * @Route(path='/', type=POST)
-     * @Response(type=json)
      */
+    #[Route(path: '/', type: 'POST')]
+    #[Response(type: 'json')]
     public function create()
     {
         return $this->getPrototype()
@@ -64,10 +71,10 @@ class ProtoCrud
     /**
      * Used for viewing record.
      * 
-     * @Route(path='{id}', type=GET)
-     * @Placeholder(id=number)
-     * @Response(type=json)
      */
+    #[Route(path: '{id}', type: 'GET')]
+    #[Placeholder(['id' => 'int'])]
+    #[Response(type: 'json')]
     public function fetch(int $id)
     {
         return $this->getPrototype()
@@ -77,10 +84,10 @@ class ProtoCrud
     /**
      * Used for updating record.
      * 
-     * @Route(path='{id}', type=PUT)
-     * @Placeholder(id=number)
-     * @Response(type=json)
      */
+    #[Route(path: '{id}', type: 'PUT')]
+    #[Placeholder(['id' => 'int'])]
+    #[Response(type: 'json')]
     public function update(int $id)
     {
         return $this->getPrototype()
@@ -91,10 +98,10 @@ class ProtoCrud
     /**
      * Used for deleting record.
      * 
-     * @Route(path='{id}', type=DELETE)
-     * @Placeholder(id=number)
-     * @Response(type=json)
      */
+    #[Route(path: '{id}', type: 'DELETE')]
+    #[Placeholder(['id' => 'int'])]
+    #[Response(type: 'json')]
     public function delete(int $id)
     {
         return $this->getPrototype()

@@ -2,6 +2,13 @@
 
 namespace Nishchay\Generator\Skelton\Controller\Employee;
 
+use Nishchay\Attributes\Controller\Controller;
+use Nishchay\Attributes\Controller\Routing;
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder
+};
+
 /**
  * Employee controller class.
  *
@@ -14,17 +21,17 @@ namespace Nishchay\Generator\Skelton\Controller\Employee;
  * {authorName}
  * {versionNumber}
  * 
- * @Controller
- * @Routing(prefix='employee')
  */
+#[Controller]
+#[Routing(prefix: 'employee')]
 class Employee
 {
 
     /**
      * Display list of employees.
      * 
-     * @Route(path='/', type=GET)
      */
+    #[Route(path: '/', type: 'GET')]
     public function index()
     {
         # TODO: Display list of employee
@@ -37,9 +44,9 @@ class Employee
     /**
      * Display employee detail.
      * 
-     * @Route(path='{employeeId}', type=GET)
-     * @Placeholder(employeeId=number)
      */
+    #[Route(path: '{employeeId}', type: 'GET')]
+    #[Placeholder(['employeeId' => 'int'])]
     public function view(int $employeeId)
     {
         # TODO: Display employee detail.
@@ -48,8 +55,8 @@ class Employee
     /**
      * Add employee.
      * 
-     * @Route(path='/', type=POST)
      */
+    #[Route(path: '/', type: 'POST')]
     public function create()
     {
         # TODO: Create new employee
@@ -58,9 +65,9 @@ class Employee
     /**
      * Edit employee detail.
      * 
-     * @Route(path='{employeeId}', type=PUT)
-     * @Placeholder(employeeId=number)
      */
+    #[Route(path: '{employeeId}', type: 'PUT')]
+    #[Placeholder(['employeeId' => 'int'])]
     public function update(int $employeeId)
     {
         # TODO: Update employee detail
@@ -69,9 +76,9 @@ class Employee
     /**
      * Remove employee.
      * 
-     * @Route(path='{employeeId}', type=DELETE)
-     * @Placeholder(employeeId=number)
      */
+    #[Route(path: '{employeeId}', type: 'DELETE')]
+    #[Placeholder(['employeeId' => 'int'])]
     public function remove(int $employeeId)
     {
         # TODO: Remove employee

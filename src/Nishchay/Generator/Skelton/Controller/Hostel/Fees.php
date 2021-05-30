@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Controller\Hostel;
 
+use Nishchay\Attributes\Controller\Controller;
+use Nishchay\Attributes\Controller\Routing;
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder
+};
 
 /**
  * Hostel fees controller class.
@@ -14,29 +20,30 @@ namespace Nishchay\Generator\Skelton\Controller\Hostel;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Controller
- * @Routing(prefix='hostel')
+ * 
  */
+#[Controller]
+#[Routing(prefix: 'hostel')]
 class Fees
 {
 
     /**
      * View various hostel fees.
      * 
-     * @Route(path='{hostelId}/fees', type=GET)
-     * @Placeholder(hostelId=number)
      */
+    #[Route(path: '{hostelId}/fees', type: 'GET')]
+    #[Placeholder(['hostelId' => 'int'])]
     public function viewHostelFeesList(int $hostelId)
     {
         # TODO: Display various hostel fees
     }
-    
+
     /**
      * View guests fees.
      * 
-     * @Route(path='{hostelId}/guests/{guestId}/fees', type=GET)
-     * @Placeholder(hostelId=number,guestId=number)
      */
+    #[Route(path: '{hostelId}/guests/{guestId}/fees', type: 'GET')]
+    #[Placeholder(['hostelId' => 'int', 'guestId' => 'int'])]
     public function viewGuestFeesList(int $hostelId, int $guestId)
     {
         # TODO: Display fees paid by guest or can also display

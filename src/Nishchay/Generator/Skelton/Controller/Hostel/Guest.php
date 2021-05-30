@@ -2,6 +2,13 @@
 
 namespace Nishchay\Generator\Skelton\Controller\Hostel;
 
+use Nishchay\Attributes\Controller\Controller;
+use Nishchay\Attributes\Controller\Routing;
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder
+};
+
 /**
  * Hostel guest controller class.
  *
@@ -13,19 +20,18 @@ namespace Nishchay\Generator\Skelton\Controller\Hostel;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Controller
- * @Routing(prefix='hostel')
  */
+#[Controller]
+#[Routing(prefix: 'hostel')]
 class Guest
 {
 
     /**
      * Display list of guests staying in hostel.
      * 
-     * @Route(path='{hostelId}/guests', type=GET)
-     * @Placeholder(hostelId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{hostelId}/guest', type: 'GET')]
+    #[Placeholder(['hostelId' => 'int'])]
     public function index(int $hostelId)
     {
         # TODO: Diplay list of guests staying in hostel
@@ -34,10 +40,9 @@ class Guest
     /**
      * View hostel guest detail.
      * 
-     * @Route(path='{hostelId}/guest/{guestId}', type=GET)
-     * @Placeholder(hostelId=number, guestId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{hostelId}/guest/{guestId}', type: 'GET')]
+    #[Placeholder(['hostelId' => 'int', 'guestId' => 'int'])]
     public function view(int $hostelId, int $guestId)
     {
         # TODO: Display hostel guest detail
@@ -46,10 +51,9 @@ class Guest
     /**
      * Add guest to hostel.
      * 
-     * @Route(path='{hostelId}/guest', type=POST)
-     * @Placeholder(hostelId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{hostelId}/guest', type: 'POST')]
+    #[Placeholder(['hostelId' => 'int'])]
     public function create(int $hostelId)
     {
         # Add guest to hostel.
@@ -62,10 +66,9 @@ class Guest
     /**
      * Update hostel guests.
      * 
-     * @Route(path='{hostelId}/guest/{guestId}', type=PUT)
-     * @Placeholder(hostelId=number, guestId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{hostelId}/guest/{guestId}', type: 'PUT')]
+    #[Placeholder(['hostelId' => 'int', 'guestId' => 'int'])]
     public function update(int $hostelId, int $guestId)
     {
         # Update hostel guest detail.
@@ -80,10 +83,9 @@ class Guest
     /**
      * Remove hostel guest.
      * 
-     * @Route(path='{hostelId}/guest/{guestId}', type=DELETE)
-     * @Placeholder(hostelId=number, guestId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{hostelId}/guest/{guestId}', type: 'DELETE')]
+    #[Placeholder(['hostelId' => 'int', 'guestId' => 'int'])]
     public function remove(int $hostelId, int $guestId)
     {
         # Remove guest from hostel
@@ -92,9 +94,9 @@ class Guest
     /**
      * Pay guest fees.
      * 
-     * @Route(path='{hostelId}/guests/{guestId}/fees', type=POST)
-     * @Placeholder(hostelId=number,guestId=number)
      */
+    #[Route(path: '{hostelId}/guest/{guestId}/fees', type: 'POST')]
+    #[Placeholder(['hostelId' => 'int', 'guestId' => 'int'])]
     public function guestFees(int $hostelId, int $guestId)
     {
         # TODO: Pay guest fees
@@ -103,9 +105,9 @@ class Guest
     /**
      * View guest fee receipt.
      * 
-     * @Route(path='{hostelId}/guests/{guestId}/fees/{feesId}')
-     * @Placeholder(hostelId=number,guestId=number,feesId=number)
      */
+    #[Route(path: '{hostelId}/guest/{guestId}/fees/{feesId}', type: 'GET')]
+    #[Placeholder(['hostelId' => 'int', 'guestId' => 'int', 'feesId' => 'int'])]
     public function guestFeesDetail(int $hostelId, int $guestId, int $feesId)
     {
         # TODO: 
