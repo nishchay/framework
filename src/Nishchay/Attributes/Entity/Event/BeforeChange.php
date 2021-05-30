@@ -48,7 +48,7 @@ class BeforeChange
     private function refactorCallback()
     {
 
-        # Ignoring callback parameter while annotation defined on method. This
+        # Ignoring callback parameter if attribute declared on method. This
         # method will be considered as callback.
         if ($this->method !== null) {
             $this->callback = $this->method;
@@ -66,8 +66,8 @@ class BeforeChange
             }
         } else {
             # Now we will prepend class name if only method has been set as 
-            # callback. In this case, we consider class on which annotation
-            # defined.
+            # callback. In this case, we consider class on which attribute was
+            # declared.
             if (strpos($this->callback, '::') === false) {
                 $this->callback = "{$this->class}::{$this->callback}";
             }
@@ -86,13 +86,13 @@ class BeforeChange
 
     /**
      * 
-     * @throws InvalidAnnotationParameterException
+     * @throws InvalidAttributeException
      */
     private function verifyForParameter()
     {
         foreach ($this->for as $type) {
             if (!in_array($type, self::SUPPORTED)) {
-                throw new InvalidAnnotationParameterException('Invalid'
+                throw new InvalidAttributeException('Invalid'
                                 . ' modification type [' . $type . '] for'
                                 . ' [BeforeChange] event.', $this->class,
                                 $this->method, 911029);

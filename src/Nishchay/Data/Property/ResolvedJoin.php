@@ -3,7 +3,7 @@
 namespace Nishchay\Data\Property;
 
 use Nishchay\Exception\ApplicationException;
-use Nishchay\Data\Annotation\Property\Relative;
+use Nishchay\Attributes\Entity\Property\Relative;
 use Nishchay\Data\Query;
 
 /**

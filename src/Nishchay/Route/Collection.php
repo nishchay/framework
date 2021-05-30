@@ -103,11 +103,11 @@ class Collection extends AbstractCollection
     /**
      * Stores route into collection.
      * 
-     * @param   \Nishchay\Route\Annotation\Placeholder      $placeholder
-     * @param   \Nishchay\Route\Annotation\Route        $route
+     * @param   Placeholder $placeholder
+     * @param   Route        $route
      * @param   int                                   $priority
      * @return  NULL
-     * @throws  \Exception
+     * @throws  ApplicationException
      */
     public function store($placeholder, Route $route, $priority)
     {
@@ -146,9 +146,9 @@ class Collection extends AbstractCollection
 
     /**
      * 
-     * @param   \Nishchay\Route\Annotation\Route                 $route
-     * @param   string                                          $pattern
-     * @param   string                                          $path
+     * @param   Route   $route
+     * @param   string  $pattern
+     * @param   string  $path
      * @throws  ApplicationException
      */
     private function storeDefinition(Route $route, $pattern, $path)
@@ -348,7 +348,7 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * Returns routes by matching with its path as defined in @Route annotation.
+     * Returns routes by matching with its path as defined in Route attribute.
      * 
      * @param string $name
      * @return array

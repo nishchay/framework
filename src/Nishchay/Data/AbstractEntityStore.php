@@ -128,7 +128,7 @@ abstract class AbstractEntityStore
     }
 
     /**
-     * Returns annotation of class.
+     * Returns attribute of class.
      * 
      * @param string $class
      * @return array

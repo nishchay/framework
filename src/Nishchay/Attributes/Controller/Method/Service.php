@@ -35,7 +35,7 @@ class Service
      * Sets supported field names.
      * 
      * @param   boolean|string|array    $supported
-     * @return  \Nishchay\Service\Annotation\Service
+     * @return  self
      */
     public function verify()
     {
@@ -47,7 +47,7 @@ class Service
 
         if (is_bool($this->supported)) {
             $this->supported = false;
-            return;
+            return $this;
         }
 
         if (is_array($this->fields)) {
@@ -61,6 +61,7 @@ class Service
                                 928001);
             }
         }
+        return $this;
     }
 
 }

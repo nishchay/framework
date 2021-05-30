@@ -9,7 +9,7 @@ use Nishchay\Attributes\Entity\Event\{
 };
 
 /**
- * Annotation defined on entity method.
+ * attribute defined on entity method.
  * 
  * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
@@ -22,14 +22,14 @@ class EntityMethod
     use AttributeTrait;
 
     /**
-     * After change annotation.
+     * After change attribute.
      * 
      * @var array
      */
     private $afterChange = [];
 
     /**
-     * Bfore change annotation.
+     * Bfore change attribute.
      * 
      * @var array
      */
@@ -49,7 +49,7 @@ class EntityMethod
     }
 
     /**
-     * Returns after change annotation.
+     * Returns after change attribute.
      * 
      * @return array
      */
@@ -59,7 +59,7 @@ class EntityMethod
     }
 
     /**
-     * Returns before change annotation.
+     * Returns before change attribute.
      * 
      * @return array
      */

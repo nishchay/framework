@@ -68,10 +68,12 @@ class Dispatcher
             # we will handle it by default handler.
             try {
                 $route = Processor::getStageDetail('object');
-                new ResponseHandler($route->getClass(), $route->getMethod(), $response, Processor::getStageDetail('context'));
+                new ResponseHandler($route->getClass(), $route->getMethod(),
+                        $response, Processor::getStageDetail('context'));
                 exit;
             } catch (Exception $e) {
-                return $this->getResponse(new DefaultHandler(), $this->getReDetail($e, $detail));
+                return $this->getResponse(new DefaultHandler(),
+                                $this->getReDetail($e, $detail));
             }
         }
     }
@@ -92,7 +94,8 @@ class Dispatcher
                 new ResponseHandler($handlerClass, null, $response, '');
                 return true;
             } catch (Exception $e) {
-                return $this->getResponse(new DefaultHandler(), $this->getReDetail($e, $detail));
+                return $this->getResponse(new DefaultHandler(),
+                                $this->getReDetail($e, $detail));
             }
         }
 
@@ -110,7 +113,8 @@ class Dispatcher
     private function getReDetail(Exception $e, Detail $detail)
     {
         $message = "Actual: {$detail->getMessage()} Further: {$e->getMessage()}";
-        return new Detail($e->getCode(), $message, $e->getFile(), $e->getLine(), 'error', $e->getTrace());
+        return new Detail($e->getCode(), $message, $e->getFile(), $e->getLine(),
+                'error', $e->getTrace());
     }
 
     /**
@@ -168,8 +172,8 @@ class Dispatcher
         $handler = false;
         try {
 
-            # Fetching method annotation so we can find exception handler 
-            # annotation defined on processing route.
+            # Fetching method attribute so we can find exception handler 
+            # attribute defined on processing route.
             $route = Processor::getStageDetail('object');
             $class = Nishchay::getControllerCollection()
                     ->getClass($route->getClass());
@@ -216,8 +220,8 @@ class Dispatcher
 
     /**
      * 
-     * @param   \Nishchay\Controller\Annotation\Method\Method    $method
-     * @param   \Nishchay\Controller\Annotation\ExceptionHandler $exceptionHandler
+     * @param   \Nishchay\Controller\ControllerMethod    $method
+     * @param   \Nishchay\Attributes\Controller\ExceptionHandler $exceptionHandler
      * @return  boolean
      */
     private function getHandlerClass($method, $exceptionHandler)
@@ -253,7 +257,7 @@ class Dispatcher
     /**
      * Returns handler class for the scope.
      * 
-     * @param \Nishchay\Controller\Annotation\Method\Method $method
+     * @param \Nishchay\Controller\ControllerMethod $method
      * @return string|boolean
      */
     private function getHandlerClassOfScope($method)

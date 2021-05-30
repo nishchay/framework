@@ -138,17 +138,6 @@ class Organizer
     }
 
     /**
-     * Returns current class type 
-     * 
-     * @param   array       $annotations
-     * @return  array
-     */
-    public function getClassType($annotations)
-    {
-        return array_intersect(self::SPECIAL_CLASSES, array_keys($annotations));
-    }
-
-    /**
      * Returns parent of file
      * 
      * @param   string  $path
@@ -263,12 +252,12 @@ class Organizer
      * Process controller class.
      * 
      * @param   string      $class
-     * @param   array       $annotation
+     * @param   array       $attributes
      * @param   string      $context
      */
-    protected function processControllerClass($class, $annotation, $context)
+    protected function processControllerClass($class, $attributes, $context)
     {
-        new ControllerClass($class, $annotation, $context);
+        new ControllerClass($class, $attributes, $context);
     }
 
     /**
@@ -380,7 +369,7 @@ class Organizer
 
     /**
      * Properly factoring to their class type
-     * From the Defined annotations class type is detected
+     * From the Defined attributes class type is detected
      * 
      * @param   string                      $class
      * @return  boolean

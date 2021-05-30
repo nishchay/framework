@@ -7,7 +7,7 @@ use Nishchay\Console\AbstractCommand;
 use Console_Table;
 use Nishchay\Console\Printer;
 use Nishchay\Processor\Names;
-use Nishchay\Event\Annotation\Method\Fire;
+use Nishchay\Attributes\Event\EventConfig;
 use Nishchay\Console\Help;
 
 /**
@@ -94,8 +94,8 @@ class Event extends AbstractCommand
 
         $name = $this->arguments[1];
         $eventCollection = Nishchay::getEventCollection();
-        $beforeEvent = $eventCollection->getContextEvent($name, Fire::BEFORE);
-        $afterEvent = $eventCollection->getContextEvent($name, Fire::AFTER);
+        $beforeEvent = $eventCollection->getContextEvent($name, EventConfig::BEFORE);
+        $afterEvent = $eventCollection->getContextEvent($name, EventConfig::AFTER);
         if (empty($beforeEvent) && empty($afterEvent)) {
             Printer::write('No event exist for context: ' . $name, Printer::RED_COLOR, 913011);
             return false;

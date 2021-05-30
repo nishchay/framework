@@ -116,7 +116,7 @@ class FromProperty extends AbstractEntityStore
     /**
      * Iterates over each property and builds join rule.
      * 
-     * @param \Nishchay\Data\Annotation\Property\Derived     $derived
+     * @param Derived     $derived
      */
     public function process(Derived $derived)
     {
@@ -290,7 +290,7 @@ class FromProperty extends AbstractEntityStore
      * @param   EntityClass            $entity
      * @param   string                                          $from
      * @return  Relative
-     * @throws  InvalidAnnotationExecption
+     * @throws  ApplicationException
      */
     private function getRelativeProperty(EntityClass $entity, $from)
     {
@@ -312,11 +312,11 @@ class FromProperty extends AbstractEntityStore
     }
 
     /**
-     * Returns relative annotation if it is valid.
+     * Returns relative attribute if it is valid.
      * 
-     * @param   \Nishchay\Data\Annotation\Property             $self
-     * @return  \Nishchay\Data\Annotation\Property\Relative
-     * @throws  \Nishchay\Exception\InvalidAnnotationExecption
+     * @param   Property             $self
+     * @return  Relative
+     * @throws  ApplicationException
      */
     private function getRelative($self)
     {

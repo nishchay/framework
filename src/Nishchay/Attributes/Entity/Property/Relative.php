@@ -36,7 +36,7 @@ class Relative
     const PERFECT = 'perfect';
 
     /**
-     * Property name on which annotation is defined.
+     * Property name on which attribute is declared.
      * 
      * @var string 
      */

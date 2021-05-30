@@ -24,7 +24,7 @@ use Nishchay\Attributes\Entity\Property\{
 };
 
 /**
- * Property annotation class.
+ * Entity property attribute class.
  *
  * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
@@ -52,9 +52,9 @@ class Property
     private $identity = false;
 
     /**
-     * DataType annotation.
+     * DataType attribute.
      * 
-     * @var \Nishchay\Data\Annotation\Property\DataType 
+     * @var DataType 
      */
     private $dataType = false;
 
@@ -66,21 +66,21 @@ class Property
     private $generator = false;
 
     /**
-     * Derived annotation.
+     * Derived attribute.
      * 
      * @var Derived 
      */
     private $derived;
 
     /**
-     * Relative annotation.
+     * Relative attribute.
      * 
-     * @var \Nishchay\Data\Annotation\Property\Relative 
+     * @var Relative 
      */
     private $relative;
 
     /**
-     * Validation annotation.
+     * Validation attribute.
      * 
      * @var array 
      */
@@ -188,13 +188,13 @@ class Property
     }
 
     /**
-     * Returns DataType annotation if defined otherwise it returns FALSE.
+     * Returns DataType attribute if defined otherwise it returns FALSE.
      * 
      * @return DataType
      */
     public function getDatatype()
     {
-        return $this->datatype;
+        return $this->dataType;
     }
 
     /**
@@ -208,7 +208,7 @@ class Property
     }
 
     /**
-     * Returns Derived annotation if defined otherwise it returns FALSE.
+     * Returns Derived attribute if defined otherwise it returns FALSE.
      * 
      * @return Derived
      */
@@ -228,7 +228,7 @@ class Property
     }
 
     /**
-     * Returns Relative annotation if defined otherwise it returns FALSE.
+     * Returns Relative attribute if defined otherwise it returns FALSE.
      * 
      * @return Relative
      */
@@ -255,11 +255,11 @@ class Property
     protected function setDataType(DataType $dataType)
     {
         $dataType->setPropertyName($this->propertyName);
-        $this->datatype = $dataType;
+        $this->dataType = $dataType;
     }
 
     /**
-     * Sets Generator annotation.
+     * Sets Generator attribute.
      * 
      * @param array $generator
      */
@@ -269,7 +269,7 @@ class Property
     }
 
     /**
-     * Sets Derived annotation.
+     * Sets Derived attribute.
      * 
      * @param array $derived
      */
@@ -287,7 +287,7 @@ class Property
     }
 
     /**
-     * Sets Relative annotation.
+     * Sets Relative attribute.
      * 
      * @param Relative $relative
      */
@@ -364,7 +364,7 @@ class Property
 
     /**
      * Returns scaler value to be stored to database.
-     * If value is instance of DateTime class then it will return date formated
+     * If value is instance of DateTime class then it will return date formatted
      * as per property data type defined in entity class otherwise it will 
      * return serialized value.
      * 
@@ -420,7 +420,7 @@ class Property
     }
 
     /**
-     * Returns validation annotations.
+     * Returns validation attributes.
      * 
      * @return array
      */
@@ -430,7 +430,7 @@ class Property
     }
 
     /**
-     * Sets validation anotation.
+     * Sets validation attribute.
      * 
      * @param array $validation
      */

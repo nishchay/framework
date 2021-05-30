@@ -4,7 +4,7 @@ namespace Nishchay\Service;
 
 use Nishchay;
 use Nishchay\Exception\BadRequestException;
-use Nishchay\Service\Annotation\Service;
+use Nishchay\Attributes\Controller\Method\Service;
 use Nishchay\Utility\MethodInvokerTrait;
 
 /**
@@ -81,7 +81,7 @@ class ServicePostProcess extends BaseServiceProcess
     {
 
         # Removing fields which are not supported as defiend in supported 
-        # parameter of @Service annotation.
+        # parameter of Service attribute.
         $this->removeUnSupported($this->getSupported());
 
         # Adding fields which always need to be sent.

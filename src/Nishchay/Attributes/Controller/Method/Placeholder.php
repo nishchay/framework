@@ -20,7 +20,7 @@ class Placeholder
     use AttributeTrait;
 
     /**
-     * Annotation name.
+     * Attribute name.
      */
     const NAME = 'placeholder';
 

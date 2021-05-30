@@ -7,9 +7,9 @@ use ReflectionClass;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\Data\AbstractEntityStore;
-use Nishchay\Data\Annotation\Entity;
 use Nishchay\Attributes\Entity\Property\Property;
-use Nishchay\Data\Annotation\Property\Relative;
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\Relative;
 use Nishchay\Data\EntityQuery;
 use Nishchay\Data\Meta\MetaTable;
 use Nishchay\Data\Property\ConstantEntity;
@@ -194,7 +194,7 @@ class EntityManager extends AbstractEntityStore
 
         # Getting connection name from @connect annotaiton defined on entity
         # class. It will return default connection name if entity class has 
-        # not defined @connect annotation on it. We are setting to this 
+        # not defined @connect attribute on it. We are setting to this 
         # class because we use it at many places.
         $this->entityConnection = $this->getThisEntity()
                 ->getConnect();
@@ -513,7 +513,7 @@ class EntityManager extends AbstractEntityStore
             $propertyName)
     {
         $records = $entityQuery->getQueryBuilder()->get();
-        
+
         $derivedData = [];
 
         # This will return mapping of alias to its entity class.
@@ -895,7 +895,7 @@ class EntityManager extends AbstractEntityStore
 
         # This will convert retrieved records into entity.
         $derived = $this->refactorDerivedResult($entityQuery, $propertyName);
-        
+
         # $property_names false means derived property should be entity instance.
         if (!empty($propertyNames)) {
             $derived = $this->extractFromDerived($derived,
@@ -1633,7 +1633,7 @@ class EntityManager extends AbstractEntityStore
     }
 
     /**
-     * Returns Entity Annotation Class instance.
+     * Returns Entity attribute Class instance.
      * 
      * @return  EntityClass
      */

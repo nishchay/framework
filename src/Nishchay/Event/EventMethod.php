@@ -9,7 +9,7 @@ use Nishchay\Attributes\AttributeTrait;
 use Nishchay\Attributes\Event\EventConfig;
 
 /**
- * Event Method annotation
+ * Event Method attribute
  *
  * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
@@ -20,20 +20,6 @@ class EventMethod
 {
 
     use AttributeTrait;
-
-    /**
-     * Intended annotation.
-     * 
-     * @var \Nishchay\Event\Annotation\Method\Intended 
-     */
-    private $intended;
-
-    /**
-     * Fire annotation.
-     * 
-     * @var \Nishchay\Event\Annotation\Method\Fire 
-     */
-    private $fire;
 
     /**
      * Is event fired or not.

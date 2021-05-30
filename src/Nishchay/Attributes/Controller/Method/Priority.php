@@ -6,7 +6,7 @@ use Nishchay\Attributes\AttributeTrait;
 use Attribute;
 
 /**
- * Web service annotation class.
+ * Route priority attribute class.
  *
  * @license     https://nishchay.io/license    New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework

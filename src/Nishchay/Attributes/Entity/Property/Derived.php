@@ -25,7 +25,7 @@ class Derived
     const NAME = 'derived';
 
     /**
-     * Property name on which annotation is defined.
+     * Property name on which attribute is declared.
      * 
      * @var string 
      */

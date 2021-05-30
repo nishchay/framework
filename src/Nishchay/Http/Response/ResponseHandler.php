@@ -160,7 +160,7 @@ class ResponseHandler
 
     /**
      * If the processing route is service then response will be filtered based
-     * on @Service annotation.
+     * on Service attribute.
      *  
      * @return boolean
      */

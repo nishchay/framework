@@ -2,9 +2,9 @@
 
 namespace Nishchay\Attributes\Controller\Method;
 
+use Nishchay\Exception\InvalidAttributeException;
 use Nishchay\Attributes\AttributeTrait;
 use Nishchay\Controller\ControllerClass;
-use Nishchay\Exception\InvalidAnnotationExecption;
 use Nishchay\Processor\Application;
 
 /**
@@ -97,7 +97,7 @@ class Route
      * 
      * @param array $stage
      * @return $this
-     * @throws InvalidAnnotationExecption
+     * @throws InvalidAttributeException
      */
     protected function validateStage()
     {
@@ -106,7 +106,7 @@ class Route
         foreach ($stage as $index => $name) {
             $name = strtolower($name);
             if (!in_array($name, $allowed)) {
-                throw new InvalidAnnotationExecption('Invalid stage for the route, it should be local or test.',
+                throw new InvalidAttributeException('Invalid stage for the route, it should be local or test.',
                                 $this->class, $this->method, 926);
             }
             $stage[$index] = $name;
@@ -119,7 +119,7 @@ class Route
     /**
      * 
      * @param ControllerClass $controller
-     * @throws InvalidAnnotationExecption
+     * @throws InvalidAttributeException
      */
     public function refactorPath(ControllerClass $controller)
     {
@@ -127,7 +127,7 @@ class Route
             $this->path = $this->method;
         }
 
-        # We wiil prefix annotation if controler class has @routing annotaiton
+        # We wiil prefix if controler class has @routing annotaiton
         # and prefix parameter value is TRUE.
         # When prefix is FALSE, we ignore prefixing of route.
         if ($controller->getRouting() !== null && $this->prefix === true) {
@@ -137,7 +137,7 @@ class Route
         $this->path = trim($this->path, '/');
 
         if (empty($this->path)) {
-            throw new InvalidAnnotationExecption('Route path should not be empty.',
+            throw new InvalidAttributeException('Route path should not be empty.',
                             $this->class, $this->method, 926006);
         }
 

@@ -44,10 +44,10 @@ class Visibility extends AbstractSingleton
     }
 
     /**
-     * Returns instance route method annotation.
+     * Returns instance route method attribute.
      * 
      * @param Route $route
-     * @return \Nishchay\Controller\Annotation\Method\Method
+     * @return \Nishchay\Controller\ControllerMethod
      */
     private function getMethod(Route $route)
     {

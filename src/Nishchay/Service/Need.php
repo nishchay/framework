@@ -4,7 +4,7 @@ namespace Nishchay\Service;
 
 use Nishchay\Controller\ControllerMethod;
 use Nishchay\Http\Request\Request;
-use Nishchay\Service\Annotation\Service as ServiceAnnotation;
+use Nishchay\Attributes\Controller\Method\Service as ServiceAttribute;
 
 /**
  * Web service Need class.
@@ -19,12 +19,12 @@ class Need
 
     /**
      *
-     * @var \Nishchay\Service\Annotation\Service 
+     * @var ServiceAttribute
      */
     private $service;
 
     /**
-     * Instance of controller method annotations.
+     * Instance of controller method attributes.
      * 
      * @param ControllerMethod $method
      */
@@ -42,7 +42,7 @@ class Need
      */
     public function __call($name, $arguments)
     {
-        if ($this->service instanceof ServiceAnnotation && strpos($name, 'is') === 0) {
+        if ($this->service instanceof ServiceAttribute && strpos($name, 'is') === 0) {
             $needed = lcfirst(substr($name, 2));
             $fields = explode(',', Request::get('fields'));
             return in_array($needed, $fields) ||

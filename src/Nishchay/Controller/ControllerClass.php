@@ -5,8 +5,7 @@ namespace Nishchay\Controller;
 use Nishchay;
 use Exception;
 use Nishchay\Exception\ApplicationException;
-use Nishchay\Exception\InvalidAnnotationExecption;
-use Nishchay\Exception\InvalidAnnotationParameterException;
+use Nishchay\Exception\InvalidAttributeException;
 use ReflectionClass;
 use ReflectionMethod;
 use Nishchay\Utility\Coding;
@@ -28,7 +27,7 @@ use Nishchay\Attributes\Controller\{
 };
 
 /**
- * Controller annotation
+ * Controller attribute
  *
  * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
@@ -48,49 +47,49 @@ class ControllerClass
     private $methods = [];
 
     /**
-     * All annotation defined on controller.
+     * All attribute defined on controller.
      *  
      * @var array 
      */
     private $attributes;
 
     /**
-     * Controller annotation.
+     * Controller attribute.
      * 
      * @var boolean 
      */
     private $controller = false;
 
     /**
-     * Routing annotation.
+     * Routing attribute.
      * 
      * @var Routing 
      */
     private $routing;
 
     /**
-     * Only GET annotation.
+     * Only GET attribute.
      * 
      * @var OnlyGet 
      */
     private $onlyget;
 
     /**
-     * Only POST annotation.
+     * Only POST attribute.
      * 
      * @var OnlyPost
      */
     private $onlypost;
 
     /**
-     * Required GET annotation.
+     * Required GET attribute.
      * 
      * @var RequiredGet 
      */
     private $requiredget;
 
     /**
-     * Required POST annotation.
+     * Required POST attribute.
      * 
      * @var RequiredPost 
      */
@@ -109,7 +108,7 @@ class ControllerClass
     private $afterevent;
 
     /**
-     * Exception handler annotation.
+     * Exception handler attribute.
      * 
      * @var ExceptionHandler 
      */
@@ -127,24 +126,15 @@ class ControllerClass
         $this->attributes = $attributes;
         $this->processAttributes($this->attributes);
         if ($this->controller === false) {
-            throw new ApplicationException('[' . $class . '] must be controller.', $class);
+            throw new ApplicationException('[' . $class . '] must be controller.',
+                            $class);
         }
         Nishchay::getControllerCollection()->store($class, $this, $parent);
         $this->extractRoute();
     }
 
     /**
-     * Returns all annotation defined on the class.
-     * 
-     * @return array
-     */
-    public function getAnnotation()
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * Returns controller annotation value.
+     * Returns controller attribute value.
      * 
      * @return boolean
      */
@@ -154,9 +144,9 @@ class ControllerClass
     }
 
     /**
-     * Returns routing annotation.
+     * Returns routing attribute.
      * 
-     * @return \Nishchay\Route\Annotation\Routing
+     * @return Routing
      */
     public function getRouting()
     {
@@ -164,9 +154,9 @@ class ControllerClass
     }
 
     /**
-     * Returns Only GET annotation.
+     * Returns Only GET attribute.
      * 
-     * @return \Nishchay\Controller\Annotation\OnlyGet
+     * @return OnlyGet
      */
     public function getOnlyget()
     {
@@ -174,9 +164,9 @@ class ControllerClass
     }
 
     /**
-     * Returns only POST annotation.
+     * Returns only POST attribute.
      * 
-     * @return \Nishchay\Controller\Annotation\OnlyPost
+     * @return OnlyPost
      */
     public function getOnlypost()
     {
@@ -184,9 +174,9 @@ class ControllerClass
     }
 
     /**
-     * Returns required GET annotation.
+     * Returns required GET attribute.
      * 
-     * @return \Nishchay\Controller\Annotation\RequiredGet
+     * @return RequiredGet
      */
     public function getRequiredget()
     {
@@ -194,9 +184,9 @@ class ControllerClass
     }
 
     /**
-     * Returns required POST annotation.
+     * Returns required POST attribute.
      * 
-     * @return \Nishchay\Controller\Annotation\RequiredPost
+     * @return RequiredPost
      */
     public function getRequiredpost()
     {
@@ -206,7 +196,7 @@ class ControllerClass
     /**
      * 
      * @param   boolean                         $controller
-     * @throws  InvalidAnnotationParameterException
+     * @throws  InvalidAttributeException
      */
     protected function setController(ControllerAttribute $controller)
     {
@@ -214,7 +204,7 @@ class ControllerClass
     }
 
     /**
-     * Sets routing annotation.
+     * Sets routing attribute.
      * 
      * @param Routing   $routing
      */
@@ -224,10 +214,10 @@ class ControllerClass
     }
 
     /**
-     * Returns controller method annotation.
+     * Returns controller method attribute.
      * 
      * @param   string      $method
-     * @return  \Nishchay\Controller\Annotation\Method\Method
+     * @return  ControllerMethod
      */
     public function getMethod($method = null)
     {
@@ -242,7 +232,7 @@ class ControllerClass
      * Add methods to this controller.
      *  
      * @param   string                                              $method
-     * @param   \Nishchay\Controller\Annotation\Method\Method        $object
+     * @param   ControllerMethod        $object
      */
     protected function addMethod($method = null, $object = null)
     {
@@ -252,7 +242,7 @@ class ControllerClass
     /**
      * Iterate over all methods to find routes.
      * 
-     * @throws  InvalidAnnotationExecption
+     * @throws  InvalidAttributeException
      */
     private function extractRoute()
     {
@@ -266,13 +256,13 @@ class ControllerClass
                 continue;
             }
 
-            # Parsing annotation defined on method. If any of method annotation 
+            # Parsing attribute defined on method. If any of method attribute 
             # is invalid, we will catch exception and rethrow to with adding class
             # and method information.
             try {
                 $attributes = $method->getAttributes();
             } catch (Exception $e) {
-                throw new InvalidAnnotationExecption($e->getMessage(),
+                throw new InvalidAttributeException($e->getMessage(),
                                 $method->class, $method->name, $e->getCode());
             }
 
@@ -350,7 +340,7 @@ class ControllerClass
     /**
      * Returns exception handler attribute.
      * 
-     * @return \Nishchay\Controller\Annotation\ExceptionHandler
+     * @return ExceptionHandler
      */
     public function getExceptionhandler()
     {

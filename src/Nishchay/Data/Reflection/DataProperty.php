@@ -34,7 +34,7 @@ class DataProperty extends AbstractEntityStore
     private $name;
 
     /**
-     * Instance of property annotation.
+     * Instance of property attribute.
      * 
      * @var Property 
      */
@@ -53,7 +53,7 @@ class DataProperty extends AbstractEntityStore
     }
 
     /**
-     * Sets property annotation for property.
+     * Sets property attribute for property.
      * 
      * @param Property $property
      */
@@ -63,7 +63,7 @@ class DataProperty extends AbstractEntityStore
     }
     
     /**
-     * Returns property annotation for property.erty.
+     * Returns property attribute for property.erty.
      * 
      * @return Property
      */
@@ -113,7 +113,7 @@ class DataProperty extends AbstractEntityStore
     }
 
     /**
-     * Returns DataType annotation of property.
+     * Returns DataType attribute of property.
      * 
      * @return string
      */

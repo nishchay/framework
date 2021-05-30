@@ -13,7 +13,7 @@ use Nishchay\Http\Request\Request;
 use Nishchay\Processor\VariableType;
 
 /**
- * Class for validating only and required annotation and assigning values to
+ * Class for validating only and required attribute and assigning values to
  * controller property and method
  *
  * @license     https://nishchay.io/license New BSD License
@@ -32,48 +32,49 @@ class Controller
     private $DI = null;
 
     /**
+     * Processes (Required, Only)attribute attribute declared on class.
      * 
-     * @param type $class
+     * @param stiring $class
      */
-    public function processClassAttributes($class)
+    public function processClassAttributes(string $class)
     {
         $this->processOnlyRequiredAttributes($class);
     }
 
     /**
-     * Controller function annotation
+     * Processes (Required, Only)attribute declared on method
      */
-    public function processMethodAttributes($method)
+    public function processMethodAttributes(string $method)
     {
         $this->processOnlyRequiredAttributes($method);
     }
 
     /**
-     * Processes onlyGet/post and requiredGet/post annotation
+     * Processes onlyGet/post and requiredGet/post attribute
      * if any defined on passed class or method.
      * 
      * @param type $instance
      */
     protected function processOnlyRequiredAttributes($instance)
     {
-        # Processing Only_get validation.
+        # Processing OnlyGet validation.
         $this->requestParameterOnly($instance->getOnlyGet(), Request::GET);
 
-        # Processing Only_post validation.
+        # Processing OnlyPost validation.
         $this->requestParameterOnly($instance->getOnlyPost(), Request::POST);
 
-        # Processing Required_get validation.
+        # Processing RequiredGet validation.
         $this->requestParameterRequired($instance->getRequiredGet(),
                 Request::GET);
 
-        # Processing Required_post validation.
+        # Processing RequiredPost validation.
         $this->requestParameterRequired($instance->getRequiredPost(),
                 Request::POST);
     }
 
     /**
-     * Common method for processing onlyGet and onlyPost annotation
-     * All method within controller where this type of annotation found 
+     * Common method for processing onlyGet and onlyPost attribute
+     * All method within controller where this type of attribute found 
      * forces that controller method to be call only if these parameter found
      * in requesting URL. There must not be more or less than mentioned Request
      * parameter
@@ -87,7 +88,7 @@ class Controller
             return false;
         }
 
-        # Requirement parameter as defined in annotation
+        # Requirement parameter as defined in attribute
         $requirement = $attribute->getParameter();
         $received = array_keys($type === Request::GET ? Request::get() : Request::post());
 
@@ -117,8 +118,8 @@ class Controller
     }
 
     /**
-     * Common method for processing requiredGet and requiredPost annotation
-     * This is same only_ type of annotation but these type annotation allows
+     * Common method for processing requiredGet and requiredPost attribute
+     * This is same only_ type of attribute but these type attribute allows
      * any other request parameter
      * 
      * @param object $type
@@ -142,7 +143,7 @@ class Controller
 
     /**
      * Prepares Controller method's parameter by assigning applicable values
-     * if parameter have default value, it's value taken as annotation and 
+     * if parameter have default value, it's value taken as attribute and 
      * then processed to assign applicable value else object will be assigned
      * by resolving dependency.
      * 
@@ -277,7 +278,7 @@ class Controller
 
     /**
      * Processes default parameter of the method to auto bind value depends
-     * annotation defined in default value.
+     * attribute defined in default value.
      * 
      * @param   ReflectionParameter  $parameter
      * @param   \Nishchay\Attributes\Controller\Method\Placeholder  $placeholder

@@ -11,7 +11,7 @@ use Nishchay\Attributes\AttributeTrait;
 use Nishchay\Attributes\Event\Event;
 
 /**
- * Event Annotation of event type class.
+ * Event attribute of event type class.
  *
  * @license     https://nishchay.io/license New BSD License
  * @copyright   (c) 2020, Nishchay PHP Framework
@@ -24,7 +24,7 @@ class EventClass
     use AttributeTrait;
 
     /**
-     * Event annotation.
+     * Event attribute.
      * 
      * @var boolean 
      */
@@ -59,10 +59,9 @@ class EventClass
     }
 
     /**
-     * Sets event annotation to true.
+     * Sets event attribute to true.
      * 
-     * @param   boolean                         $event
-     * @throws  InvalidAnnotationExecption
+     * @param   Event $event
      */
     protected function setEvent(Event $event)
     {
@@ -85,7 +84,7 @@ class EventClass
             }
 
             try {
-                # Ignoring methods which does not have annotation on them.
+                # Ignoring methods which does not have attribute on them.
                 if (empty($method->getAttributes())) {
                     continue;
                 }

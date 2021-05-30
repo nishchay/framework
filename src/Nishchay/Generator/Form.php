@@ -137,7 +137,7 @@ class Form extends AbstractGenerator
         # Form field type
         $type = $this->propertyTypes->{$propertyName} ?? 'text';
 
-        # If there values parameter set in @DataType annotation, we will create
+        # If there values parameter set in DataType attribute, we will create
         # input choice radio field.
         if (!empty($property->getProperty()->getDatatype()->getValues())) {
             $methodName = 'newInputChoice';

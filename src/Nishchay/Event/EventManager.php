@@ -8,7 +8,7 @@ use Nishchay\DI\DI;
 use Nishchay\Event\EventMethod;
 use Nishchay\Controller\ControllerClass;
 use Nishchay\Controller\ControllerMethod;
-use Nishchay\Event\Annotation\Method\Fire;
+use Nishchay\Attributes\Event\EventConfig;
 
 /**
  * Event Manager class.
@@ -39,23 +39,23 @@ class EventManager
     /**
      * Returns order in which event should be called.
      *  
-     * @param   object      $annotation
+     * @param   object      $attribute
      * @return  array
      */
-    private function getOrder($annotation)
+    private function getOrder($attribute)
     {
-        return $annotation === null ? [] : $annotation->getOrder();
+        return $attribute === null ? [] : $attribute->getOrder();
     }
 
     /**
-     * Returns callback method detail defined under annotation.
+     * Returns callback method detail defined under attribute.
      * 
-     * @param   object          $annotation
+     * @param   object          $attribute
      * @return  array|boolean
      */
-    private function getCallback($annotation)
+    private function getCallback($attribute)
     {
-        return $annotation === null ? false : $annotation->getCallback();
+        return $attribute === null ? false : $attribute->getCallback();
     }
 
     /**
@@ -76,7 +76,7 @@ class EventManager
             $order = array_merge($this->getOrder($beforeMethod),
                     $this->getOrder($beforeController));
             $response = $this->fireEvent(Nishchay::getEventCollection()
-                            ->getEvents(Fire::BEFORE, $context, $scope, $order));
+                            ->getEvents(EventConfig::BEFORE, $context, $scope, $order));
         }
 
         return $response;
@@ -99,7 +99,7 @@ class EventManager
             $order = array_merge($this->getOrder($afterMethod),
                     $this->getOrder($afterController));
             $response = $this->fireEvent(Nishchay::getEventCollection()
-                            ->getEvents(Fire::AFTER, $context, $scope, $order));
+                            ->getEvents(EventConfig::AFTER, $context, $scope, $order));
         }
         return $response;
     }
@@ -170,7 +170,7 @@ class EventManager
      */
     private function invokeCallback($callback, $class)
     {
-        # We allow callback of class where annotation is defined or registered
+        # We allow callback of class where attribute is defined or registered
         # event class.
         if ($callback[0] !== $class && Nishchay::getEventCollection()->isExist($callback[0]) === false) {
             throw new NotSupportedException('Invalid event callback [' .

@@ -8,7 +8,7 @@ use Nishchay\Console\AbstractCommand;
 use Nishchay\Console\Printer;
 use Nishchay\Console\Help;
 use Nishchay\Http\Request\Request;
-use Nishchay\Event\Annotation\Method\Fire;
+use Nishchay\Attributes\Event\EventConfig;
 
 /**
  * Route console command class.
@@ -143,8 +143,8 @@ class Route extends AbstractCommand
         }
 
         $allEvents = [
-            Fire::BEFORE => $this->fetchEvents(Fire::BEFORE, $controller->getBeforeevent(), $method->getBeforeevent(), $context, $scope),
-            Fire::AFTER => $this->fetchEvents(Fire::AFTER, $controller->getAfterevent(), $method->getAfterevent(), $context, $scope)
+            EventConfig::BEFORE => $this->fetchEvents(EventConfig::BEFORE, $controller->getBeforeevent(), $method->getBeforeevent(), $context, $scope),
+            EventConfig::AFTER => $this->fetchEvents(EventConfig::AFTER, $controller->getAfterevent(), $method->getAfterevent(), $context, $scope)
         ];
 
         return $this->printEventTable($allEvents);
@@ -264,7 +264,7 @@ class Route extends AbstractCommand
             return false;
         }
 
-        # Fetching routes by matching path as defined in @Route annotation with
+        # Fetching routes by matching path as defined in Route attribute with
         # passed regex pattern.
         $routes = Nishchay::getRouteCollection()->getByName($this->arguments[1], true);
         if (empty($routes)) {

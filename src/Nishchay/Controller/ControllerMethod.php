@@ -3,7 +3,6 @@
 namespace Nishchay\Controller;
 
 use Nishchay;
-use Nishchay\Exception\InvalidAnnotationExecption;
 use Nishchay\Exception\InvalidAttributeException;
 use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\Attributes\AttributeTrait;
@@ -43,21 +42,21 @@ class ControllerMethod
         AttributeTrait;
 
     /**
-     * All annotation defined on method.
+     * All attribute defined on method.
      * 
      * @var array 
      */
-    private $annotation = [];
+    private $attribute = [];
 
     /**
-     * Route annotation object.
+     * Route attribute object.
      * 
      * @var Route 
      */
     private $route;
 
     /**
-     * Special annotation object.
+     * Special attribute object.
      * 
      * @var Placeholder 
      */
@@ -71,28 +70,28 @@ class ControllerMethod
     private $priority;
 
     /**
-     * Only get request parameter annotation object.
+     * Only get request parameter attribute object.
      * 
      * @var OnlyGet
      */
     private $onlyGet;
 
     /**
-     * Only post request parameter annotation object.
+     * Only post request parameter attribute object.
      * 
      * @var OnlyPost 
      */
     private $onlyPost;
 
     /**
-     * Required get request parameter annotation object.
+     * Required get request parameter attribute object.
      * 
      * @var RequiredGet 
      */
     private $requiredGet;
 
     /**
-     * Required post request parameter annotation object.
+     * Required post request parameter attribute object.
      * 
      * @var RequiredPost 
      */
@@ -106,7 +105,7 @@ class ControllerMethod
     private $response;
 
     /**
-     * Session scope annotation.
+     * Session scope attribute.
      * 
      * @var NamedScope
      */
@@ -125,21 +124,21 @@ class ControllerMethod
     private $afterEvent;
 
     /**
-     * Forwarder annotation object.
+     * Forwarder attribute object.
      * 
      * @var Forwarder
      */
     private $forwarder;
 
     /**
-     * Exception handler annotation.
+     * Exception handler attribute.
      * 
      * @var ExceptionHandler 
      */
     private $exceptionHandler;
 
     /**
-     * Web service annotation.
+     * Web service attribute.
      * 
      * @var Service
      */
@@ -153,8 +152,8 @@ class ControllerMethod
     private $noservice = false;
 
     /**
-     * Some annotation have default values.
-     * This array helps setting default value when annotation not defined on method.
+     * Some attribute have default values.
+     * This array helps setting default value when attribute not defined on method.
      * 
      * @var array 
      */
@@ -210,7 +209,7 @@ class ControllerMethod
 
         $pattern = Nishchay::getRoutePatternCollection()->get($routing->getPattern());
 
-        # This returns route instance or (route and placeholder) annotation in an array.
+        # This returns route instance or (route and placeholder) attribute in an array.
         $route = $pattern->processMethod($this->class, $this->method);
 
         if ($route === false) {
@@ -265,7 +264,7 @@ class ControllerMethod
     }
 
     /**
-     * Applies default value to annotation and stores route to collection. 
+     * Applies default value to attribute and stores route to collection. 
      */
     public function process()
     {
@@ -289,7 +288,7 @@ class ControllerMethod
         if ($this->service !== false &&
                 in_array(strtolower($this->response->getType()),
                         [Response::NULL_RESPONSE, Response::VIEW_RESPONSE])) {
-            throw new InvalidAnnotationExecption('Route ['
+            throw new InvalidAttributeException('Route ['
                             . $this->getRoute()->getPath() . '] is service which requires'
                             . ' its response type either JSON or XML.',
                             $this->class, $this->method, 914013);
@@ -312,27 +311,17 @@ class ControllerMethod
     }
 
     /**
-     * Returns annotation defined on method.
+     * Returns route attribute object.
      * 
-     * @return array
+     * @return Route
      */
-    public function getAnnotation()
-    {
-        return $this->annotation;
-    }
-
-    /**
-     * Returns route annotation object.
-     * 
-     * @return \Nishchay\Route\Annotation\Route
-     */
-    public function getRoute()
+    public function getRoute(): ?Route
     {
         return $this->route;
     }
 
     /**
-     * Returns special annotation object.
+     * Returns special attribute object.
      * 
      * @return Placeholder
      */
@@ -391,7 +380,7 @@ class ControllerMethod
     }
 
     /**
-     * Sets route annotation information.
+     * Sets route attribute information.
      * 
      * @param array $route
      */
@@ -406,7 +395,7 @@ class ControllerMethod
      * Sets special value.
      * 
      * @param   array                           $placeholder
-     * @throws  InvalidAnnotationExecption
+     * @throws  InvalidAttributeException
      */
     protected function setPlaceholder(Placeholder $placeholder)
     {
@@ -470,7 +459,7 @@ class ControllerMethod
     }
 
     /**
-     * Sets response type of the method defined in response annotation.
+     * Sets response type of the method defined in response attribute.
      * 
      * @param   array   $response
      */
@@ -505,7 +494,7 @@ class ControllerMethod
     }
 
     /**
-     * Returns forward annotation object of the method.
+     * Returns forward attribute object of the method.
      * 
      * @return object
      */
@@ -515,7 +504,7 @@ class ControllerMethod
     }
 
     /**
-     * Sets forwarder details defined in annotation.
+     * Sets forwarder details defined in attribute.
      * 
      * @param   array   $forwarder
      */
@@ -571,7 +560,7 @@ class ControllerMethod
     }
 
     /**
-     * Returns exception handler annotation.
+     * Returns exception handler attribute.
      * 
      * @return ExceptionHandler
      */
@@ -581,7 +570,7 @@ class ControllerMethod
     }
 
     /**
-     * Sets exception handler annotation.
+     * Sets exception handler attribute.
      * 
      * @param ExceptionHandler $exceptionhandler
      */
@@ -629,7 +618,7 @@ class ControllerMethod
     }
 
     /**
-     * Returns web service annotation.
+     * Returns web service attribute.
      * 
      * @return ervice|boolean
      */
@@ -639,7 +628,7 @@ class ControllerMethod
     }
 
     /**
-     * Sets web service annotation.
+     * Sets web service attribute.
      * 
      * @param array $service
      */
