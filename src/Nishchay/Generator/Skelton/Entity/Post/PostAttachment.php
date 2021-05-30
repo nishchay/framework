@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Post;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Attachment entity class.
  *
@@ -13,37 +19,38 @@ namespace Nishchay\Generator\Skelton\Entity\Post;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class PostAttachment
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Attachment id.
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $attachmentId;
 
     /**
      * Post id.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $postId;
 
     /**
      * Path to attachment.
      * 
-     * @DataType(type=string, required=true)
      */
+    #[DataType(type: 'string', required: true)]
     public $path;
 
     /**
      * Name of attachment.
      * 
-     * @DataType(type=string, length=200)
      */
+    #[DataType(type: 'string', length: 200)]
     public $name;
 
 }

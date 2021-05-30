@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\User;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * User entity class.
  *
@@ -13,22 +19,24 @@ namespace Nishchay\Generator\Skelton\Entity\User;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class User
 {
 
     /**
-     * @Identity
-     * @DataType(type=int,readonly=TRUE) 
+     * User id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $userId;
 
     /**
      * First name of user.
      * 
-     * @DataType(type=string,length=50,required=true,encrypt=true) 
      */
+    #[DataType(type: 'string', length: 50, required: true, encrypt: true)]
     public $firstName;
 
     /**
@@ -36,26 +44,29 @@ class User
      * 
      * @DataType(type=string,length=50,required=true,encrypt=true) 
      */
+    #[DataType(type: 'string', length: 50, required: true, encrypt: true)]
     public $lastName;
 
     /**
      * Gender.
      * 
-     * @DataType(type=string,length=10,value=[male,female],encrypt=true) 
      */
+    #[DataType(type: 'string', length: 50, values: ['male', 'female'],
+                encrypt: true)]
     public $gender;
 
     /**
      * Email of user.
-     * @DataType(type=string,length=100,required=true,encrypt=true)
+     * 
      */
+    #[DataType(type: 'string', length: 100, required: true, encrypt: true)]
     public $email;
 
     /**
      * User password.
      * 
-     * @DataType(type=string,length=200,required=true)
      */
+    #[DataType(type: 'string', length: 200, required: true)]
     public $password;
 
     /**
@@ -63,27 +74,28 @@ class User
      * 
      * @DataType(type=date,encrypt=true) 
      */
+    #[DataType(type: 'date', encrypt: true)]
     public $birthDate;
 
     /**
      * Is user active.
      * 
-     * @DataType(type=boolean)
      */
+    #[DataType(type: 'boolean', default: true)]
     public $isActive;
 
     /**
      * Is user verified.
      * 
-     * @DataType(type=boolean)
      */
+    #[DataType(type: 'boolean', default: false)]
     public $isVerified;
 
     /**
      * Time when was user verified.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $verifiedAt;
 
 }

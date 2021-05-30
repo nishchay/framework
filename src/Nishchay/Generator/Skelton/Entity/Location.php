@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Location entity class.
  *
@@ -13,44 +19,45 @@ namespace Nishchay\Generator\Skelton\Entity;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Location
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Location id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $locationId;
 
     /**
      * Name of this address.
      * 
-     * @DataType(type=string, length=100)
      */
+    #[DataType(type: 'string', length: 100)]
     public $name;
 
     /**
      * Full address.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $address;
 
     /**
      * Latitude of this address.
      * 
-     * @DataType(type=float)
      */
+    #[DataType(type: 'float')]
     public $latitude;
 
     /**
      * Longitude of this address.
      * 
-     * @DataType(type=float)
      */
+    #[DataType(type: 'float')]
     public $longitude;
 
 }

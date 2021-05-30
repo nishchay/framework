@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * {CrudControllerClassDescription}
  *
@@ -14,58 +20,67 @@ namespace Nishchay\Generator\Skelton\Entity;
  * {authorName}
  * {versionNumber}
  * 
- * @Entity(name='this.base')
  */
+#[Entity(name: 'this.base')]
 class CrudEntity
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int,readonly=true)
+     * Identity
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $identityId;
 
     /**
-     *
-     * @DataType(type=datetime)
+     * Time when record was created.
+     * 
      */
+    #[DataType(type: 'datetime', default: 'now')]
     public $createdAt;
 
     /**
-     *
-     * @DataType(type=int)
+     * Who created record.
+     * 
      */
+    #[DataType(type: 'int')]
     public $createdBy;
 
     /**
-     *
+     * Time when last record was updated.
+     * 
      * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $updatedAt;
 
     /**
-     *
-     * @DataType(type=int)
+     * Who last updated record.
+     * 
      */
+    #[DataType(type: 'int')]
     public $updatedBy;
 
     /**
-     *
+     * Time when record was deleted.
+     * 
      * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $deletedAt;
 
     /**
-     *
-     * @DataType(type=int)
+     * Who deleted record.
+     * 
      */
+    #[DataType(type: 'int')]
     public $deletedBy;
 
     /**
-     *
-     * @DataType(type=boolean,default=false)
+     * Is record deleted.
+     * 
      */
+    #[DataType(type: 'boolean', default: false)]
     public $isDeleted;
 
 }

@@ -1,7 +1,12 @@
 <?php
 
-
 namespace Nishchay\Generator\Skelton\Entity;
+
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
 
 /**
  * Category entity class.
@@ -14,34 +19,38 @@ namespace Nishchay\Generator\Skelton\Entity;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Category
 {
+
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Category id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $categoryId;
+
     /**
      * Name of category.
      * 
-     * @DataType(type=string, length=100)
      */
+    #[DataType(type: 'string', length: 100)]
     public $name;
-    
+
     /**
      * Code of category.
      * 
-     * @DataType(type=string, length=10)
      */
+    #[DataType(type: 'string', length: 10)]
     public $code;
-    
+
     /**
      * Description of category.
      * 
-     * @DataType(type=stringÏ)
      */
+    #[DataType(type: 'string')]
     public $description;
+
 }

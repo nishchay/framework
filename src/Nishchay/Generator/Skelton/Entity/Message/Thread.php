@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Message;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Thread entity class.
  *
@@ -13,37 +19,38 @@ namespace Nishchay\Generator\Skelton\Entity\Message;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Thread
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Thread id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $threadId;
 
     /**
      * Thread name.
      * 
-     * @DataType(type=string, length=100)
      */
+    #[DataType(type: 'string', length: 100)]
     public $threadName;
-    
+
     /**
      * Thread created at.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $createdAt;
-    
+
     /**
      * Who created thread.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $creatdBy;
 
 }

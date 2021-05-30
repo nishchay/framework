@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * {EmptyEntityClassDescription}
  *
@@ -14,16 +20,16 @@ namespace Nishchay\Generator\Skelton\Entity;
  * {authorName}
  * {versionNumber}
  * 
- * @Entity(name='this.base')
  */
+#[Entity(name: 'this.base')]
 class EmptyEntity
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int,readonly=true)
+     * Identity
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $identityId;
 
 }

@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\User;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Session entity class.
  *
@@ -13,37 +19,38 @@ namespace Nishchay\Generator\Skelton\Entity\User;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Session
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Session identity id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $sessionIdentityId;
 
     /**
      * Session id.
      * 
-     * @DataType(type=string, length=200,required=true)
      */
+    #[DataType(type: 'int', length: 200, required: true)]
     public $sessionId;
 
     /**
      * Data of session.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $data;
 
     /**
      * Time when last accessed this session.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $accessAt;
 
 }

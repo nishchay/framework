@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Activity;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Affected Entity entity class.
  * User activity can alter many entity. Store list of entities affected in
@@ -15,30 +21,31 @@ namespace Nishchay\Generator\Skelton\Entity\Activity;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class AffectedEntity
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Affected entity id.
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $affectedEntityId;
 
     /**
      * Should be activity id of Activity entity.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $activityId;
 
     /**
      * Entity name whose data has been updated.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $entityName;
 
 }

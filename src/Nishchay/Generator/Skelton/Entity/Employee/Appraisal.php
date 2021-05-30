@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Employee;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Employee APpraisal entity class.
  *
@@ -13,72 +19,74 @@ namespace Nishchay\Generator\Skelton\Entity\Employee;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Appraisal
 {
 
     /**
-     * @Identity
-     * @DataType(type=int)
+     * Appraisal id.
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $appraisalId;
 
     /**
      * Employee id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $employeeId;
 
     /**
      * Salary of employee.
      * This should be current salary.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $salary;
 
     /**
      * Percent of increase in salary.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $percent;
 
     /**
      * Value of increase in salary.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $amount;
 
     /**
      * Salary after appraisal.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $newSalary;
 
     /**
      * Is appraisal accepted by employee.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'boolean', default: false)]
     public $accepted;
 
     /**
      * Appraisal offered at.
      * 
-     * @DataType(type=date)
      */
+    #[DataType(type: 'date')]
     public $offeredAt;
 
     /**
      * Appraisal effective from.
      * 
-     * @DataType(type=date)
      */
+    #[DataType(type: 'date')]
     public $effectiveAt;
 
 }

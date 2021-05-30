@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\User;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * User permission entity class.
  *
@@ -13,29 +19,31 @@ namespace Nishchay\Generator\Skelton\Entity\User;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class UserPermission
 {
 
     /**
-     * @Identity
-     * @DataType(type=int, readonly=true) 
+     * User permission id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $userPermissionId;
 
     /**
      * Permission id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $permissionId;
 
     /**
      * User id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $userId;
 
 }

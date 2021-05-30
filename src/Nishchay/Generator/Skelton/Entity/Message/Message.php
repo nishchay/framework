@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Message;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Message entity class.
  *
@@ -13,51 +19,52 @@ namespace Nishchay\Generator\Skelton\Entity\Message;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Message
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Message id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $messageId;
 
     /**
      * On which thread message was sent to.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $threadId;
 
     /**
      * Who sent message.
      * 
-     * @DataType(type=int, readonly=true)
      */
+    #[DataType(type: 'int', readOnly: true)]
     public $senderId;
 
     /**
      * Type of message.
      * 
-     * @DataType(type=string, length=50)
      */
+    #[DataType(type: 'string', length: 50)]
     public $type;
 
     /**
      * Content of message.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $content;
 
     /**
      * Message sent at.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $messageAt;
 
 }

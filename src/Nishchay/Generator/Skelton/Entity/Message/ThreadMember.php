@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Message;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Thread member entity class.
  *
@@ -13,72 +19,73 @@ namespace Nishchay\Generator\Skelton\Entity\Message;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class ThreadMember
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Thread member id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $threadMemberId;
 
     /**
      * Thread id to which member is belongs to.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $threadId;
 
     /**
      * User id.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $userId;
 
     /**
      * Last visit to this thread by user.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $lastSeen;
 
     /**
      * Last message read by this user.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $lastReadId;
 
     /**
      * Last message read at.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $lastReadAt;
 
     /**
      * Last message id which was sent by this user.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $lastMessageId;
 
     /**
      * Time when last message was sent by this user.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $lastMessageAt;
 
     /**
      * Is this user admin of thread.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $isAdmin;
 
 }

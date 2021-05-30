@@ -2,6 +2,8 @@
 
 namespace Nishchay\Data;
 
+use Nishchay\Attributes\Entity\Property\DataType;
+
 /**
  * Tracker trait for entity.
  * 
@@ -16,15 +18,15 @@ class TrackerTrait
     /**
      * Time when record was created.
      * 
-     * @DataType(type=datetime,default=now)
      */
+    #[DataType(type: 'datetime', default: 'now')]
     public $createdAt;
 
     /**
      * Who created record.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $createdBy;
 
     /**
@@ -32,13 +34,14 @@ class TrackerTrait
      * 
      * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $updatedAt;
 
     /**
      * Who last updated record.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $updatedBy;
 
     /**
@@ -46,20 +49,21 @@ class TrackerTrait
      * 
      * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $deletedAt;
 
     /**
      * Who deleted record.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $deletedBy;
 
     /**
      * Is record deleted.
      * 
-     * @DataType(type=boolean,default=false)
      */
+    #[DataType(type: 'boolean', default: false)]
     public $isDeleted;
 
 }

@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Employee;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Employee entity class.
  *
@@ -13,86 +19,87 @@ namespace Nishchay\Generator\Skelton\Entity\Employee;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Employee
 {
 
     /**
-     * @Identity
-     * @DataType(type=int,readonly=true) 
+     * Employee id.
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $employeeId;
 
     /**
      * First name of employee.
      * 
-     * @DataType(type=string,length=100,encrypt=true)
      */
+    #[DataType(type: 'string', length: 100, encrypt: true)]
     public $firstName;
 
     /**
      * Last name of employee.
      * 
-     * @DataType(type=string,length=100,encrypt=true)
      */
+    #[DataType(type: 'string', length: 100, encrypt: true)]
     public $lastName;
 
     /**
      * Gender of employee.
      * 
-     * @DataType(type=string,value=[male,female],encrypt=true)
      */
+    #[DataType(type: 'string', values: ['male', 'female'], encrypt: true)]
     public $gender;
 
     /**
      * Birth date
      * 
-     * @DataType(type=date,encrypt=true)
      */
+    #[DataType(type: 'date', encrypt: true)]
     public $birthDate;
 
     /**
      * Join date.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime', encrypt: true)]
     public $joinDate;
 
     /**
      * Department id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $departmentId;
 
     /**
      * Position id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $positionId;
 
     /**
      * Employee current salary.
      * 
-     * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $salary;
 
     /**
      * Date when employee left organization.
      * 
-     * @DataType(type=date,encrypt=true)
      */
+    #[DataType(type: 'date', encrypt: true)]
     public $leaveDate;
 
     /**
      * Reason of leaving organization.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $leaveReason;
 
 }
