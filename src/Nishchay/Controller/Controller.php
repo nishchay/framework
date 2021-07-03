@@ -29,14 +29,14 @@ class Controller
      * 
      * @var DI 
      */
-    private $DI = null;
+    private $di = null;
 
     /**
      * Processes (Required, Only)attribute attribute declared on class.
      * 
      * @param stiring $class
      */
-    public function processClassAttributes(string $class)
+    public function processClassAttributes($class)
     {
         $this->processOnlyRequiredAttributes($class);
     }
@@ -44,7 +44,7 @@ class Controller
     /**
      * Processes (Required, Only)attribute declared on method
      */
-    public function processMethodAttributes(string $method)
+    public function processMethodAttributes($method)
     {
         $this->processOnlyRequiredAttributes($method);
     }
@@ -191,8 +191,8 @@ class Controller
      */
     public function getResolvedHinting($class)
     {
-        $this->DI = $this->DI ?? new DI();
-        return $this->DI->create($class);
+        $this->di = $this->di ?? new DI();
+        return $this->di->create($class);
     }
 
     /**

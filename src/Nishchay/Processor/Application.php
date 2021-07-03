@@ -28,6 +28,7 @@ use Nishchay\Persistent\System as SystemPersistent;
 use Nishchay\Processor\EnvironmentVariables;
 use Nishchay\Logger\Logger;
 use Nishchay\Lang\Lang;
+use Nishchay\OAuth2\OAuth2;
 
 /**
  * Core of the application
@@ -296,7 +297,8 @@ final class Application
     {
         if ($this->getSetting('logger.enable') === false) {
             throw new ApplicationException('Logger is disabled. To enable set'
-                    . ' enable = true in logger.php file.', null, null, 925026);
+                            . ' enable = true in logger.php file.', null, null,
+                            925026);
         }
 
         return $this->getInstance(Logger::class);
@@ -456,6 +458,16 @@ final class Application
     }
 
     /**
+     * Returns instance of OAuth2 class.
+     * 
+     * @return OAuth2
+     */
+    public function getOAuth2(): OAuth2
+    {
+        return OAuth2::getInstance();
+    }
+
+    /**
      * Returns structure processor.
      * 
      * @return \Nishchay\Processor\Structure\StructureProcessor
@@ -485,7 +497,8 @@ final class Application
     public function run($runningFrom)
     {
         if (!is_int($runningFrom) || $runningFrom > 2) {
-            throw new Exception('Application running from invalid place.', null, null, 925027);
+            throw new Exception('Application running from invalid place.', null,
+                            null, 925027);
         }
         $this->runningFrom = $runningFrom;
 
@@ -538,14 +551,15 @@ final class Application
                 }
             }
         }
-        
+
         $this->landingRoute = $this->getSetting('routes.landing');
         if ($this->landingRoute === false) {
             $this->landingRoute = $this->getConfig('config.landingRoute');
         }
         if ($this->landingRoute === false || empty($this->landingRoute)) {
             throw new InvalidStructureException('Please spcify landing route'
-                    . ' in application configuration setting.', null, null, 925028);
+                            . ' in application configuration setting.', null,
+                            null, 925028);
         }
 
         if ($this->isApplicationStageLive()) {
@@ -568,10 +582,12 @@ final class Application
         $reflection = new ReflectionClass(new Connection());
 
         # Registering all defined connections to connection class.
-        $this->setClassProperty($reflection->getProperty(Connection::CONNECTIONS), $datbaseConfig->connections);
+        $this->setClassProperty($reflection->getProperty(Connection::CONNECTIONS),
+                $datbaseConfig->connections);
 
         # Registering default connection to connection class.
-        $this->setClassProperty($reflection->getProperty(Connection::DEFAULT_CONNECTION), $datbaseConfig->default);
+        $this->setClassProperty($reflection->getProperty(Connection::DEFAULT_CONNECTION),
+                $datbaseConfig->default);
     }
 
     /**
@@ -598,7 +614,8 @@ final class Application
 
         if ($this->supportedExtension === false || empty($this->supportedExtension)) {
             throw new ApplicationException('Missing File types. Should be'
-                    . ' defined in [config.fileTypes] separated by pipeline.', null, null, 925029);
+                            . ' defined in [config.fileTypes] separated by pipeline.',
+                            null, null, 925029);
         }
 
         $this->supportedExtension = explode('|', $this->supportedExtension);

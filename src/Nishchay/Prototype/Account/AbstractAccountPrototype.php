@@ -2,11 +2,11 @@
 
 namespace Nishchay\Prototype\Account;
 
+use Nishchay;
 use Nishchay\Data\EntityQuery;
 use Nishchay\Prototype\AbstractPrototype;
 use Nishchay\Prototype\Account\Response\AccountResponse;
 use Nishchay\Session\Session;
-use Nishchay\OAuth2\OAuth2;
 use Nishchay\Http\Request\Request;
 use Nishchay\Exception\BadRequestException;
 use Closure;
@@ -48,6 +48,13 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
      * @var bool
      */
     protected $isScopeRequired = true;
+
+    /**
+     * Consider all scope defined in an application.
+     * 
+     * @var bool
+     */
+    protected $considerAllScope = false;
 
     /**
      * Callback for verifying scope.
@@ -174,14 +181,16 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
         if ($scope !== false) {
             $scope = explode(',', $scope);
         } else {
-            $scope = null;
+            $scope = $this->getConsiderAllScope() ? Nishchay::getScopeCollection()->get() : null;
         }
 
-        if (($callback = $this->getVerifyScope()) !== null && $this->invokeMethod($callback, [$scope]) !== true) {
+        if (($callback = $this->getVerifyScope()) !== null && $this->invokeMethod($callback,
+                        [$scope]) !== true) {
             throw new BadRequestException('Invalid scope.');
         }
 
-        return $this->getInstance(OAuth2::class)->generateUserCredentialToken($userId, $scope);
+        return Nishchay::getOAuth2()->generateUserCredentialToken($userId,
+                        $scope);
     }
 
     /**
@@ -203,6 +212,27 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
     public function setScopeRequired(bool $isScopeRequired)
     {
         $this->isScopeRequired = $isScopeRequired;
+        return $this;
+    }
+
+    /**
+     * Returns flag for considering all scope defined in an application.
+     * @return bool
+     */
+    public function getConsiderAllScope(): bool
+    {
+        return $this->considerAllScope;
+    }
+
+    /**
+     * Sets flag to consider all scope defined in an application.
+     * 
+     * @param bool $considerAllScope
+     * @return void
+     */
+    public function setConsiderAllScope(bool $considerAllScope): self
+    {
+        $this->considerAllScope = $considerAllScope;
         return $this;
     }
 
