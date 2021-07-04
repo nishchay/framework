@@ -161,7 +161,7 @@ class ServicePreProcess extends BaseServiceProcess
      * 
      * @param Method $method
      */
-    private function init(Method $method)
+    private function init($method)
     {
         $this->setMethod($method)
                 ->setService($this->method->getService())
@@ -190,7 +190,7 @@ class ServicePreProcess extends BaseServiceProcess
      * @param Method $method
      * @return $this
      */
-    private function setMethod(Method $method)
+    private function setMethod($method)
     {
         $this->method = $method;
         return $this;
