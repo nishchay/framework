@@ -40,7 +40,7 @@ class NamedScope
         foreach ($this->name as $value) {
             if (is_string($value) === false || empty($value)) {
                 throw new ApplicationException('Invalid named scope, all scope name should be string.',
-                                $this->class, $this->method, 926013);
+                                $this->class, $this->method, 914037);
             }
             Nishchay::getScopeCollection()->store($value);
         }

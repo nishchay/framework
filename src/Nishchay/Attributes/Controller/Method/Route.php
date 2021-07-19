@@ -107,7 +107,7 @@ class Route
             $name = strtolower($name);
             if (!in_array($name, $allowed)) {
                 throw new InvalidAttributeException('Invalid stage for the route, it should be local or test.',
-                                $this->class, $this->method, 926);
+                                $this->class, $this->method, 914033);
             }
             $stage[$index] = $name;
         }
@@ -138,7 +138,7 @@ class Route
 
         if (empty($this->path)) {
             throw new InvalidAttributeException('Route path should not be empty.',
-                            $this->class, $this->method, 926006);
+                            $this->class, $this->method, 914034);
         }
 
         # We here now preg quoting path except curly bracket start & end and 

@@ -92,7 +92,8 @@ class Placeholder
     public function verifyParameters()
     {
         if (empty($this->actualPlaceholders)) {
-            throw new InvalidAttributeException('[' . __CLASS__ . '] requires parameters to be passed.');
+            throw new InvalidAttributeException(message: '[' . __CLASS__ . '] requires parameters to be passed.',
+                            code: 914032);
         }
 
 
@@ -102,14 +103,14 @@ class Placeholder
         if (count($diff) > 0) {
             throw new InvalidAttributeException('Route placeholder values  mismatch. ['
                             . implode(',', $diff) . '] does not exist in route path.',
-                            $this->class, $this->method, 926003);
+                            $this->class, $this->method, 914035);
         }
 
         foreach ($this->actualPlaceholders as $name => $type) {
             if ((is_string($type) && array_key_exists($type, $this->supported) === false) || (!is_string($type) && !is_array($type))) {
                 throw new NotSupportedException('Placeholder segment type [' .
                                 $type . '] not supported.', $this->class,
-                                $this->method, 926004);
+                                $this->method, 914036);
             }
 
             if (is_string($type)) {

@@ -163,7 +163,7 @@ class DataType
     }
 
     /**
-     * Validates value as per validation rule of prdefined type.
+     * Validates value as per validation rule of predefined type.
      * 
      * @param type $value
      * @throws Exception

@@ -141,16 +141,36 @@ class Processor
         if (!SystemPersistent::isPersisted('controllers')) {
             new Organizer();
             if (Nishchay::isApplicationStageLive()) {
+                
+                # Persiting controller collections
                 SystemPersistent::setPersistent('controllers',
                         Nishchay::getControllerCollection()->get());
+                
+                # Persiting entities collection
                 SystemPersistent::setPersistent('entities',
                         Nishchay::getEntityCollection()->get());
+                
+                # Persiting configs
                 SystemPersistent::setPersistent('cfigs', ['APP' => APP]);
+                
+                # Persisting views collection
                 SystemPersistent::setPersistent('views', ViewCollection::get());
+                
+                # Persisting containers collection
                 SystemPersistent::setPersistent('containers',
                         Nishchay::getContainerCollection()->getAll());
+                
+                # Persisting container facade names
+                SystemPersistent::setPersistent('facades',
+                        Nishchay::getContainerCollection()->getFacades());
             }
         } else {
+
+            # This is because, container collection never gets called if only facade is used by application.
+            # In this collection class, we have registered class auto load function. If container is not called
+            # , then class auto load won't be registered
+            Nishchay::getContainerCollection();
+
             $constants = SystemPersistent::getPersistent('cfigs');
             foreach ($constants as $key => $value) {
                 defined($key) || define($key, $value);

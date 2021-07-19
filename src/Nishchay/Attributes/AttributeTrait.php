@@ -63,31 +63,54 @@ trait AttributeTrait
         }
     }
 
+    /**
+     * 
+     * @throws ApplicationException
+     */
     public function verify()
     {
         if ($this->verified) {
-            throw new ApplicationException('Attribute already been verified');
+            throw new ApplicationException(message: 'Attribute already been verified.',
+                            code: 925048);
         }
         $this->verified = true;
     }
 
-    public function getClass()
+    /**
+     * 
+     * @return string|null
+     */
+    public function getClass(): ?string
     {
         return $this->class;
     }
 
-    public function getMethod()
+    /**
+     * 
+     * @return string|null
+     */
+    public function getMethod(): ?string
     {
         return $this->method;
     }
 
-    public function setClass($class)
+    /**
+     * 
+     * @param string|null $class
+     * @return self
+     */
+    public function setClass(?string $class): self
     {
         $this->class = $class;
         return $this;
     }
 
-    public function setMethod($method)
+    /**
+     * 
+     * @param string|null $method
+     * @return self
+     */
+    public function setMethod(?string $method): self
     {
         $this->method = $method;
         return $this;
@@ -107,7 +130,8 @@ trait AttributeTrait
             return $this->{$property};
         }
 
-        throw new ApplicationException('Method [' . $name . '] does not exists.');
+        throw new ApplicationException(message: 'Method [' . $name . '] does not exists.',
+                        code: 925049);
     }
 
 }

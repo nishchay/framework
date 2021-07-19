@@ -45,7 +45,7 @@ class OnlyPost
             if (!is_string($name)) {
                 throw new InvalidAttributeException('List of all parameter '
                                 . 'passed in [' . __CLASS__ . '] attribute must '
-                                . 'be string.', $this->class, $this->method);
+                                . 'be string.', $this->class, $this->method, 914039);
             }
         }
     }

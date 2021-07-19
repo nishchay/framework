@@ -62,7 +62,7 @@ class BeforeChange
             if (count($this->callback) !== 2) {
                 throw new InvalidAttributeException('Invalid callback parameter'
                                 . ' of [BeforeChange] attribute.', $this->class,
-                                $this->method);
+                                $this->method, 911101);
             }
         } else {
             # Now we will prepend class name if only method has been set as 
@@ -78,7 +78,7 @@ class BeforeChange
         if (method_exists(...$this->callback) === false) {
             throw new InvalidAttributeException('Callback for [BeforeChange]'
                             . ' event does not exists.', $this->class,
-                            $this->method);
+                            $this->method, 911102);
         }
 
         return $this;

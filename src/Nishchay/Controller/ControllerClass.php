@@ -127,7 +127,7 @@ class ControllerClass
         $this->processAttributes($this->attributes);
         if ($this->controller === false) {
             throw new ApplicationException('[' . $class . '] must be controller.',
-                            $class);
+                            $class, null, 914042);
         }
         Nishchay::getControllerCollection()->store($class, $this, $parent);
         $this->extractRoute();

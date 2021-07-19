@@ -299,7 +299,7 @@ class ControllerMethod
             if ($placeholder === null) {
                 throw new InvalidAttributeException('[' . Placeholder::class .
                                 '] required when there is placeholder segment'
-                                . ' in route path.', $this->class, $this->method);
+                                . ' in route path.', $this->class, $this->method, 914043);
             }
             $placeholder->setRoute($this->getRoute())
                     ->verifyParameters();
@@ -666,7 +666,7 @@ class ControllerMethod
      */
     public function __call($name, $arguments)
     {
-        throw new ApplicationException('Method [' . __CLASS__ . '::' . $name . '] does not exists.');
+        throw new ApplicationException('Method [' . __CLASS__ . '::' . $name . '] does not exists.', null, null, 914044);
     }
 
 }

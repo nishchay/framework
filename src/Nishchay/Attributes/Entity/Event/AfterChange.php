@@ -62,7 +62,7 @@ class AfterChange
             if (count($this->callback) !== 2) {
                 throw new InvalidAttributeException('Invalid callback parameter'
                                 . ' of [AfterChange] attribute.', $this->class,
-                                $this->method);
+                                $this->method, 911099);
             }
         } else {
             # Now we will prepend class name if only method has been set as 
@@ -78,7 +78,7 @@ class AfterChange
         if (method_exists(...$this->callback) === false) {
             throw new InvalidAttributeException('Callback for [AfterChange]'
                             . ' event does not exists.', $this->class,
-                            $this->method);
+                            $this->method, 911100);
         }
         var_dump($this);
         return $this;

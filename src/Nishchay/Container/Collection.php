@@ -75,6 +75,7 @@ class Collection extends AbstractCollection
         spl_autoload_register([$this, 'checkFacade']);
         if (Nishchay::isApplicationStageLive() && System::isPersisted('containers')) {
             $this->collection = System::getPersistent('containers');
+            $this->facades = System::getPersistent('facades');
         }
     }
 
@@ -93,8 +94,8 @@ class Collection extends AbstractCollection
         }
 
         if ($isContainer === false) {
-            throw new ApplicationException('[' . $class . '] must be container.',
-                            $class);
+            throw new ApplicationException('Class [' . $class . '] must be container.',
+                            $class, null, 934006);
         }
 
         $this->collection[$class] = new Container($class);
@@ -136,6 +137,16 @@ class Collection extends AbstractCollection
     public function getAll()
     {
         return $this->collection;
+    }
+
+    /**
+     * Returns all facades.
+     * 
+     * @return array
+     */
+    public function getFacades()
+    {
+        return $this->facades;
     }
 
     /**

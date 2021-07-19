@@ -55,7 +55,7 @@ class Collection extends AbstractCollection
 
         if ($isEntity === false) {
             throw new ApplicationException('[' . $class . '] must be entity.',
-                            $class);
+                            $class, null, 911103);
         }
 
         $this->checkStoring();

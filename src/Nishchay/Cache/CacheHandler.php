@@ -51,7 +51,8 @@ class CacheHandler
     protected function init($config)
     {
         if (!isset($config->type) || !isset($config->server)) {
-            throw new ApplicationException('Invalid cache config.', null, null, 912002);
+            throw new ApplicationException(message: 'Invalid cache config.',
+                            code: 912002);
         }
 
         $this->setKeyToHash($config);
@@ -69,8 +70,8 @@ class CacheHandler
                 $this->cache = new OfflineCache($config->server);
                 break;
             default :
-                throw new NotSupportedException('Cache type [' .
-                        $config->type . '] not supported.');
+                throw new NotSupportedException(message: 'Cache type [' .
+                                $config->type . '] not supported.', code: 912005);
         }
     }
 

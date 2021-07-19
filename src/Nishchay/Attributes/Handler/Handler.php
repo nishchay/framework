@@ -47,8 +47,8 @@ class Handler
                             Names::TYPE_GLOBAL,
                             Names::TYPE_SCOPE
                 ])) {
-            throw new NotSupportedException('Handler type ' . $this->type .
-                            ' not supported', $this->class);
+            throw new NotSupportedException('Handler type [' . $this->type .
+                            '] not supported.', $this->class, 919005);
         }
 
         $this->type = strtolower($this->type);
