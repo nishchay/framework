@@ -6,7 +6,7 @@ use Nishchay;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Data\Reflection\DataClass;
 use Nishchay\Data\Reflection\DataProperty;
-use Nishchay\Data\Annotation\Property\Property;
+use Nishchay\Attributes\Entity\Property\Property;
 use Nishchay\Console\Printer;
 use Nishchay\FileManager\SimpleFile;
 use Nishchay\Form\Form as RequestForm;
@@ -65,7 +65,8 @@ class Form extends AbstractGenerator
         $class = Nishchay::getEntityCollection()->locate($name);
 
         if ($class === null) {
-            throw new ApplicationException('Entity [' . $name . '] not found.', null, null, 933016);
+            throw new ApplicationException('Entity [' . $name . '] not found.',
+                            null, null, 933016);
         }
 
         if ($class !== $name) {
@@ -136,7 +137,7 @@ class Form extends AbstractGenerator
         # Form field type
         $type = $this->propertyTypes->{$propertyName} ?? 'text';
 
-        # If there values parameter set in @DataType annotation, we will create
+        # If there values parameter set in DataType attribute, we will create
         # input choice radio field.
         if (!empty($property->getProperty()->getDatatype()->getValues())) {
             $methodName = 'newInputChoice';
@@ -263,7 +264,8 @@ VALIDATION;
      * @param string $name
      * @return string
      */
-    private function getClassStartCode(string $namespace, string $name, bool $csrf): string
+    private function getClassStartCode(string $namespace, string $name,
+            bool $csrf): string
     {
         $formName = strtolower($name) . '-form';
         $formClass = RequestForm::class;

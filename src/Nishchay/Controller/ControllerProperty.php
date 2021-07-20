@@ -2,12 +2,17 @@
 
 namespace Nishchay\Controller;
 
-use AnnotationParser;
-use stdClass;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionProperty;
 use Nishchay\DI\DI;
 use Nishchay\Service\Service;
+use \Nishchay\Processor\FetchSingletonTrait;
+use Nishchay\Attributes\Controller\Property\{
+    Get,
+    Post,
+    Service as ServiceAttribute
+};
 
 /**
  * Process properties defined in controller class to autobind values.
@@ -20,6 +25,8 @@ use Nishchay\Service\Service;
 class ControllerProperty
 {
 
+    use FetchSingletonTrait;
+
     /**
      *
      * @var object 
@@ -27,10 +34,17 @@ class ControllerProperty
     private $instance;
 
     /**
-     *
+     * 
+     * @var ReflectionClass
+     */
+    private ReflectionClass $reflection;
+
+    /**
+     * Instances list.
+     * 
      * @var object 
      */
-    private $reflection;
+    protected static $instances = [];
 
     /**
      * 
@@ -59,21 +73,49 @@ class ControllerProperty
      */
     private function processProperty(ReflectionProperty $property)
     {
-        $annotations = AnnotationParser::getAnnotations($property->getDocComment());
-        if (empty($annotations)) {
-            return false;
-        }
-        list($annotation, $value) = [key($annotations), current($annotations)];
+
         $property->setAccessible(true);
-        $calling = new DI(new stdClass());
-        switch ($annotation) {
-            case 'bind':
-                $property->setValue($this->instance, $calling->create($value, true));
-            case 'service':
-                $property->setValue($this->instance, new Service());
-            default:
-                break;
+
+        $attributes = $property->getAttributes();
+
+        if (!empty($attributes)) {
+            $attribute = current($attributes);
+
+            switch ($attribute->getName()) {
+                case Get::class:
+                case Post::class:
+                    $property->setValue($this->instance,
+                            $this->getAttributeValue($property, $attribute));
+                    break;
+                case ServiceAttribute::class:
+                    $property->setValue($this->instance, new Service());
+                    break;
+            }
         }
+
+        $type = $property->getType()?->getName();
+
+        if ($type !== null && class_exists($type)) {
+            $property->setValue($this->instance,
+                    $this->getInstance(DI::class)->create($type));
+        }
+    }
+
+    /**
+     * 
+     * @param ReflectionProperty $property
+     * @param ReflectionAttribute $attribute
+     */
+    private function getAttributeValue(ReflectionProperty $property,
+            ReflectionAttribute $attribute)
+    {
+        $type = $property->getType()?->getName();
+        $value = $attribute->newInstance()->getValue();
+        if ($type === 'array') {
+            $value = (array) $value;
+        }
+
+        return $value;
     }
 
 }

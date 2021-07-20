@@ -18,7 +18,7 @@ class Help
             '{no-params}' => 'To list all defined routes',
             'path' => 'Gives information of route',
             'path -run' => 'Executes route',
-            '-name name' => 'Gives information based on path as defined in @Route annotation',
+            '-name name' => 'Gives information based on path as specified in Route attribute',
             '-match pattern' => 'Lists routes which matches pattern',
             '-controller name' => 'Lists routes defined in controller name',
             '-context name' => 'Lists routes belongs to context name',
@@ -29,8 +29,6 @@ class Help
             '{controller-alias}' => 'c',
             '{no-params}' => 'List all controller',
             'class' => 'Gives information of controller',
-            'class -annotation' => 'Lists annotation defined on class',
-            'class -annotation -method method' => 'Lists annotation defined on controller method',
             '-create name' => 'Creates empty controller',
             '-create name -crud' => 'Creates contrller with crud routes',
             '-create name -template name' => 'Creates controller from template name'

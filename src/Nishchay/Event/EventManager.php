@@ -5,10 +5,10 @@ namespace Nishchay\Event;
 use Nishchay;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\DI\DI;
-use Nishchay\Event\Annotation\Method\Method;
-use Nishchay\Controller\Annotation\Controller;
-use Nishchay\Controller\Annotation\Method\Method as ControllerMethod;
-use Nishchay\Event\Annotation\Method\Fire;
+use Nishchay\Event\EventMethod;
+use Nishchay\Controller\ControllerClass;
+use Nishchay\Controller\ControllerMethod;
+use Nishchay\Attributes\Event\EventConfig;
 
 /**
  * Event Manager class.
@@ -39,42 +39,44 @@ class EventManager
     /**
      * Returns order in which event should be called.
      *  
-     * @param   object      $annotation
+     * @param   object      $attribute
      * @return  array
      */
-    private function getOrder($annotation)
+    private function getOrder($attribute)
     {
-        return $annotation === false ? [] : $annotation->getOrder();
+        return $attribute === null ? [] : $attribute->getOrder();
     }
 
     /**
-     * Returns callback method detail defined under annotation.
+     * Returns callback method detail defined under attribute.
      * 
-     * @param   object          $annotation
+     * @param   object          $attribute
      * @return  array|boolean
      */
-    private function getCallback($annotation)
+    private function getCallback($attribute)
     {
-        return $annotation === false ? false : $annotation->getCallback();
+        return $attribute === null ? false : $attribute->getCallback();
     }
 
     /**
      * Fires event to be execute before calling route.
      * 
-     * @param   \Nishchay\Controller\Annotation\Controller         $controller
-     * @param   \Nishchay\Controller\Annotation\Method\Method      $method
+     * @param   \Nishchay\Controller\ControllerClass    $controller
+     * @param   \Nishchay\Controller\ControllerMethod   $method
      * @return  mixed
      */
-    public function fireBeforeEvent(Controller $controller, ControllerMethod $method, $context, $scope)
+    public function fireBeforeEvent(ControllerClass $controller,
+            ControllerMethod $method, $context, $scope)
     {
-        $beforeController = $controller->getBeforeevent();
-        $beforeMethod = $method->getBeforeevent();
+        $beforeController = $controller->getBeforeEvent();
+        $beforeMethod = $method->getBeforeEvent();
         $response = $this->executeCallback($beforeController, $beforeMethod);
 
         if ($response === true) {
-            $order = array_merge($this->getOrder($beforeMethod), $this->getOrder($beforeController));
+            $order = array_merge($this->getOrder($beforeMethod),
+                    $this->getOrder($beforeController));
             $response = $this->fireEvent(Nishchay::getEventCollection()
-                            ->getEvents(Fire::BEFORE, $context, $scope, $order));
+                            ->getEvents(EventConfig::BEFORE, $context, $scope, $order));
         }
 
         return $response;
@@ -83,19 +85,21 @@ class EventManager
     /**
      * Fires event to be execute after called route.
      * 
-     * @param   \Nishchay\Controller\Annotation\Controller         $controller
-     * @param   \Nishchay\Controller\Annotation\Method\Method      $method
+     * @param   \Nishchay\Controller\ControllerClass    $controller
+     * @param   \Nishchay\Controller\ControllerMethod   $method
      * @return  mixed
      */
-    public function fireAfterEvent(Controller $controller, ControllerMethod $method, $context, $scope)
+    public function fireAfterEvent(ControllerClass $controller,
+            ControllerMethod $method, $context, $scope)
     {
-        $afterController = $controller->getAfterevent();
-        $afterMethod = $method->getAfterevent();
+        $afterController = $controller->getAfterEvent();
+        $afterMethod = $method->getAfterEvent();
         $response = $this->executeCallback($afterController, $afterMethod);
         if ($response === true) {
-            $order = array_merge($this->getOrder($afterMethod), $this->getOrder($afterController));
+            $order = array_merge($this->getOrder($afterMethod),
+                    $this->getOrder($afterController));
             $response = $this->fireEvent(Nishchay::getEventCollection()
-                            ->getEvents(Fire::AFTER, $context, $scope, $order));
+                            ->getEvents(EventConfig::AFTER, $context, $scope, $order));
         }
         return $response;
     }
@@ -116,18 +120,18 @@ class EventManager
     /**
      * Fires event.
      * 
-     * @param instance $annotation
+     * @param instance $attribute
      * @param array $callback
      * @return boolean
      */
-    private function fire($annotation, $callback)
+    private function fire($attribute, $callback)
     {
         if ($callback === false) {
             return true;
         }
-        if (!($annotation->getOnce() && $annotation->isFired())) {
-            $annotation->markFired();
-            return $this->invokeCallback($callback, $annotation->getClass());
+        if (!($attribute->getOnce() && $attribute->isFired())) {
+            $attribute->markFired();
+            return $this->invokeCallback($callback, $attribute->getClass());
         }
         return true;
     }
@@ -140,16 +144,17 @@ class EventManager
      */
     private function fireEvent($events)
     {
-        foreach ($events as $annotation) {
-            if ($annotation instanceof Method &&
-                    $annotation->getFire()->getOnce() &&
-                    $annotation->isFired()) {
+        foreach ($events as $attribute) {
+            if ($attribute instanceof EventMethod &&
+                    $attribute->getEventConfig()->getOnce() &&
+                    $attribute->isFired()) {
                 continue;
             }
 
             $response = $this->di
-                    ->invoke($this->getInstance($annotation->getClass()), $annotation->getMethod());
-            $annotation instanceof Method && $annotation->markFired();
+                    ->invoke($this->getInstance($attribute->getClass()),
+                    $attribute->getMethod());
+            $attribute instanceof EventMethod && $attribute->markFired();
             if ($response !== true) {
                 return $response;
             }
@@ -165,12 +170,13 @@ class EventManager
      */
     private function invokeCallback($callback, $class)
     {
-        # We allow callback of class where annotation is defined or registered
+        # We allow callback of class where attribute is defined or registered
         # event class.
-        if ($callback[0] !== $class && !Nishchay::getEventCollection()->isExist($callback[0])) {
+        if ($callback[0] !== $class && Nishchay::getEventCollection()->isExist($callback[0]) === false) {
             throw new NotSupportedException('Invalid event callback [' .
-                    implode('::', $callback) . '].'
-                    . ' It should belongs to controller or any event class.', $class, null, 916009);
+                            implode('::', $callback) . '].'
+                            . ' It should belongs to controller or any event class.',
+                            $class, null, 916009);
         }
 
         return $this->di->invoke($this->getInstance($callback[0]), $callback[1]);

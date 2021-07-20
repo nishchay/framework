@@ -2,7 +2,7 @@
 
 namespace Nishchay\Route\Pattern;
 
-use Nishchay\Route\Annotation\Route;
+use Nishchay\Attributes\Controller\Method\Route;
 
 /**
  * Action method route pattern.
@@ -36,7 +36,7 @@ class ActionMethod extends AbstractPattern
      */
     private function setRegex()
     {
-        $types = array_map(function($type) {
+        $types = array_map(function ($type) {
             return ucfirst(strtolower($type));
         }, Route::REQUEST_METHODS);
         $this->regex = '#^action(?P<type>((' . implode('|', $types) . ')*)?)(.*)#';
@@ -63,6 +63,7 @@ class ActionMethod extends AbstractPattern
         if (strlen($type) > 0) {
             $route['type'] = preg_split('/(?=[A-Z])/', lcfirst($type));
         }
+        $route = new Route($route['path'], type: $route['type'] ?? []);
 
         return $route;
     }

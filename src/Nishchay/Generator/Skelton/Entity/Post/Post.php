@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Post;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Post entity class.
  *
@@ -13,58 +19,59 @@ namespace Nishchay\Generator\Skelton\Entity\Post;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Post
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Post id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $postId;
-    
+
     /**
      * Type of post.
      * 
-     * @DataType(type=string, length=50)
      */
+    #[DataType(type: 'string', length: 50)]
     public $type;
-    
+
     /**
      * User id of this post.
      * 
-     * @DataType(type=int, required=true) 
      */
+    #[DataType(type: 'int', required: true)]
     public $userId;
-    
+
     /**
      * Content of this post.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $content;
-    
+
     /**
      * List of tags in this post.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $tags;
-    
+
     /**
      * Privacy id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $privacyId;
-    
+
     /**
      * Number of comment on this post.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $commentCount;
 
 }

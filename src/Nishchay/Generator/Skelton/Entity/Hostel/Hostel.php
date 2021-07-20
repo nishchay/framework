@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Hostel;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Hostel entity class.
  *
@@ -13,51 +19,52 @@ namespace Nishchay\Generator\Skelton\Entity\Hostel;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Hostel
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Hostel id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $hostelId;
 
     /**
      * Name of hostel.
      * 
-     * @DataType(type=string, length=100)
      */
+    #[DataType(type: 'string', length: 100)]
     public $name;
 
     /**
      * Number of rooms in hostel.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $roomCount;
 
     /**
      * Number of guests in hostel.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $guestCount;
 
     /**
      * Location of hostel. Should be address.
      * 
-     * @DataType(type=string, length=100)
      */
+    #[DataType(type: 'string')]
     public $location;
 
     /**
      * Fees for this hostel.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $fees;
 
 }

@@ -251,7 +251,7 @@ class Auth extends AbstractAccountPrototype
 
         $this->isUserActive($user)
                 ->isUserVerified($user)
-                ->processPasswordVerification($user->password);
+                ->processPasswordVerification($user->password ?? null);
 
         if ($this->getPostAuth() instanceof Closure) {
             $this->invokeMethod($this->getPostAuth(), [$user]);

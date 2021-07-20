@@ -3,7 +3,7 @@
 namespace Nishchay\Service;
 
 use Nishchay\Exception\BadRequestException;
-use Nishchay\Service\Annotation\Service;
+use Nishchay\Attributes\Controller\Method\Service;
 use Nishchay\Http\Request\Request;
 
 /**
@@ -26,7 +26,7 @@ class BaseServiceProcess
 
     /**
      *
-     * @var \Nishchay\Service\Annotation\Service 
+     * @var Service
      */
     protected $service;
 

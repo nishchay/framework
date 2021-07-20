@@ -2,6 +2,13 @@
 
 namespace Nishchay\Generator\Skelton\Controller;
 
+use Nishchay\Attributes\Controller\Controller;
+use Nishchay\Attributes\Controller\Routing;
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder
+};
+
 /**
  * {CrudControllerClassDescription}
  *
@@ -14,17 +21,17 @@ namespace Nishchay\Generator\Skelton\Controller;
  * {authorName}
  * {versionNumber}
  * 
- * @Controller
- * @Routing(prefix='#routeName#')
  */
+#[Controller]
+#[Routing(prefix: '#routeName#')]
 class CrudController
 {
 
     /**
      * Used for listing.
      * 
-     * @Route(path='/', type=GET)
      */
+    #[Route(path: '/', type: 'GET')]
     public function index()
     {
         // TODO: Listing
@@ -33,8 +40,8 @@ class CrudController
     /**
      * Used for inserting record.
      * 
-     * @Route(path='/', type=POST)
      */
+    #[Route(path: '/', type: 'POST')]
     public function create()
     {
         // TODO: Insert record
@@ -43,9 +50,9 @@ class CrudController
     /**
      * Used for viewing record.
      * 
-     * @Route(path='{id}', type=GET)
-     * @Placeholder(id=number)
      */
+    #[Route(path: '{id}', type: 'GET')]
+    #[Placeholder(['id' => 'int'])]
     public function fetch(int $id)
     {
         // TODO: Fetch record
@@ -54,9 +61,9 @@ class CrudController
     /**
      * Used for updating record.
      * 
-     * @Route(path='{id}', type=PUT)
-     * @Placeholder(id=number)
      */
+    #[Route(path: '{id}', type: 'PUT')]
+    #[Placeholder(['id' => 'int'])]
     public function update(int $id)
     {
         // TODO: Update record
@@ -65,9 +72,9 @@ class CrudController
     /**
      * Used for deleting record.
      * 
-     * @Route(path='{id}', type=DELETE)
-     * @Placeholder(id=number)
      */
+    #[Route(path: '{id}', type: 'DELETE')]
+    #[Placeholder(['id' => 'int'])]
     public function delete(int $id)
     {
         // TODO: Delete record

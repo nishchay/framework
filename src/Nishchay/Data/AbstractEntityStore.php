@@ -5,10 +5,8 @@ namespace Nishchay\Data;
 use Nishchay;
 use Exception;
 use Nishchay\Exception\ApplicationException;
-use AnnotationParser;
 use ReflectionClass;
 use Nishchay\Persistent\System;
-use Nishchay\Data\Annotation\EntityClass;
 
 /**
  * Description of Entity Store.
@@ -31,7 +29,7 @@ abstract class AbstractEntityStore
     /**
      * 
      * @param type $class
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      * @throws Exception
      */
     protected function entity($class)
@@ -43,8 +41,10 @@ abstract class AbstractEntityStore
         if (array_key_exists($class, self::$collection)) {
             return self::$collection[$class];
         }
+        
         if ($this->isEntity($class) === FALSE) {
-            throw new ApplicationException('Class [' . $class . '] is not registered entity.', 1, null, 911061);
+            throw new ApplicationException('Class [' . $class . '] is not registered entity.',
+                            1, null, 911061);
         }
 
         return $this->instanciate($class);
@@ -65,7 +65,7 @@ abstract class AbstractEntityStore
      * Stores entity class instance into collection.
      * 
      * @param string $class
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      */
     private function instanciate($class)
     {
@@ -107,11 +107,11 @@ abstract class AbstractEntityStore
      * Returns instance of Entity class.
      * 
      * @param string $class
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      */
     private function getInstance($class)
     {
-        $entity = new EntityClass($class, $this->getAnnotations($class));
+        $entity = new EntityClass($class, $this->getAttributes($class));
         return $this->store($class, $entity);
     }
 
@@ -128,15 +128,15 @@ abstract class AbstractEntityStore
     }
 
     /**
-     * Returns annotation of class.
+     * Returns attribute of class.
      * 
      * @param string $class
      * @return array
      */
-    private function getAnnotations($class)
+    private function getAttributes(string $class)
     {
         $reflection = new ReflectionClass($class);
-        return AnnotationParser::getAnnotations($reflection->getDocComment());
+        return $reflection->getAttributes();
     }
 
 }

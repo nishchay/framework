@@ -7,7 +7,7 @@ use Processor;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\Exception\BadRequestException;
 use Nishchay\Exception\AuthorizationFailedException;
-use Nishchay\Controller\Annotation\Method\Method;
+use Nishchay\Controller\ControllerMethod;
 use Nishchay\Http\Request\Request;
 use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\OAuth2\OAuth2;
@@ -33,15 +33,15 @@ class ServicePreProcess extends BaseServiceProcess
 
     /**
      *
-     * @var \Nishchay\Controller\Annotation\Method\Method 
+     * @var ControllerMethod
      */
     protected $method;
 
     /**
      * 
-     * @param Method $method
+     * @param ControllerMethod $method
      */
-    public function check(Method $method)
+    public function check(ControllerMethod $method)
     {
         $this->init($method)
                 ->verifyToken()
@@ -161,7 +161,7 @@ class ServicePreProcess extends BaseServiceProcess
      * 
      * @param Method $method
      */
-    private function init(Method $method)
+    private function init($method)
     {
         $this->setMethod($method)
                 ->setService($this->method->getService())
@@ -190,7 +190,7 @@ class ServicePreProcess extends BaseServiceProcess
      * @param Method $method
      * @return $this
      */
-    private function setMethod(Method $method)
+    private function setMethod($method)
     {
         $this->method = $method;
         return $this;
@@ -222,7 +222,7 @@ class ServicePreProcess extends BaseServiceProcess
                     . ' filtering.', $this->service->getClass(), $this->service->getMethod(), 928009);
         }
 
-        # If @Service annotation has defined supported fields, we should check
+        # If Service attribute has defined supported fields, we should check
         # for fields demanded are valid or not.
         if ($this->service->getSupported() !== false && $this->fields !== false) {
             $diff = array_diff($this->fields, $this->service->getSupported());

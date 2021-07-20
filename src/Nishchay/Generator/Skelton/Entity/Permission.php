@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Permission entity class.
  *
@@ -13,23 +19,24 @@ namespace Nishchay\Generator\Skelton\Entity;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Permission
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Permission id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $permissionId;
 
     /**
      * Name of permission.
      * 
-     * @DataType(type=string, length=50)
      */
+    #[DataType(type: 'string', length: 50)]
     public $name;
 
     /**
@@ -37,6 +44,7 @@ class Permission
      * 
      * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $description;
 
 }

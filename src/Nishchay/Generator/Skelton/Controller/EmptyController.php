@@ -2,6 +2,8 @@
 
 namespace Nishchay\Generator\Skelton\Controller;
 
+use Nishchay\Attributes\Controller\Controller;
+
 /**
  * {EmptyControllerClassDescription}
  *
@@ -14,14 +16,15 @@ namespace Nishchay\Generator\Skelton\Controller;
  * {authorName}
  * {versionNumber}
  * 
- * @Controller
  */
+#[Controller]
 class EmptyController
 {
 
     /**
-     * Route(path='toDo')
+     * To Do
      */
+    ##[Route(path:'toDo')]
     public function toDo()
     {
         // REMOVE OR EDIT THIS ROUTE

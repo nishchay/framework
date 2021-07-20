@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Hostel;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Hostel Furniture entity class.
  *
@@ -13,65 +19,66 @@ namespace Nishchay\Generator\Skelton\Entity\Hostel;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Furniture
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Furniture id.
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $furnitureId;
 
     /**
      * Hostel Id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $hostelId;
 
     /**
      * Building Id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $buildingId;
 
     /**
      * Room Id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $roomId;
 
     /**
      * Furniture name.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $furnitureName;
 
     /**
      * Amount of this furniture.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $amount;
 
     /**
      * Is furniture being used.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $isActive;
 
     /**
      * Reason for furniture not being used.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $inactiveReason;
 
 }

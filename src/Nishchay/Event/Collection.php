@@ -6,7 +6,7 @@ use Nishchay;
 use Nishchay\Persistent\System as SystemPersistent;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Utility\ArrayUtility;
-use Nishchay\Event\Annotation\Method\Fire;
+use Nishchay\Attributes\Event\EventConfig;
 use Nishchay\Processor\Names;
 
 /**
@@ -65,7 +65,7 @@ class Collection extends AbstractCollection
         } else {
             foreach ([Names::TYPE_GLOBAL, Names::TYPE_CONTEXT, Names::TYPE_SCOPE] as $type) {
                 $this->collection[$type] = [
-                    Fire::BEFORE => [], Fire::AFTER => []
+                    EventConfig::BEFORE => [], EventConfig::AFTER => []
                 ];
             }
         }
@@ -83,7 +83,8 @@ class Collection extends AbstractCollection
         }
 
         if (Nishchay::isApplicationStageLive()) {
-            SystemPersistent::setPersistent(static::EVENT, ['collection' => $this->collection, 'classes' => $this->eventClass]);
+            SystemPersistent::setPersistent(static::EVENT,
+                    ['collection' => $this->collection, 'classes' => $this->eventClass]);
         }
         $this->persisted = true;
     }
@@ -91,28 +92,28 @@ class Collection extends AbstractCollection
     /**
      * Stores scope or context event.
      * 
-     * @param   \Nishchay\Event\Annotation\Method\Method         $annotation
-     * @param   string                                          $value
-     * @param   array                                           $callback
+     * @param   EventMethod $attribute
+     * @param   string  $value
+     * @param   array   $callback
      */
-    public function store($annotation, $value)
+    public function store($attribute, $value)
     {
-        if ($this->isExist($annotation->getClass())) {
-            $this->collection[$annotation->getIntended()->getType()]
-                    [$annotation->getFire()->getWhen()][$value][] = $annotation;
+        if ($this->isExist($attribute->getClass())) {
+            $this->collection[$attribute->getEventConfig()->getType()]
+                    [$attribute->getEventConfig()->getWhen()][$value][] = $attribute;
         }
     }
 
     /**
      * Stores global event.
      * 
-     * @param   string      $when
-     * @param   \Nishchay\Event\Annotation\Method\Method      $annotation
+     * @param   string  $when
+     * @param   EventMethod $attribute
      */
-    public function storeGlobal($annotation)
+    public function storeGlobal($attribute)
     {
-        if ($this->isExist($annotation->getClass())) {
-            $this->collection[Names::TYPE_GLOBAL][$annotation->getFire()->getWhen()][] = $annotation;
+        if ($this->isExist($attribute->getClass())) {
+            $this->collection[Names::TYPE_GLOBAL][$attribute->getEventConfig()->getWhen()][] = $attribute;
         }
     }
 
@@ -142,7 +143,7 @@ class Collection extends AbstractCollection
             Names::TYPE_CONTEXT => $this->getContextEvent($context, $when),
             Names::TYPE_SCOPE => $this->getScopeEvent($scope, $when)
         ];
-        $sorted = ArrayUtility::customeKeySort($when === Fire::BEFORE ?
+        $sorted = ArrayUtility::customeKeySort($when === EventConfig::BEFORE ?
                         $declared : array_reverse($declared), $order);
         $events = [];
         foreach ($sorted as $value) {
@@ -166,7 +167,8 @@ class Collection extends AbstractCollection
         }
         foreach ($scope as $name) {
             if (isset($this->collection [Names::TYPE_SCOPE][$when][$name])) {
-                $events = array_merge($events, $this->collection [Names::TYPE_SCOPE][$when][$name]);
+                $events = array_merge($events,
+                        $this->collection [Names::TYPE_SCOPE][$when][$name]);
             }
         }
         return $events;

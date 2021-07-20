@@ -5,8 +5,8 @@ namespace Nishchay\Handler;
 use Nishchay;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Processor\AbstractCollection;
-use Nishchay\Handler\Annotation\HandlerClass;
-use Nishchay\Handler\Annotation\Handler;
+use Nishchay\Handler\HandlerClass;
+use Nishchay\Attributes\Handler\Handler;
 use Nishchay\Processor\Names;
 use Nishchay\Persistent\System;
 
@@ -53,12 +53,12 @@ class Collection extends AbstractCollection
     /**
      * 
      * @param type $class
-     * @param type $annotation
+     * @param type $attributes
      */
-    public function store($class, $annotation)
+    public function store($class, $attributes)
     {
         $this->checkStoring();
-        $handler = (new HandlerClass($class, $annotation))->getHandler();
+        $handler = (new HandlerClass($class, $attributes))->getHandler();
 
         switch ($handler->getType()) {
             case Names::TYPE_CONTEXT:
@@ -85,7 +85,8 @@ class Collection extends AbstractCollection
     {
         if ($this->get(Names::TYPE_SCOPE, $handler->getName()) !== false) {
             throw new ApplicationException('Exception handler defined on [' . $handler->getClass() . '] class for scope ['
-                    . $handler->getName() . '] already exist.', $handler->getClass(), null, 919002);
+                            . $handler->getName() . '] already exist.',
+                            $handler->getClass(), null, 919002);
         }
         $this->collection[Names::TYPE_SCOPE][$handler->getName()] = $handler->getClass();
     }
@@ -100,7 +101,8 @@ class Collection extends AbstractCollection
     {
         if ($this->get(Names::TYPE_CONTEXT, $handler->getName())) {
             throw new ApplicationException('Exception handler defined on [' . $handler->getClass() . '] class for context ['
-                    . $handler->getName() . '] already exist.', $handler->getClass(), null, 919003);
+                            . $handler->getName() . '] already exist.',
+                            $handler->getClass(), null, 919003);
         }
         $this->collection[Names::TYPE_CONTEXT][$handler->getName()] = $handler->getClass();
     }
@@ -114,7 +116,8 @@ class Collection extends AbstractCollection
     {
         if ($this->getGlobal() !== false) {
             throw new ApplicationException('Exception handler defined on [' .
-                    $class . '] class for global already exist.', $class, null, 919004);
+                            $class . '] class for global already exist.',
+                            $class, null, 919004);
         }
         $this->collection[Names::TYPE_GLOBAL] = $class;
     }

@@ -7,9 +7,9 @@ use ReflectionClass;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\Data\AbstractEntityStore;
-use Nishchay\Data\Annotation\Entity;
-use Nishchay\Data\Annotation\Property\Property;
-use Nishchay\Data\Annotation\Property\Relative;
+use Nishchay\Attributes\Entity\Property\Property;
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\Relative;
 use Nishchay\Data\EntityQuery;
 use Nishchay\Data\Meta\MetaTable;
 use Nishchay\Data\Property\ConstantEntity;
@@ -194,7 +194,7 @@ class EntityManager extends AbstractEntityStore
 
         # Getting connection name from @connect annotaiton defined on entity
         # class. It will return default connection name if entity class has 
-        # not defined @connect annotation on it. We are setting to this 
+        # not defined @connect attribute on it. We are setting to this 
         # class because we use it at many places.
         $this->entityConnection = $this->getThisEntity()
                 ->getConnect();
@@ -237,7 +237,7 @@ class EntityManager extends AbstractEntityStore
     {
         if (!$this->isPropertyExist($name) && !$this->isExtraPropertyExists($name)) {
             throw new ApplicationException('Property [' . $this->entityClass .
-                    '::' . $name . '] does not exists.', 1, null, 911064);
+                            '::' . $name . '] does not exists.', 1, null, 911064);
         }
 
         if ($this->isExtraPropertyExists($name)) {
@@ -265,14 +265,15 @@ class EntityManager extends AbstractEntityStore
         # We first must check that calling method exist in entity class or not.
         if (!method_exists($this->entityClass, $name)) {
             throw new ApplicationException('Method [' . $this->entityClass .
-                    '::' . $name . '] does not exists.');
+                            '::' . $name . '] does not exists.');
         }
 
         # We will not allow non public method to be called from outside class.
         $method = $this->getThisEntity()->getMethod($name);
         if ($method->isPublic() === false) {
             throw new NotSupportedException('Can not call non public method [' .
-                    $this->entityClass . '::' . $name . '] from outside class.', 1, null, 911065);
+                            $this->entityClass . '::' . $name . '] from outside class.',
+                            1, null, 911065);
         }
 
         $instance = null;
@@ -355,7 +356,7 @@ class EntityManager extends AbstractEntityStore
         }
 
         throw new ApplicationException('Property [' . $this->entityClass .
-                '::' . $name . '] does not exists.', 1, null, 911066);
+                        '::' . $name . '] does not exists.', 1, null, 911066);
     }
 
     /**
@@ -424,7 +425,8 @@ class EntityManager extends AbstractEntityStore
         $property = $this->getThisEntity()->getProperty($propertyName);
         if ($property === false) {
             throw new ApplicationException('Property [' . $this->entityClass . '::' .
-                    $propertyName . '] does not exists.', 1, null, 911097);
+                            $propertyName . '] does not exists.', 1, null,
+                            911097);
         }
 
         $value = (new Query())
@@ -507,20 +509,22 @@ class EntityManager extends AbstractEntityStore
      * @param   string $propertyName
      * @return  array
      */
-    private function refactorDerivedResult(EntityQuery $entityQuery, $propertyName)
+    private function refactorDerivedResult(EntityQuery $entityQuery,
+            $propertyName)
     {
         $records = $entityQuery->getQueryBuilder()->get();
+
         $derivedData = [];
 
         # This will return mapping of alias to its entity class.
         $mapping = $entityQuery->getReturnableEntity();
 
-
         unset($mapping[$this->entityTable]);
         foreach ($records as $row) {
             # Storing value as index so that we can easily retrieve it
             # at the calling side.
-            $derivedData[$row->{$propertyName}][] = $this->getRowAsEntity($row, $mapping, $entityQuery);
+            $derivedData[$row->{$propertyName}][] = $this->getRowAsEntity($row,
+                    $mapping, $entityQuery);
         }
         return $derivedData;
     }
@@ -609,7 +613,7 @@ class EntityManager extends AbstractEntityStore
 
             # Will not process if property does not exist or 
             # property is derived.
-            if ($property === false || $property->getDerived() !== false) {
+            if ($property === false || $property->getDerived() !== null) {
                 continue;
             }
 
@@ -618,7 +622,8 @@ class EntityManager extends AbstractEntityStore
             $value = $property->getValue($value);
             $this->fetched[$column] = is_object($value) ?
                     (clone $value) : $value;
-            $property->updateValueToEntity($property->applySetter($value), $this->getInstance());
+            $property->updateValueToEntity($property->applySetter($value),
+                    $this->getInstance());
         }
 
         $this->setDerivedProperties($row);
@@ -641,7 +646,8 @@ class EntityManager extends AbstractEntityStore
         $property = $this->getThisEntity()->getProperty($propertyName);
 
         if ($property === false) {
-            throw new ApplicationException('Property [' . $this->entityClass . '::' . $propertyName . '] does not exists.', null, null, 911098);
+            throw new ApplicationException('Property [' . $this->entityClass . '::' . $propertyName . '] does not exists.',
+                            null, null, 911098);
         }
 
         return $property->getDatatype()->convertDataType($value);
@@ -659,7 +665,8 @@ class EntityManager extends AbstractEntityStore
         foreach ($properties as $name) {
             $this->getThisEntity()
                     ->getProperty($name)
-                    ->updateValueToEntity($this->getCallbackValue($name), $this->getInstance());
+                    ->updateValueToEntity($this->getCallbackValue($name),
+                            $this->getInstance());
         }
     }
 
@@ -717,7 +724,8 @@ class EntityManager extends AbstractEntityStore
                 continue;
             }
 
-            $this->setDerivedPropertyValues($self, $toAssign, $row, $property, $joinTable);
+            $this->setDerivedPropertyValues($self, $toAssign, $row, $property,
+                    $joinTable);
         }
     }
 
@@ -727,10 +735,11 @@ class EntityManager extends AbstractEntityStore
      * @param   string                                            $propertyName
      * @param   array                                             $derivedProperties
      * @param   \stdClass                                         $row
-     * @param   \Nishchay\Data\Annotation\Property\Property        $property
+     * @param   Property        $property
      * @param   \Nishchay\Data\Property\ResolvedJoin               $joinTable
      */
-    private function setDerivedPropertyValues($selfPropertyName, $derivedProperties, $row, $property, $joinTable)
+    private function setDerivedPropertyValues($selfPropertyName,
+            $derivedProperties, $row, $property, $joinTable)
     {
         # Property can have more than one from another class, we will here
         # iterate over each to assign.
@@ -755,7 +764,8 @@ class EntityManager extends AbstractEntityStore
                 $relativeClass = $joinTable->getPropertyClass($propertyName);
                 $derivedValue[$propertyName] = $this->entity($relativeClass)
                         ->getProperty($propertyName)
-                        ->applySetter($property->getValue($propertyValue, $propertyName));
+                        ->applySetter($property->getValue($propertyValue,
+                                $propertyName));
             }
         }
         # If derived property is deriving only one property then that property
@@ -765,12 +775,14 @@ class EntityManager extends AbstractEntityStore
                     $derivedValue[$propertyName] : null;
         } else {
             $derivedValue = !empty($derivedValue) ?
-                    (new ConstantProperty($derivedValue, $this->entityClass .
+                    (new ConstantProperty($derivedValue,
+                            $this->entityClass .
                             '::' . $propertyName)) : null;
         }
 
         # Calling self class setter method if exists.
-        $property->updateValueToEntity($property->applySetter($derivedValue), $this->getInstance());
+        $property->updateValueToEntity($property->applySetter($derivedValue),
+                $this->getInstance());
     }
 
     /**
@@ -830,10 +842,11 @@ class EntityManager extends AbstractEntityStore
             # rather than combining with main query to fetch record. Derived
             # properties whih holds array or whole entity is called laxy property.  
             if ($joinTable->getHoldType() === ResolvedJoin::HOLD_TYPE_ARRAY ||
-                    $propertyNames === false) {
+                    empty($propertyNames)) {
                 $relativeProperty = $this->getThisEntity()
                         ->getRelativePropertyName($propertyName);
-                $this->setLazyProperty($records, $joinTable, $relativeProperty, $propertyName);
+                $this->setLazyProperty($records, $joinTable, $relativeProperty,
+                        $propertyName);
             }
         }
 
@@ -848,7 +861,8 @@ class EntityManager extends AbstractEntityStore
      * @param string $propertyName
      * @param string $selfProperty
      */
-    private function setLazyProperty(&$records, ResolvedJoin $join, $propertyName, $selfProperty)
+    private function setLazyProperty(&$records, ResolvedJoin $join,
+            $propertyName, $selfProperty)
     {
         # Finding unique value from records.
         $values = $this->getUniqueRecords($records, $propertyName);
@@ -869,7 +883,7 @@ class EntityManager extends AbstractEntityStore
                     $this->entityTable . '.' . $propertyName . '[+]' => $values
         ]);
 
-        if ($join->getGroupBy() !== false) {
+        if (!empty($join->getGroupBy())) {
             $entityQuery->setGroupBy($join->getGroupBy());
         }
 
@@ -878,12 +892,14 @@ class EntityManager extends AbstractEntityStore
                 ->getDerived()
                 ->getProperty();
         $entityQuery->setProperty($join->getPropertyNameToFetch());
+
         # This will convert retrieved records into entity.
         $derived = $this->refactorDerivedResult($entityQuery, $propertyName);
 
         # $property_names false means derived property should be entity instance.
-        if ($propertyNames !== false) {
-            $derived = $this->extractFromDerived($derived, $this->getAssignableMapping($join), $selfProperty);
+        if (!empty($propertyNames)) {
+            $derived = $this->extractFromDerived($derived,
+                    $this->getAssignableMapping($join), $selfProperty);
         }
 
         $property = $this->getThisEntity()
@@ -941,7 +957,8 @@ class EntityManager extends AbstractEntityStore
                             $entry->{$alias}->{$name} :
                             $entry->{$name};
                 }
-                $values[$key] = new ConstantProperty($assigned, $this->entityClass . '::' . $selfProperty);
+                $values[$key] = new ConstantProperty($assigned,
+                        $this->entityClass . '::' . $selfProperty);
             }
             $derived[$index] = $values;
         }
@@ -987,7 +1004,8 @@ class EntityManager extends AbstractEntityStore
     {
         if ($this->isEnityReturned) {
             throw new ApplicationException('This is returned entity and'
-                    . ' not allowed to re-fetch record.', 1, null, 9110067);
+                            . ' not allowed to re-fetch record.', 1, null,
+                            9110067);
         }
 
         $entity = $this->getThisEntity();
@@ -1009,15 +1027,16 @@ class EntityManager extends AbstractEntityStore
 
                 # Will not add join if derived property's 'from' property exists
                 # unfetchable or deriving whole entity.
-                if ($derived->getProperty() === false ||
-                        ($derived->getFrom() !== false &&
-                        array_key_exists($derived->getFrom(), $this->unFetchAbleProperties))) {
+                if (empty($derived->getProperty()) ||
+                        ($derived->getFrom() !== null &&
+                        array_key_exists($derived->getFrom(),
+                                $this->unFetchAbleProperties))) {
                     continue;
                 }
 
                 $builder->addJoin($join->getClassJoin());
 
-                if ($derived->getGroup() !== false) {
+                if (!empty($derived->getGroup())) {
                     foreach ($derived->getGroup() as $by) {
                         $builder->setGroupBy($this->entityTable . '.' . $by);
                     }
@@ -1031,7 +1050,8 @@ class EntityManager extends AbstractEntityStore
         $query = $builder->getQueryBuilder();
 
         # We will set column based on  derived property to be set or not.
-        $query->setColumn($this->getSelectiveColumn($entity, $query, $fetchDerived));
+        $query->setColumn($this->getSelectiveColumn($entity, $query,
+                        $fetchDerived));
         $query->setOrderBy($this->entityTable . '.' . $entity->getIdentity());
 
         return $query;
@@ -1103,7 +1123,8 @@ class EntityManager extends AbstractEntityStore
         # of this class result in empty string.  fetched gets value when 
         # record is fetched from database otherwise all values are null or
         # record has been updated or inserted.
-        return ($this->isEntityInsertable = empty(implode('', $this->getStoreable($this->fetched))));
+        return ($this->isEntityInsertable = empty(implode('',
+                        $this->getStoreable($this->fetched))));
     }
 
     /**
@@ -1119,7 +1140,8 @@ class EntityManager extends AbstractEntityStore
         $property = $this->getThisEntity()->getProperty($property_name);
         if ($property->getDerived()) {
             $callback = $property->getDerived()->getCallback();
-            return $this->getThisEntity()->callMethod($this->getInstance(), $callback, []);
+            return $this->getThisEntity()->callMethod($this->getInstance(),
+                            $callback, []);
         }
     }
 
@@ -1135,7 +1157,8 @@ class EntityManager extends AbstractEntityStore
     public function save()
     {
         if ($this->isEntityUpdateable === false) {
-            throw new ApplicationException('Entity is readonly.', 1, null, 911068);
+            throw new ApplicationException('Entity is readonly.', 1, null,
+                            911068);
         }
 
         # Entity is considered as insertable if this entity does not contain
@@ -1163,7 +1186,8 @@ class EntityManager extends AbstractEntityStore
     public function remove()
     {
         if ($this->isEntityUpdateable === false) {
-            throw new ApplicationException('Entity is readonly.', 1, null, 911069);
+            throw new ApplicationException('Entity is readonly.', 1, null,
+                            911069);
         }
         $query = $this->getThisEntity()->getQuery();
 
@@ -1171,14 +1195,13 @@ class EntityManager extends AbstractEntityStore
         # These values with properties results in where clause.
         $this->setCondition($query);
 
-
         # If there are any callback to be executed before removing records, we
         # will execute. if any of callback returns false, will cancel remove 
         # operation and return false indicating that remove got cancelled.
         if ($this->executeBeforeChange(self::REMOVE) === false) {
             throw new ApplicationException('Entity [' . $this->entityClass . ']'
-                    . ' record can not be removed as before change event'
-                    . ' return failure.', 1, null, 911070);
+                            . ' record can not be removed as before change event'
+                            . ' return failure.', 1, null, 911070);
         }
 
         # Executing remove query.
@@ -1219,15 +1242,16 @@ class EntityManager extends AbstractEntityStore
         # cancelled.
         if ($this->executeBeforeChange(self::INSERT) === false) {
             throw new ApplicationException('Entity [' . $this->entityClass . ']'
-                    . ' record can be inserted as before change event return'
-                    . ' failure.', 1, null, 911071);
+                            . ' record can be inserted as before change event return'
+                            . ' failure.', 1, null, 911071);
         }
 
         # We first must validate each property of entity class before we proceed
         # for anything. Below method will return updated properties with its 
         # value. We will these property query builder for update.
         $passed = $this->getThisEntity()
-                ->validateEntityRecord($this->getInstance(), $this->getInstanceOfFetched(), $this->skipRelativeValidation);
+                ->validateEntityRecord($this->getInstance(),
+                $this->getInstanceOfFetched(), $this->skipRelativeValidation);
 
         # Will not proceed if nothing has been updated.
         if (empty($passed)) {
@@ -1335,8 +1359,8 @@ class EntityManager extends AbstractEntityStore
         # operation and return FASLE indicating that update got cancelled.
         if ($this->executeBeforeChange(self::UPDATE, array_keys($updated)) === false) {
             throw new ApplicationException('Entity [' . $this->entityClass . ']'
-                    . ' record can not be updated as before change event'
-                    . ' return failure.', 1, null, 911072);
+                            . ' record can not be updated as before change event'
+                            . ' return failure.', 1, null, 911072);
         }
 
         $afterEventCall = Coding::serialize($this->getInstance());
@@ -1387,7 +1411,8 @@ class EntityManager extends AbstractEntityStore
     private function executeBeforeChange($mode, $updatedNames = null)
     {
         return $this->getThisEntity()
-                        ->executeBeforeChange($this->getConstantEntity($this->getInstanceOfFetched()), $this->getInstance(), $mode, $updatedNames);
+                        ->executeBeforeChange($this->getConstantEntity($this->getInstanceOfFetched()),
+                                $this->getInstance(), $mode, $updatedNames);
     }
 
     /**
@@ -1412,7 +1437,8 @@ class EntityManager extends AbstractEntityStore
     private function executeAfterChange($mode, $updatedNames = null)
     {
         return $this->getThisEntity()
-                        ->executeAfterChangeEvent($this->getInstanceOfFetched(), $this->getInstance(), $mode, $updatedNames);
+                        ->executeAfterChangeEvent($this->getInstanceOfFetched(),
+                                $this->getInstance(), $mode, $updatedNames);
     }
 
     /**
@@ -1445,7 +1471,8 @@ class EntityManager extends AbstractEntityStore
     {
         $query = $this->getThisEntity()->getQuery();
         return $this->addExtraPropertyToQuery(
-                        $query->setColumnWithValue($this->getStoreable($updated, $query))
+                        $query->setColumnWithValue($this->getStoreable($updated,
+                                        $query))
         );
     }
 
@@ -1458,7 +1485,8 @@ class EntityManager extends AbstractEntityStore
         # If extra property added, updated or removed, we will serialize extra
         # property detail to be store in extra property column of this entity. 
         if ($this->isExtraPropertyUpdated()) {
-            $query->setColumnWithValue(Property::EXTRA_PROPERTY, Coding::serialize($this->extraProperty, true));
+            $query->setColumnWithValue(Property::EXTRA_PROPERTY,
+                    Coding::serialize($this->extraProperty, true));
         }
 
         return $query;
@@ -1549,7 +1577,8 @@ class EntityManager extends AbstractEntityStore
             $property = $this->getThisEntity()->getProperty($key);
             if (!is_scalar($value)) {
                 $value = $property ?
-                        $property->getScalerValue($value) : Coding::serialize($value, true);
+                        $property->getScalerValue($value) : Coding::serialize($value,
+                                true);
             } else if (is_bool($value)) {
                 $value = $value ? 1 : 0;
             }
@@ -1578,7 +1607,8 @@ class EntityManager extends AbstractEntityStore
     {
         $identity = $this->getIdentityValue();
         if (!empty($identity)) {
-            $query->setCondition($this->getThisEntity()->getIdentity(), $identity);
+            $query->setCondition($this->getThisEntity()->getIdentity(),
+                    $identity);
         } else {
             $values = !empty($this->fetched) ?
                     $this->fetched : $this->getNonEmpty();
@@ -1603,9 +1633,9 @@ class EntityManager extends AbstractEntityStore
     }
 
     /**
-     * Returns Entity Annotation Class instance.
+     * Returns Entity attribute Class instance.
      * 
-     * @return  \Nishchay\Data\Annotation\EntityClass
+     * @return  EntityClass
      */
     private function getThisEntity($name = null)
     {
@@ -1715,7 +1745,8 @@ class EntityManager extends AbstractEntityStore
     {
         if ($this->isExtraPropertyExists($name) === false) {
             throw new ApplicationException('Extra property [' .
-                    $this->entityClass . '::' . $name . '] does not exists.', 1, null, 911073);
+                            $this->entityClass . '::' . $name . '] does not exists.',
+                            1, null, 911073);
         }
 
         unset($this->extraProperty[$name]);
@@ -1752,7 +1783,8 @@ class EntityManager extends AbstractEntityStore
     public function getData($as = 'object', $fetched = true, $withNull = true)
     {
         $values = array_merge($this->getThisEntity()
-                        ->getPropertyValues($this->getInstance(), (bool) $fetched), $this->getExtraProperties());
+                        ->getPropertyValues($this->getInstance(),
+                                (bool) $fetched), $this->getExtraProperties());
 
         if ($withNull === false) {
             foreach ($values as $key => $val) {
@@ -1777,7 +1809,7 @@ class EntityManager extends AbstractEntityStore
     {
         if ($this->isTempExists($name) === false) {
             throw new ApplicationException('Temporary data [' . $name . ']'
-                    . ' does not exist.', 1, null, 911074);
+                            . ' does not exist.', 1, null, 911074);
         }
         return $this->tempData[$name];
     }
@@ -1830,7 +1862,8 @@ class EntityManager extends AbstractEntityStore
     {
         $builder = $this->getSelectiveQuery(false, true);
         if ($properties === true) {
-            $properties = $this->getSelectiveColumn($this->getThisEntity(), $builder, false);
+            $properties = $this->getSelectiveColumn($this->getThisEntity(),
+                    $builder, false);
             $builder->setProperty(array_values($properties));
             if ($withJoin) {
                 foreach ($this->getThisEntity()->getDerivedProperties() as $propertyName => $no) {
@@ -1843,7 +1876,8 @@ class EntityManager extends AbstractEntityStore
         } else if (is_array($properties)) {
             foreach ($properties as $name) {
                 if (strpos($name, '.') === false) {
-                    $name = StringUtility::getExplodeLast('\\', $this->entityClass) . '.' . $name;
+                    $name = StringUtility::getExplodeLast('\\',
+                                    $this->entityClass) . '.' . $name;
                 }
                 $builder->setProperty($name);
             }
@@ -1870,11 +1904,11 @@ class EntityManager extends AbstractEntityStore
         $mapping = $query->getReturnableEntity();
         $iterator = [];
 
-
         $propertyMapping = $query->getPropertyMapping();
 
         foreach ($records as $row) {
-            $value = $this->getRowAsEntity($row, $mapping, $query, $propertyMapping);
+            $value = $this->getRowAsEntity($row, $mapping, $query,
+                    $propertyMapping);
             foreach ($query->getDerivingProperties() as $name) {
                 list($alias, $property) = explode('.', $name);
                 if (isset($mapping[$alias]) === false) {
@@ -1889,7 +1923,10 @@ class EntityManager extends AbstractEntityStore
                     continue;
                 }
                 $entity = $this->entity($mapping[$alias]);
-                $toSet->setDerivedPropertyValues($property, $entity->getDerivedProperty($property), $row, $entity->getProperty($property), $entity->getJoinTable($property));
+                $toSet->setDerivedPropertyValues($property,
+                        $entity->getDerivedProperty($property), $row,
+                        $entity->getProperty($property),
+                        $entity->getJoinTable($property));
             }
 
             $iterator[] = $value;
@@ -2015,7 +2052,6 @@ class EntityManager extends AbstractEntityStore
         # To fetch exists table structure.
         $meta = new MetaTable($this->entityTable);
 
-
         $dbManager = new DatabaseManager($this->entityConnection);
         $dbManager->setTableName($this->entityTable);
         $columns = [];
@@ -2041,7 +2077,7 @@ class EntityManager extends AbstractEntityStore
         foreach ($this->getProperties() as $name => $property) {
 
             # Discard derived property
-            if ($property->getDerived() !== false) {
+            if ($property->getDerived() !== null) {
                 continue;
             }
             $columnName = [$name => $name];
@@ -2051,7 +2087,10 @@ class EntityManager extends AbstractEntityStore
                 $columnName = $name;
             }
             $dataType = $property->getDataType();
-            $dbManager->setColumn($columnName, $dbManager->getType($dataType->getType(), $dataType->getLength()), ($dataType->getRequired() || $identityPropertyName === $name) ? false : null);
+            $dbManager->setColumn($columnName,
+                    $dbManager->getType($dataType->getType(),
+                            $dataType->getLength()),
+                    ($dataType->getRequired() || $identityPropertyName === $name) ? false : null);
 
             # If property is relative and is using perfect join then we will add foreign key
             # only if it does not already exists in table.
@@ -2064,10 +2103,11 @@ class EntityManager extends AbstractEntityStore
                 # If property is relative to which property of relative entity
                 # is not defined then we will use identity property of relative
                 # entity.
-                if (($foreignColumn = $relative->getName()) === false) {
+                if (($foreignColumn = $relative->getName()) === null) {
                     $foreignColumn = $entity->getIdentity();
                 }
-                $dbManager->addForeignKey($name, ['table' => $table, 'column' => $foreignColumn]);
+                $dbManager->addForeignKey($name,
+                        ['table' => $table, 'column' => $foreignColumn]);
             }
         }
 

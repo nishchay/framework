@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Hostel;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Hostel Fees entity class.
  *
@@ -13,72 +19,73 @@ namespace Nishchay\Generator\Skelton\Entity\Hostel;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Fees
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Fees id.
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $feesId;
 
     /**
      * Hostel  Id.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $hostelId;
 
     /**
      * Building Id.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $buildingId;
 
-    /** 
+    /**
      * Guest Id.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $guestId;
 
     /**
      * Amount paid.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $amount;
 
     /**
      * Currency of  paid amount.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $currency;
 
     /**
      * Paid at.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     public $paidAt;
 
     /**
      * Who received fees.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $receiverId;
 
     /**
      * Receiver name if any.
      * 
-     * @DataType(type=string, length=200)
      */
+    #[DataType(type: 'string', length: 200)]
     public $receiverName;
 
 }

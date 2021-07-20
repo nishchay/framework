@@ -9,13 +9,13 @@ use Nishchay\Generator\Skelton\Entity\CrudEntity;
 use Nishchay\Utility\Coding;
 use Nishchay\Generator\Skelton\Entity\TemplateMapper;
 use Nishchay\Console\Printer;
-use Nishchay\Data\Annotation\Property\DataType;
+use Nishchay\Attributes\Entity\Property\DataType;
 use Nishchay\FileManager\SimpleFile;
 use Nishchay\Utility\SystemUtility;
 use Nishchay\Processor\VariableType;
 use Nishchay\Data\Meta\MetaTable;
 use Nishchay\Data\Meta\MetaConnection;
-use Nishchay\Data\Annotation\Property\Property;
+use Nishchay\Attributes\Entity\Property\Property;
 use Nishchay\Data\EntityManager;
 
 /**
@@ -159,7 +159,8 @@ class Entity extends AbstractGenerator
         while (true) {
 
             # Asking user for property name.
-            $property = $this->getInput('Enter property name(Type q then enter to stop)', null);
+            $property = $this->getInput('Enter property name(Type q then enter to stop)',
+                    null);
             if (strtolower($property) === 'q') {
                 break;
             }
@@ -175,7 +176,8 @@ class Entity extends AbstractGenerator
             # For the first property we taking its data type as int and making it
             # identity property.
             if (!empty($properties)) {
-                $chosenDataType = $this->getInput('Select Data type(Type number)', $dataType, 3, true);
+                $chosenDataType = $this->getInput('Select Data type(Type number)',
+                        $dataType, 3, true);
                 if (isset($dataType[$chosenDataType])) {
                     $chosenDataType = $dataType[$chosenDataType];
                 } else {
@@ -191,7 +193,8 @@ class Entity extends AbstractGenerator
         }
 
         if (empty($properties)) {
-            Printer::red('Entity without property is not allowed.' . PHP_EOL, 933013);
+            Printer::red('Entity without property is not allowed.' . PHP_EOL,
+                    933013);
             return false;
         }
 
@@ -217,7 +220,8 @@ class Entity extends AbstractGenerator
      * 
      * @param string|null $namespace
      */
-    public function createFromTable(?string $namespace = null, ?string $connection = null)
+    public function createFromTable(?string $namespace = null,
+            ?string $connection = null)
     {
         # Fetching columns first so that if connecton is offline or we are not
         # able to connect to database, we can then terminate instantly.
@@ -265,14 +269,16 @@ class Entity extends AbstractGenerator
         $meta = new MetaConnection($connection);
         $tables = $meta->getTables();
 
-        $all = $this->getInput('Do you want to create entities of all tables?', 'YN') === 'y';
+        $all = $this->getInput('Do you want to create entities of all tables?',
+                        'YN') === 'y';
 
         $namespace = $this->getNamespace();
 
         foreach ($tables as $table) {
 
             if ($all === false) {
-                if ($this->getInput('Do you want to create [' . $table->tableName . ']', 'YN') !== 'y') {
+                if ($this->getInput('Do you want to create [' . $table->tableName . ']',
+                                'YN') !== 'y') {
                     continue;
                 }
             }
@@ -290,12 +296,14 @@ class Entity extends AbstractGenerator
      * @param string $entity
      * @param array $properties
      */
-    private function createEntity(string $namespace, string $entity, string $table, array $properties)
+    private function createEntity(string $namespace, string $entity,
+            string $table, array $properties)
     {
         $filePath = SystemUtility::refactorDS(ROOT . $namespace . DS . $entity . '.php');
 
         if (empty($properties)) {
-            Printer::red('Can not create [' . $entity . ']. Table or columns not found.' . PHP_EOL, 933014);
+            Printer::red('Can not create [' . $entity . ']. Table or columns not found.' . PHP_EOL,
+                    933014);
             return false;
         }
         $this->name = $namespace . '\\' . $entity;
@@ -304,7 +312,8 @@ class Entity extends AbstractGenerator
         try {
             $this->isValidFile(false);
         } catch (ApplicationException $e) {
-            Printer::red('Entity [' . $this->name . '] is already exists.' . PHP_EOL, 933015);
+            Printer::red('Entity [' . $this->name . '] is already exists.' . PHP_EOL,
+                    933015);
             return false;
         }
         $file = new SimpleFile($filePath, SimpleFile::TRUNCATE_WRITE);
@@ -337,7 +346,8 @@ class Entity extends AbstractGenerator
      * @param string $name
      * @return string
      */
-    private function getClassStartCode(string $namespace, string $name, string $table): string
+    private function getClassStartCode(string $namespace, string $name,
+            string $table): string
     {
 
         $table = $name === $table ? 'this.base' : $table;
@@ -393,7 +403,8 @@ PROP;
      */
     protected function writeIdentityId(string $content): string
     {
-        return str_replace('identityId', lcfirst(Coding::getClassBaseName($this->name)) . 'Id', $content);
+        return str_replace('identityId',
+                lcfirst(Coding::getClassBaseName($this->name)) . 'Id', $content);
     }
 
 }

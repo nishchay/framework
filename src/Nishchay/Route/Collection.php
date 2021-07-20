@@ -6,8 +6,8 @@ use Nishchay;
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Persistent\System;
 use Nishchay\Utility\ArrayUtility;
-use Nishchay\Route\Annotation\Placeholder;
-use Nishchay\Route\Annotation\Route;
+use Nishchay\Attributes\Controller\Method\Placeholder;
+use Nishchay\Attributes\Controller\Method\Route;
 use Nishchay\Processor\AbstractCollection;
 use Nishchay\Route\Visibility;
 
@@ -103,11 +103,11 @@ class Collection extends AbstractCollection
     /**
      * Stores route into collection.
      * 
-     * @param   \Nishchay\Route\Annotation\Placeholder      $placeholder
-     * @param   \Nishchay\Route\Annotation\Route        $route
+     * @param   Placeholder $placeholder
+     * @param   Route        $route
      * @param   int                                   $priority
      * @return  NULL
-     * @throws  \Exception
+     * @throws  ApplicationException
      */
     public function store($placeholder, Route $route, $priority)
     {
@@ -116,7 +116,7 @@ class Collection extends AbstractCollection
         }
 
         $this->checkStoring();
-        if ((!$route instanceof Route) || (!is_bool($placeholder) && !$placeholder instanceof Placeholder)) {
+        if ((!$route instanceof Route) || ($placeholder !== null && !$placeholder instanceof Placeholder)) {
             throw new ApplicationException('First two paramter should be object.', null, null, 926010);
         }
 
@@ -146,14 +146,14 @@ class Collection extends AbstractCollection
 
     /**
      * 
-     * @param   \Nishchay\Route\Annotation\Route                 $route
-     * @param   string                                          $pattern
-     * @param   string                                          $path
+     * @param   Route   $route
+     * @param   string  $pattern
+     * @param   string  $path
      * @throws  ApplicationException
      */
     private function storeDefinition(Route $route, $pattern, $path)
     {
-        if (($requestMethods = $route->getType()) === false) {
+        if (empty(($requestMethods = $route->getType()))) {
             $requestMethods = $route->getValidRequestMethods();
         }
 
@@ -328,7 +328,7 @@ class Collection extends AbstractCollection
         if ($this->isVisible($route) === false) {
             return false;
         }
-        if (is_array($supportedType) && !in_array($currentType, $supportedType)) {
+        if (!empty($supportedType) && !in_array($currentType, $supportedType)) {
             return false;
         }
 
@@ -348,7 +348,7 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * Returns routes by matching with its path as defined in @Route annotation.
+     * Returns routes by matching with its path as defined in Route attribute.
      * 
      * @param string $name
      * @return array

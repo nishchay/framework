@@ -56,12 +56,12 @@ class Register extends AbstractAccountPrototype
                     . ' provided email.');
         }
 
-        # Before registration callback
-        $this->getPreRegister() instanceof Closure &&
-                call_user_func($this->getPreRegister(), [$this->getForm()]);
-
         $entity = $this->prepareEntity()
                 ->getEntity();
+
+        # Before registration callback
+        $this->getPreRegister() instanceof Closure &&
+                call_user_func($this->getPreRegister(), [$this->getForm(), $entity]);
 
         $userId = $this->saveEntity();
 

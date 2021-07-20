@@ -9,6 +9,7 @@ use Nishchay\Exception\BadRequestException;
 use Nishchay\Exception\AuthorizationFailedException;
 use Nishchay\Utility\StringUtility;
 use Nishchay\Processor\AbstractSingleton;
+use Nishchay\Data\EntityManager;
 
 /**
  * OAuth2 class.
@@ -18,7 +19,8 @@ use Nishchay\Processor\AbstractSingleton;
  * @version     1.0
  * @author      Bhavik Patel
  */
-class OAuth2 extends AbstractSingleton {
+class OAuth2 extends AbstractSingleton
+{
 
     /**
      * OAuth configuration name.
@@ -68,11 +70,13 @@ class OAuth2 extends AbstractSingleton {
      * 
      * @return string
      */
-    private function getHeader(): string {
+    private function getHeader(): string
+    {
         return json_encode(['typ' => 'JWT', 'alg' => 'RS256']);
     }
 
-    protected function onCreateInstance() {
+    protected function onCreateInstance()
+    {
         
     }
 
@@ -83,7 +87,8 @@ class OAuth2 extends AbstractSingleton {
      * @return boolean
      * @throws BadRequestException
      */
-    private function validateGenerateScope(?array $scope) {
+    private function validateGenerateScope(?array $scope)
+    {
         if ($scope === null) {
             return true;
         }
@@ -104,7 +109,8 @@ class OAuth2 extends AbstractSingleton {
      * @param type $scope
      * @return type
      */
-    private function getPayload($userId = null, $scope = null) {
+    private function getPayload($userId = null, $scope = null)
+    {
         $this->validateGenerateScope($scope);
         $time = time();
         return json_encode([
@@ -115,7 +121,7 @@ class OAuth2 extends AbstractSingleton {
             'uu' => $userId,
             'scope' => $scope,
             'ct' => $time,
-            'exp' => $time + $this->getExpiry()
+            'exp' => $time + $this->getAccessTokenExpiry()
         ]);
     }
 
@@ -125,21 +131,85 @@ class OAuth2 extends AbstractSingleton {
      * @param int $userId
      * @return array
      */
-    public function generateUserCredentialToken($userId, ?array $scope = null): array {
+    public function generateUserCredentialToken($userId, ?array $scope = null): array
+    {
         $header = $this->urlSafeBase64Encode($this->getHeader());
         $payload = $this->urlSafeBase64Encode($this->getPayload($userId, $scope));
-        openssl_sign($header . self::SEPARATOR . $payload . self::SEPARATOR . $this->getAppSecret(), $signature, $this->getPrivateKey(), OPENSSL_ALGO_SHA256);
+        openssl_sign($header . self::SEPARATOR . $payload . self::SEPARATOR . $this->getAppSecret(),
+                $signature, $this->getPrivateKey(), OPENSSL_ALGO_SHA256);
 
         $signature = $this->urlSafeBase64Encode($signature);
 
+        if (Nishchay::getSetting(self::CONFIG_NAME . '.refreshToken.enable') === true) {
+
+            $entity = $this->getRefreshEntity();
+
+            $refreshToken = StringUtility::getRandomString(128, true);
+
+            $entity->token = $refreshToken;
+            $entity->userId = $userId;
+            $entity->scopes = $scope;
+            $entity->createdAt = new \DateTime();
+            $entity->expireAt = (new \DateTime())->modify('+' . $this->getRefreshTokenExpiry() . ' seconds');
+            $entity->save();
+        }
+
         $response = [
             implode(self::SEPARATOR, [$header, $payload, $signature]),
-            $this->getExpiry(),
+            $this->getAccessTokenExpiry(),
             'password',
+            'refreshToken' => $refreshToken ?? null,
             empty($scope) ? null : implode(',', $scope)
         ];
 
-        return array_combine(['accessToken', 'expiresIn', 'tokenType', 'scope'], $response);
+        return array_combine(['accessToken', 'expiresIn', 'tokenType', 'refreshToken', 'scope'],
+                $response);
+    }
+
+    /**
+     * Returns entity manager instance on refresh token table.
+     * 
+     * @return EntityManager
+     */
+    private function getRefreshEntity()
+    {
+        return new EntityManager(Nishchay::getSetting(self::CONFIG_NAME . '.refreshToken.entity'));
+    }
+
+    /**
+     * Generates new access token from refresh token.
+     * 
+     * @param string|bool $refreshToken
+     * @return type
+     * @throws BadRequestException
+     */
+    public function generateTokenFromRefreshToken(string|bool $refreshToken)
+    {
+        if ($refreshToken === false) {
+            throw new BadRequestException('refreshToken parameter is required.');
+        }
+
+        # Fetching refresh token detail from DB using Refresh token entity.
+        $entity = $this->getRefreshEntity();
+        $tokenDetail = $entity->getEntityQuery()
+                ->setCondition(['token' => $refreshToken])
+                ->getOne();
+
+        # Token detail not found for passed refresh token.
+        if ($tokenDetail === false) {
+            throw new BadRequestException('Invalid refresh token.');
+        }
+
+        if ($tokenDetail->expireAt < (new \DateTime())) {
+            throw new BadRequestException('Refresh token expired.');
+        }
+
+        $accessToken = $this->generateUserCredentialToken($tokenDetail->userId,
+                $tokenDetail->scopes);
+
+        $tokenDetail->remove();
+
+        return $accessToken;
     }
 
     /**
@@ -148,9 +218,9 @@ class OAuth2 extends AbstractSingleton {
      * @param string $data
      * @return string
      */
-    public function urlSafeBase64Encode($data) {
-        return str_replace(['+', '/', "\r", "\n", '='],
-                ['-', '_'],
+    public function urlSafeBase64Encode($data)
+    {
+        return str_replace(['+', '/', "\r", "\n", '='], ['-', '_'],
                 base64_encode($data));
     }
 
@@ -160,7 +230,8 @@ class OAuth2 extends AbstractSingleton {
      * @param string $string
      * @return string
      */
-    private function urlSafeBase64Decode($string) {
+    private function urlSafeBase64Decode($string)
+    {
         return base64_decode(str_replace(['-', '_'], ['+', '/'], $string));
     }
 
@@ -169,7 +240,8 @@ class OAuth2 extends AbstractSingleton {
      * 
      * @return string
      */
-    private function getAppId(): string {
+    private function getAppId(): string
+    {
 
         if ($this->appId !== null) {
             return $this->appId;
@@ -183,7 +255,8 @@ class OAuth2 extends AbstractSingleton {
      * 
      * @return string
      */
-    private function getAppSecret(): string {
+    private function getAppSecret(): string
+    {
 
         if ($this->appSecret !== null) {
             return $this->appSecret;
@@ -198,7 +271,8 @@ class OAuth2 extends AbstractSingleton {
      * @param string $appId
      * @return $this
      */
-    public function setAppId(string $appId) {
+    public function setAppId(string $appId)
+    {
         $this->appId = $appId;
         return $this;
     }
@@ -209,7 +283,8 @@ class OAuth2 extends AbstractSingleton {
      * @param string $appSecret
      * @return $this
      */
-    public function setAppSecret(string $appSecret) {
+    public function setAppSecret(string $appSecret)
+    {
         $this->appSecret = $appSecret;
         return $this;
     }
@@ -219,8 +294,19 @@ class OAuth2 extends AbstractSingleton {
      * 
      * @return int
      */
-    private function getExpiry(): int {
+    private function getAccessTokenExpiry(): int
+    {
         return (int) Nishchay::getSetting(self::CONFIG_NAME . '.expiry');
+    }
+
+    /**
+     * Returns refresh token expiry time.
+     * 
+     * @return int
+     */
+    private function getRefreshTokenExpiry(): int
+    {
+        return (int) Nishchay::getSetting(self::CONFIG_NAME . '.refreshToken.expiry');
     }
 
     /**
@@ -229,7 +315,8 @@ class OAuth2 extends AbstractSingleton {
      * @param string $token
      * @return boolean
      */
-    public function verify($token) {
+    public function verify($token)
+    {
         $token = explode(self::SEPARATOR, $token);
         if (count($token) !== 3) {
             return false;
@@ -238,10 +325,10 @@ class OAuth2 extends AbstractSingleton {
         list($header, $payload, $signature) = $token;
         $decodedSignature = $this->urlSafeBase64Decode($signature);
 
-
         $payloadToVerify = ($header . self::SEPARATOR . $payload . self::SEPARATOR . $this->getAppSecret());
 
-        $verified = openssl_verify($payloadToVerify, $decodedSignature, $this->getPublicKey(), OPENSSL_ALGO_SHA256);
+        $verified = openssl_verify($payloadToVerify, $decodedSignature,
+                $this->getPublicKey(), OPENSSL_ALGO_SHA256);
 
         # Invalid token
         if ($verified !== 1) {
@@ -273,7 +360,8 @@ class OAuth2 extends AbstractSingleton {
      * @return boolean
      * @throws AuthorizationFailedException
      */
-    private function isValidScope($payload) {
+    private function isValidScope($payload)
+    {
         $currentScope = Processor::getStageDetail('scopeName');
 
         if ($currentScope === false) {
@@ -296,7 +384,8 @@ class OAuth2 extends AbstractSingleton {
      * 
      * @return string
      */
-    private function getPrivateKey() {
+    private function getPrivateKey()
+    {
 
         if ($this->privateKey !== null) {
             return $this->privateKey;
@@ -314,7 +403,8 @@ class OAuth2 extends AbstractSingleton {
      * 
      * @return string
      */
-    private function getPublicKey() {
+    private function getPublicKey()
+    {
 
         if ($this->publicKey !== null) {
             return $this->privateKey;
@@ -335,7 +425,8 @@ class OAuth2 extends AbstractSingleton {
      * @param string $privateKey
      * @return $this
      */
-    public function setPrivateKey(string $privateKey) {
+    public function setPrivateKey(string $privateKey)
+    {
         $this->privateKey = $privateKey;
         return $this;
     }
@@ -346,7 +437,8 @@ class OAuth2 extends AbstractSingleton {
      * @param string $publicKey
      * @return $this
      */
-    public function setPublicKey(string $publicKey) {
+    public function setPublicKey(string $publicKey)
+    {
         $this->publicKey = $publicKey;
         return $this;
     }

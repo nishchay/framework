@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Asset entity class.
  *
@@ -13,29 +19,31 @@ namespace Nishchay\Generator\Skelton\Entity;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Tree
 {
 
     /**
-     * @Identity
-     * @DataType(type=int, readonly=TRUE)
+     * Tree id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $treeId;
 
     /**
      * Parent id.
-     * 
-     * @DataType(type=int) 
+     *  
      */
+    #[DataType(type: 'int')]
     public $parentId;
 
     /**
      * Name.
      * 
-     * @DataType(type=string) 
      */
+    #[DataType(type: 'string')]
     public $name;
 
 }

@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Post;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Post Category entity class.
  *
@@ -13,30 +19,31 @@ namespace Nishchay\Generator\Skelton\Entity\Post;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class PostCategory
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Post category id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $postCategoryId;
 
     /**
      * Post id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $postId;
 
     /**
      * Category id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $categoryId;
 
 }

@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\User;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * User privacy entity class.
  *
@@ -13,36 +19,38 @@ namespace Nishchay\Generator\Skelton\Entity\User;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class UserPrivacy
 {
 
     /**
-     * @Identity
-     * @DataType(type=int, readonly=true) 
+     * User privacy id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $userPrivacyId;
 
     /**
      * User id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $userId;
 
     /**
      * Privacy name.
      * 
-     * @DataType(type=string, length=100)
      */
+    #[DataType(type: 'string', length: 100)]
     public $privacyName;
 
     /**
      * Description of this privacy.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $description;
 
 }

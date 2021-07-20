@@ -3,9 +3,6 @@
 namespace Nishchay\Console\Command;
 
 use Nishchay;
-use AnnotationParser;
-use ReflectionClass;
-use ReflectionMethod;
 use Console_Table;
 use Nishchay\Console\Printer;
 use Nishchay\Console\AbstractCommand;
@@ -143,55 +140,6 @@ class Controller extends AbstractCommand
         }
 
         return $class;
-    }
-
-    /**
-     * Prints annotation defined on controller class.
-     * It prints annotation defined on method if -method command passed.
-     * 
-     * @return boolean
-     */
-    public function getAnnotation()
-    {
-        if (($class = $this->locateClass($this->arguments[0])) === false) {
-            return false;
-        }
-
-        $controller = Nishchay::getControllerCollection()
-                ->getClass($class);
-
-        # If only argument is passed we will print annotation defined on
-        # controller class.
-        if (count($this->arguments) === 2) {
-            $reflection = new ReflectionClass($controller->getClass());
-        } else {
-            # Verifying if further command is -method or not.
-            if ($this->arguments[2] !== '-method' || !isset($this->arguments[3])) {
-                Printer::write('Invalid command: ' . $this->arguments[2], Printer::RED_COLOR, 913005);
-                return false;
-            }
-
-            # Checking if method exist in controller class or not.
-            if ($controller->getMethod($this->arguments[3]) === false) {
-                Printer::write('Method [' . $class .
-                        '::' . $this->arguments[3] . '] does not exist', Printer::RED_COLOR, 913006);
-                return false;
-            }
-            $reflection = new ReflectionMethod($class, $this->arguments[3]);
-        }
-
-        # Parsing annotation defined on controller or method.
-        $annotations = AnnotationParser::getAnnotationAsString($reflection->getDocComment());
-
-        # Priting annotation.F
-        $table = new Console_Table();
-        $table->setHeaders(['Name', 'Parameter']);
-
-        foreach ($annotations as $name => $parameter) {
-            $table->addRow([$name, substr($parameter, 1, -1)]);
-        }
-
-        Printer::write($table->getTable());
     }
 
     /**

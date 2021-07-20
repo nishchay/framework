@@ -4,8 +4,8 @@ namespace Nishchay\Data\Property\Join;
 
 use Nishchay\Exception\ApplicationException;
 use Nishchay\Exception\NotSupportedException;
-use Nishchay\Exception\InvalidAnnotationExecption;
-use Nishchay\Data\Annotation\EntityClass;
+use Nishchay\Exception\InvalidAttributeException;
+use Nishchay\Data\EntityClass;
 use Nishchay\Data\AbstractEntityStore;
 
 /**
@@ -102,12 +102,14 @@ class CustomJoin extends AbstractEntityStore
 
             if ($entity->getConnect() !== $this->entity->getConnect()) {
                 throw new NotSupportedException('Each entity should be from'
-                        . ' same database connection defined on derived property ['
-                        . $this->entity->getClass() . '::' . $this->propertyName . '].', $this->entity->getClass(), null, 911050);
+                                . ' same database connection defined on derived property ['
+                                . $this->entity->getClass() . '::' . $this->propertyName . '].',
+                                $this->entity->getClass(), null, 911050);
             }
 
             $this->joinAlias[$tableName] = $this->lastClass;
-            $table = str_replace($this->lastClass, $entity->getEntity()->getName(), $table);
+            $table = str_replace($this->lastClass,
+                    $entity->getEntity()->getName(), $table);
             $this->resolvedJoin[$table] = $joinCondition;
             $this->joinClass[$table] = $entity->getConnect();
         }
@@ -118,7 +120,7 @@ class CustomJoin extends AbstractEntityStore
      * 
      * @param   string                      $rule
      * @return  array
-     * @throws  InvalidAnnotationExecption
+     * @throws  InvalidAttributeException
      */
     private function getJoinRule($rule)
     {
@@ -133,8 +135,9 @@ class CustomJoin extends AbstractEntityStore
         if (preg_match('#^\[(\>\<|\<|\>)\](.*)\((.*)\)$#', $rule, $tmatch)) {
             return $tmatch;
         }
-        throw new InvalidAnnotationExecption('Invalid join rule defined on property '
-                . '[' . $this->entity->getClass() . '::' . $this->propertyName . '].', $this->entity->getClass(), null, 911051);
+        throw new InvalidAttributeException('Invalid join rule defined on property '
+                        . '[' . $this->entity->getClass() . '::' . $this->propertyName . '].',
+                        $this->entity->getClass(), null, 911051);
     }
 
     /**

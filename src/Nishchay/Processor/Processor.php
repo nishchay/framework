@@ -21,8 +21,8 @@ use Nishchay\Http\View\Collection as ViewCollection;
 use Nishchay\Maintenance\Maintenance;
 use Nishchay\Persistent\System as SystemPersistent;
 use Nishchay\Processor\SetUp\Organizer;
-use Nishchay\Route\Annotation\Forwarder as ForwarderAnnotation;
-use Nishchay\Route\Annotation\Route;
+use Nishchay\Attributes\Controller\Method\Forwarder as ForwarderAttribute;
+use Nishchay\Attributes\Controller\Method\Route;
 use Nishchay\Service\ServicePreProcess;
 use Nishchay\Http\Request\RequestForwarder;
 use Nishchay\Http\Request\RequestRedirector;
@@ -70,16 +70,16 @@ class Processor
     private $parameter;
 
     /**
-     * Controller annotation instance of the calling controller(class).
+     * Controller attribute instance of the calling controller(class).
      * 
-     * @var Nishchay\Controller\Annotation\Controller 
+     * @var Nishchay\Controller\ControllerClass 
      */
     private $currentClass = null;
 
     /**
      * Currently processing route method.
      * 
-     * @var Nishchay\Controller\Annotation\Method\Method 
+     * @var \Nishchay\Controller\ControllerMethod
      */
     private $currentMethod = false;
 
@@ -91,7 +91,7 @@ class Processor
     private static $stageNumber = 0;
 
     /**
-     * Contains all stage information including all annotation,
+     * Contains all stage information including all attribute,
      * path,URL string and URL parts
      *  
      * @var array 
@@ -141,13 +141,36 @@ class Processor
         if (!SystemPersistent::isPersisted('controllers')) {
             new Organizer();
             if (Nishchay::isApplicationStageLive()) {
-                SystemPersistent::setPersistent('controllers', Nishchay::getControllerCollection()->get());
-                SystemPersistent::setPersistent('entities', Nishchay::getEntityCollection()->get());
+                
+                # Persiting controller collections
+                SystemPersistent::setPersistent('controllers',
+                        Nishchay::getControllerCollection()->get());
+                
+                # Persiting entities collection
+                SystemPersistent::setPersistent('entities',
+                        Nishchay::getEntityCollection()->get());
+                
+                # Persiting configs
                 SystemPersistent::setPersistent('cfigs', ['APP' => APP]);
+                
+                # Persisting views collection
                 SystemPersistent::setPersistent('views', ViewCollection::get());
-                SystemPersistent::setPersistent('containers', Nishchay::getContainerCollection()->getAll());
+                
+                # Persisting containers collection
+                SystemPersistent::setPersistent('containers',
+                        Nishchay::getContainerCollection()->getAll());
+                
+                # Persisting container facade names
+                SystemPersistent::setPersistent('facades',
+                        Nishchay::getContainerCollection()->getFacades());
             }
         } else {
+
+            # This is because, container collection never gets called if only facade is used by application.
+            # In this collection class, we have registered class auto load function. If container is not called
+            # , then class auto load won't be registered
+            Nishchay::getContainerCollection();
+
             $constants = SystemPersistent::getPersistent('cfigs');
             foreach ($constants as $key => $value) {
                 defined($key) || define($key, $value);
@@ -217,10 +240,10 @@ class Processor
     /**
      * Checks the rule to allow request or  not.
      * 
-     * @param   ForwarderAnnotation     $forwarder
+     * @param   ForwarderAttribute     $forwarder
      * @throws  NotSupportedException
      */
-    protected function preCheck(ForwarderAnnotation $forwarder)
+    protected function preCheck(ForwarderAttribute $forwarder)
     {
 
         $object = $this->getStageDetail('object');
@@ -228,13 +251,15 @@ class Processor
         # Incomming request checking.
         if (self::$stageNumber === 1 && Nishchay::isApplicationRunningNoConsole() && $object->getIncoming() === false) {
             throw new RequestNotFoundException('Route [' .
-                    $this->getStageDetail('urlString') . '] does not exist.', null, null, 925036);
+                            $this->getStageDetail('urlString') . '] does not exist.',
+                            null, null, 925036);
         }
 
         # Ascent forward checking.
         if (self::$stageNumber > 1 && $forwarder->getAscent() === false) {
             throw new NotSupportedException('Ascent forward not allowed'
-                    . ' on route [' . $object->getPath() . '].', $object->getClass(), $object->getMethod(), 925037);
+                            . ' on route [' . $object->getPath() . '].',
+                            $object->getClass(), $object->getMethod(), 925037);
         }
         $this->initServiceCheck();
     }
@@ -284,7 +309,8 @@ class Processor
     {
         # In the case of abstract route, route method is not called.
         if ($this->instance !== null) {
-            $response = $this->getDI()->invoke($this->instance, $this->getCurrentMethod()->getMethod(), $this->parameter);
+            $response = $this->getDI()->invoke($this->instance,
+                    $this->getCurrentMethod()->getMethod(), $this->parameter);
         } else {
             $viewName = $this->getCurrentMethod()->getResponse()->getView();
             if (empty($viewName) === false) {
@@ -311,15 +337,22 @@ class Processor
         if (is_object($response)) {
             # Before forwarding request to another route, we must fire 'after' event
             # for currently processed route.
-            $this->eventManager->fireAfterEvent($this->getCurrentClass(), $this->getCurrentMethod(), $this->getContext(), $this->getScope());
+            $this->eventManager->fireAfterEvent($this->getCurrentClass(),
+                    $this->getCurrentMethod(), $this->getContext(),
+                    $this->getScope());
             if ($response instanceof RequestForwarder) {
-                $this->forwardRequest(new Forwarder($response), $this->getCurrentMethod()->getClass(), $this->getCurrentMethod()->getMethod());
+                $this->forwardRequest(new Forwarder($response),
+                        $this->getCurrentMethod()->getClass(),
+                        $this->getCurrentMethod()->getMethod());
             } else if ($response instanceof RequestRedirector) {
                 Request::redirect($response->getRoute());
             }
         } else {
-            $this->eventManager->fireAfterEvent($this->getCurrentClass(), $this->getCurrentMethod(), $this->getContext(), $this->getScope());
-            new ResponseHandler($this->getCurrentMethod()->getClass(), $this->getCurrentMethod()->getMethod(), $response);
+            $this->eventManager->fireAfterEvent($this->getCurrentClass(),
+                    $this->getCurrentMethod(), $this->getContext(),
+                    $this->getScope());
+            new ResponseHandler($this->getCurrentMethod()->getClass(),
+                    $this->getCurrentMethod()->getMethod(), $response);
         }
     }
 
@@ -335,12 +368,15 @@ class Processor
     {
         if ($this->getCurrentMethod()->getForwarder()->getDescent() === false) {
             throw new NotSupportedException('Descent forward not allowed on'
-                    . ' route [' . $this->getCurrentMethod()->getRoute()->getPath() . '].', $class, $method, 925039);
+                            . ' route [' . $this->getCurrentMethod()->getRoute()->getPath() . '].',
+                            $class, $method, 925039);
         }
 
         $this->setURL($response->getForwardedRoute(), self::$stageNumber + 1);
         $this->setStageDetail('mode', 'forwarded', self::$stageNumber + 1);
-        $this->eventManager->fireAfterEvent($this->getCurrentClass(), $this->getCurrentMethod(), $this->getContext(), $this->getScope());
+        $this->eventManager->fireAfterEvent($this->getCurrentClass(),
+                $this->getCurrentMethod(), $this->getContext(),
+                $this->getScope());
         $this->startStage();
     }
 
@@ -366,18 +402,22 @@ class Processor
     private function prepare()
     {
         $method = $this->getCurrentMethod()->getMethod();
-        $this->controller->classAnnotation($this->getCurrentClass());
-        $this->controller->methodAnnotation($this->getCurrentMethod());
+        $this->controller->processClassAttributes($this->getCurrentClass());
+        $this->controller->processMethodAttributes($this->getCurrentMethod());
 
         $eventResponse = $this->eventManager
-                ->fireBeforeEvent($this->getCurrentClass(), $this->getCurrentMethod(), $this->getContext(), $this->getScope());
+                ->fireBeforeEvent($this->getCurrentClass(),
+                $this->getCurrentMethod(), $this->getContext(),
+                $this->getScope());
 
         # Respond with bad request in case event respond with false.
         if ($eventResponse === false) {
             $url = $this->getStageDetail('urlString');
             throw new BadRequestException('Route [' .
-                    (empty($url) ? Nishchay::getConfig('config.landingRoute') : $url)
-                    . '] is not valid.', $this->getCurrentMethod()->getClass(), $method, 925038);
+                            (empty($url) ? Nishchay::getConfig('config.landingRoute') : $url)
+                            . '] is not valid.',
+                            $this->getCurrentMethod()->getClass(), $method,
+                            925038);
         }
 
         # If event does not respond with true or null, it means that event
@@ -387,12 +427,13 @@ class Processor
         }
 
         if ($this->getReflection()->isAbstract() === false) {
-            $this->instance = $this->getDI()->create($this->getCurrentMethod()->getClass(), [], true);
+            $this->instance = $this->getDI()->create($this->getCurrentMethod()->getClass(),
+                    [], true);
             new ControllerProperty($this->instance);
 
             # Setting up controller ennvironment.
-            # We will first validates class annotation if any set.
-            # Then we will process annotation defiend on route method.
+            # We will first validates class attribute if any set.
+            # Then we will process attribute defiend on route method.
             $this->controller->property($this->instance);
 
             #Preparing parameter to autobind values.
@@ -418,7 +459,8 @@ class Processor
         }
 
         if (isset(self::$stageDetail[$stage][$name])) {
-            throw new ApplicationException('Stage name [' . $name . '] is not valid.', null, null, 925040);
+            throw new ApplicationException('Stage name [' . $name . '] is not valid.',
+                            null, null, 925040);
         }
 
         self::$stageDetail[$stage][$name] = $value;
@@ -444,7 +486,8 @@ class Processor
     {
         $this->init();
         if (self::$stageNumber > 0) {
-            throw new ApplicationException('Can not restart application.', null, null, 925041);
+            throw new ApplicationException('Can not restart application.', null,
+                            null, 925041);
         }
 
         if (Nishchay::isApplicationRunningNoConsole()) {
@@ -536,7 +579,7 @@ class Processor
 
         if (!isset($stage[$name])) {
             throw new ApplicationException('Invalid state detail. Stage detail [' .
-                    $name . '] does not exist.', null, null, 925042);
+                            $name . '] does not exist.', null, null, 925042);
         }
 
         return $stage[$name];
@@ -570,7 +613,8 @@ class Processor
     private function getStage()
     {
         if (!isset(self::$stageDetail[self::$stageNumber])) {
-            throw new ApplicationException('It seems stage is not started yet.', null, null, 925043);
+            throw new ApplicationException('It seems stage is not started yet.',
+                            null, null, 925043);
         }
         return self::$stageDetail[self::$stageNumber];
     }
@@ -590,7 +634,7 @@ class Processor
             $this->setStageDetail($key, $value);
         }
 
-        # Route annotation instance.
+        # Route attribute instance.
         $route = $this->getStageDetail('object');
 
         $this->setCurrent($route);
@@ -607,11 +651,14 @@ class Processor
             # In maintenance mode
             if ($maintenanceRoute !== false) {
                 $this->setURL($maintenanceRoute, self::$stageNumber + 1);
-                $this->setStageDetail(Maintenance::MAINTENANCE, $maintenance, self::$stageNumber + 1);
-                $this->setStageDetail('mode', Maintenance::MAINTENANCE, self::$stageNumber + 1);
+                $this->setStageDetail(Maintenance::MAINTENANCE, $maintenance,
+                        self::$stageNumber + 1);
+                $this->setStageDetail('mode', Maintenance::MAINTENANCE,
+                        self::$stageNumber + 1);
                 return $this->startStage();
             } else {
-                $this->setStageDetail(Maintenance::MAINTENANCE, $maintenance, self::$stageNumber);
+                $this->setStageDetail(Maintenance::MAINTENANCE, $maintenance,
+                        self::$stageNumber);
             }
         }
 
@@ -635,7 +682,7 @@ class Processor
     /**
      * Sets current class, method and scope of the request.
      * 
-     * @param \Nishchay\Route\Annotation\Route $route
+     * @param Route $route
      */
     private function setCurrent(Route $route)
     {
@@ -654,7 +701,7 @@ class Processor
     private function getScopeName()
     {
         $scopeName = false;
-        if (($scope = $this->getCurrentMethod()->getNamedscope()) !== false) {
+        if (($scope = $this->getCurrentMethod()->getNamedscope()) !== null) {
             $scopeName = $scope->getName();
         }
         return $scopeName;
@@ -677,7 +724,8 @@ class Processor
         # Current request method.
         $requestMethod = Request::server('METHOD');
 
-        $matched = Nishchay::getRouteCollection()->getRoute($urlString, $requestMethod);
+        $matched = Nishchay::getRouteCollection()->getRoute($urlString,
+                $requestMethod);
 
         if (!is_bool($matched)) {
             return $matched;
@@ -685,16 +733,18 @@ class Processor
 
         if ($matched === true) {
             throw new RequestMethodNotAllowedException('Request method'
-                    . ' not supported for [' . $urlString . '].', null, null, 925044);
+                            . ' not supported for [' . $urlString . '].', null,
+                            null, 925044);
         }
 
-        throw new RequestNotFoundException('Route [' . $urlString . '] not found.', null, null, 925045);
+        throw new RequestNotFoundException('Route [' . $urlString . '] not found.',
+                        null, null, 925045);
     }
 
     /**
-     * Returns controller annotation instance of located route that is controller class.
+     * Returns controller attribute instance of located route that is controller class.
      * 
-     * @return \Nishchay\Controller\Annotation\Controller
+     * @return \Nishchay\Controller\ControllerClass
      */
     public function getCurrentClass()
     {
@@ -703,7 +753,7 @@ class Processor
 
     /**
      * 
-     * @return Nishchay\Controller\Annotation\Method\Method
+     * @return \Nishchay\Controller\ControllerMethod
      */
     public function getCurrentMethod()
     {

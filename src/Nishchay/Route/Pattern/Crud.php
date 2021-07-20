@@ -2,6 +2,11 @@
 
 namespace Nishchay\Route\Pattern;
 
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder
+};
+
 /**
  * Abstract pattern.
  *
@@ -40,13 +45,18 @@ class Crud extends AbstractPattern
         if (isset(self::CRUD[$method]) === false) {
             return null;
         }
-        
+
         list($path, $type, $placeholder) = self::CRUD[$method];
-        $annotation = ['route' => ['path' => $path, 'type' => $type]];
-        
-        $placeholder !== null && $annotation['placeholder'] = $placeholder;
-        
-        return $annotation;
+        $route = new Route($path, $type);
+
+        if ($placeholder !== null) {
+            return [
+                'route' => $route,
+                'placeholder' => new Placeholder($placeholder)
+            ];
+        }
+
+        return $route;
     }
 
 }

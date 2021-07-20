@@ -2,6 +2,13 @@
 
 namespace Nishchay\Generator\Skelton\Controller;
 
+use Nishchay\Attributes\Controller\Controller;
+use Nishchay\Attributes\Controller\Routing;
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder
+};
+
 /**
  * Message controller class.
  *
@@ -9,18 +16,18 @@ namespace Nishchay\Generator\Skelton\Controller;
  * @copyright   (c) 2020, Nishchay PHP Framework
  * @version     1.0
  * @author      Bhavik Patel
- * @Controller
- * @Routing(prefix='post')
+ * 
  */
+#[Controller]
+#[Routing(prefix: 'post')]
 class Post
 {
 
     /**
      * To render list of posts.
      * 
-     * @Route(path='/', type=GET)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '/', type: 'GET')]
     public function index()
     {
         
@@ -29,56 +36,52 @@ class Post
     /**
      * Create post.
      * 
-     * @Route(path='/',type=POST)
-     * @Response(type=JSON)
      */
+    #[Route(path: '/', type: 'POST')]
     public function create()
     {
         
     }
 
     /**
-     * Edit post.
+     * View post.
      * 
-     * @Route(path='{postId}',type=GET)
-     * @Placeholder(postId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{postId}', type: 'GET')]
+    #[Placeholder(['postId' => 'int'])]
     public function viewPost(int $postId)
     {
         
     }
 
     /**
-     * Edit post.
+     * Like post.
      * 
-     * @Route(path='{postId}/like',type=POST)
-     * @Placeholder(postId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{postId}', type: 'POST')]
+    #[Placeholder(['postId' => 'int'])]
     public function likePost(int $postId)
     {
         
     }
 
     /**
-     * Edit post.
+     * Update post.
      * 
-     * @Route(path='{postId}',type=PUT)
-     * @Placeholder(postId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{postId}', type: 'PUT')]
+    #[Placeholder(['postId' => 'int'])]
     public function editPost(int $postId)
     {
         
     }
 
     /**
+     * Remove post.
      * 
-     * @Route(path='{postId}', type=DELETE)
-     * @Placeholder(postId=number)
-     * @Response(type=JSON)
      */
+    #[Route(path: '{postId}', type: 'DELETE')]
+    #[Placeholder(['postId' => 'int'])]
     public function removePost(int $postId)
     {
         
@@ -87,10 +90,9 @@ class Post
     /**
      * View List of comment.
      * 
-     * @Route(path='{postId}/comments',type=GET)
-     * @Placeholder(postId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{postId}/comment', type: 'GET')]
+    #[Placeholder(['postId' => 'int'])]
     public function viewComments(int $postId)
     {
         
@@ -99,46 +101,42 @@ class Post
     /**
      * Add comment.
      * 
-     * @Route(path='{postId}/comment',type=POST)
-     * @Placeholder(postId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{postId}/comment', type: 'POST')]
+    #[Placeholder(['postId' => 'int'])]
     public function addComment(int $postId)
     {
         
     }
 
     /**
-     * Add comment.
+     * Like comment.
      * 
-     * @Route(path='{postId}/comment/{commentId}/like',type=POST)
-     * @Placeholder(postId=number,commentId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{postId}/comment/{commentId}/like', type: 'POST')]
+    #[Placeholder(['postId' => 'int', 'commentId' => 'int'])]
     public function likeComment(int $postId, int $commentId)
     {
         
     }
 
     /**
-     * Add comment.
+     * Update comment.
      * 
-     * @Route(path='{postId}/comment/{commentId}',type=PUT)
-     * @Placeholder(postId=number,commentId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{postId}/comment/{commentId}', type: 'PUT')]
+    #[Placeholder(['postId' => 'int', 'commentId' => 'int'])]
     public function editComment(int $postId, int $commentId)
     {
         
     }
 
     /**
-     * Add comment.
+     * Remove comment.
      * 
-     * @Route(path='{postId}/comment/{commentId}',type=DELETE)
-     * @Placeholder(postId=number,commentId=number)
-     * @Response(type=VIEW)
      */
+    #[Route(path: '{postId}/comment/{commentId}', type: 'DELETE')]
+    #[Placeholder(['postId' => 'int', 'commentId' => 'int'])]
     public function removeComment(int $postId, int $commentId)
     {
         

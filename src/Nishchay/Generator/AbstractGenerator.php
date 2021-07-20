@@ -273,7 +273,7 @@ abstract class AbstractGenerator
     }
 
     /**
-     * Updates namespace, class name and annotation defined on class.
+     * Updates namespace, class name and attribute defined on class.
      * 
      * @param string $content
      * @param string $namespace
@@ -284,7 +284,7 @@ abstract class AbstractGenerator
     {
         $this->replaceNamespace($namespace, $content);
         $this->replaceClassName($class, $content);
-        $this->removeFrameworkAnnotation($content);
+        $this->removeFrameworkDetail($content);
         $search = [
             '{authorName}',
             '{versionNumber}',
@@ -298,12 +298,12 @@ abstract class AbstractGenerator
     }
 
     /**
-     * Removes framework annotation defined on class.
+     * Removes framework attribute defined on class.
      * 
      * @param string $content
      * @return string
      */
-    private function removeFrameworkAnnotation(&$content)
+    private function removeFrameworkDetail(&$content)
     {
         $start = strpos($content, '#ANN_START');
         $content = substr_replace($content, '', $start, (strpos($content, '#ANN_END') - $start) + 12);

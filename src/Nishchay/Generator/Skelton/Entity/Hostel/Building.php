@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Hostel;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Hostel Building entity class.
  *
@@ -13,52 +19,53 @@ namespace Nishchay\Generator\Skelton\Entity\Hostel;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Building
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Building id.
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $buildingId;
-    
+
     /**
      * Hostel to which this building belongs.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $hostelId;
 
     /**
      * Name of building.
      * 
-     * @DataType(type=string, length=50)
      */
+    #[DataType(type: 'string', length: 50)]
     public $name;
 
     /**
      * Description of this building.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $description;
 
     /**
      * Fees for this building.
      * Keep zero to apply default hostel as mentioned in Hostel entity.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $fees;
 
     /**
      * Location of building.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $location;
 
 }

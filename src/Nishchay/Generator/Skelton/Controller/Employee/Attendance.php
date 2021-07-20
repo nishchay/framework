@@ -2,6 +2,13 @@
 
 namespace Nishchay\Generator\Skelton\Controller\Employee;
 
+use Nishchay\Attributes\Controller\Controller;
+use Nishchay\Attributes\Controller\Routing;
+use Nishchay\Attributes\Controller\Method\{
+    Route,
+    Placeholder
+};
+
 /**
  * Employee controller class.
  *
@@ -14,17 +21,17 @@ namespace Nishchay\Generator\Skelton\Controller\Employee;
  * {authorName}
  * {versionNumber}
  * 
- * @Controller
- * @Routing(prefix='employee')
  */
+#[Controller]
+#[Routing(prefix: 'employee')]
 class Attendance
 {
 
     /**
      * Displays attendance of an employee for current month or trend.
      * 
-     * @Route(path='attendance', type=GET)
      */
+    #[Route(path: 'attendance', type: 'GET')]
     public function index()
     {
         # TODO: You can display attendance of current month or
@@ -34,9 +41,9 @@ class Attendance
     /**
      * Displays attendance of an employee for requested month and year.
      * 
-     * @Route(path='attendance/{year}/{month}', type=GET)
-     * @Placeholder(year=number, month=number)
      */
+    #[Route(path: 'attendance/{year}/{month}', type: 'GET')]
+    #[Placeholder(['year' => 'int', 'month' => 'int'])]
     public function monthAttendance(int $year, int $month)
     {
         # TODO: Display employee's attendance of requested month and year
@@ -45,8 +52,8 @@ class Attendance
     /**
      * Log employee attendance.
      * 
-     * @Route(path='attendance', type=POST)
      */
+    #[Route(path: 'attendance', type: 'POST')]
     public function create()
     {
         # TODO: Implement business to log employee attedance
@@ -58,8 +65,8 @@ class Attendance
     /**
      * Display list of request.
      * 
-     * @Route(path='attendance/request', type=GET)
      */
+    #[Route(path: 'attendance/request', type: 'GET')]
     public function request()
     {
         # TODO: Display list request.
@@ -70,8 +77,8 @@ class Attendance
     /**
      * Request for missed login or logout time.
      * 
-     * @Route(path='attendance/request', type=POST)
      */
+    #[Route(path: 'attendance/request', type: 'POST')]
     public function createRequest()
     {
         # TODO: Implement business to request login and logout time.
@@ -80,9 +87,9 @@ class Attendance
     /**
      * View to attendance request.
      * 
-     * @Route(path='attendance/request/{requestId}', type=POST)
-     * @Placeholder(requestId=number)
      */
+    #[Route(path: 'attendance/request/{requestId}', type: 'POST')]
+    #[Placeholder(['requestId' => 'int'])]
     public function viewRequest(int $requestId)
     {
         # TODO: Implement business to respond attedance request.
@@ -91,9 +98,9 @@ class Attendance
     /**
      * Responds to attendance request.
      * 
-     * @Route(path='attendance/request/{requestId}/respond', type=POST)
-     * @Placeholder(requestId=number)
      */
+    #[Route(path: 'attendance/request/{requestId}/respond', type: 'POST')]
+    #[Placeholder(['requestId' => 'int'])]
     public function responseRequest(int $requestId)
     {
         # TODO: Implement business to respond attedance request.

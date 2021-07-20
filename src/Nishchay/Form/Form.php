@@ -9,11 +9,13 @@ use Nishchay\Security\CSRF;
 use Nishchay\Form\Field\AbstractField;
 use Nishchay\Validation\Validator;
 use Nishchay\Http\Request\Request;
-use Nishchay\Form\Field\Type\Button;
-use Nishchay\Form\Field\Type\Input;
-use Nishchay\Form\Field\Type\InputChoice;
-use Nishchay\Form\Field\Type\Select;
-use Nishchay\Form\Field\Type\TextArea;
+use Nishchay\Form\Field\Type\{
+    Button,
+    Input,
+    InputChoice,
+    Select,
+    TextArea
+};
 use Nishchay\Processor\FetchSingletonTrait;
 
 /**
@@ -185,7 +187,7 @@ class Form
      * 
      * @return string
      */
-    protected function printAttributes()
+    protected function printAttributes(): string
     {
         $attributes = [];
         foreach ($this->getAttributes() as $attrName => $attrValue) {
@@ -204,7 +206,7 @@ class Form
      * @param array $name
      * @return $this
      */
-    final public function setAttribute($name, $value = null)
+    final public function setAttribute(string|array $name, $value = null)
     {
         if (is_string($name)) {
             $name = [$name => $value];
@@ -214,7 +216,7 @@ class Form
         foreach ($name as $attrName => $attrValue) {
             if (is_string($attrName) === false || is_scalar($attrValue) === false) {
                 throw new NotSupportedException('Attribute name and its value'
-                        . ' must be string.', 1, null, 918005);
+                                . ' must be string.', 1, null, 918005);
             }
 
             # Not allowing reserved attribute via this method.
@@ -320,7 +322,7 @@ class Form
      * 
      * @return ReflectionClass
      */
-    private function getReflection()
+    private function getReflection(): ReflectionClass
     {
         if ($this->reflection !== null) {
             return $this->reflection;
@@ -356,7 +358,7 @@ class Form
      * 
      * @return \Nishchay\Validation\Validator
      */
-    private function getValidator()
+    private function getValidator(): Validator
     {
         if ($this->validator !== null) {
             return $this->validator;
@@ -381,7 +383,8 @@ class Form
             # Iterating over each messeges to add it to validator cusotm message
             # list.
             foreach ($field->getMessages() as $ruleName => $message) {
-                $this->validator->setMessage($field->getName(), $ruleName, $message);
+                $this->validator->setMessage($field->getName(), $ruleName,
+                        $message);
             }
         }
         $this->validator->setValidation($validation);
@@ -415,11 +418,13 @@ class Form
      * @param string $type
      * @return Button
      */
-    protected function newButton(string $name, string $type): Button {
+    protected function newButton(string $name, string $type): Button
+    {
         if (isset($this->fields[$name])) {
             return $this->fields[$name];
         }
-        return $this->fields[$name] = (new Button($name, $type, $this->getMethod()));
+        return $this->fields[$name] = (new Button($name, $type,
+                        $this->getMethod()));
     }
 
     /**
@@ -429,11 +434,13 @@ class Form
      * @param string $type
      * @return Input
      */
-    protected function newInput(string $name, string $type): Input {
+    protected function newInput(string $name, string $type): Input
+    {
         if (isset($this->fields[$name])) {
             return $this->fields[$name];
         }
-        return $this->fields[$name] = (new Input($name, $type, $this->getMethod()));
+        return $this->fields[$name] = (new Input($name, $type,
+                        $this->getMethod()));
     }
 
     /**
@@ -443,11 +450,13 @@ class Form
      * @param string $type
      * @return InputChoice
      */
-    protected function newInputChoice(string $name, string $type): InputChoice {
+    protected function newInputChoice(string $name, string $type): InputChoice
+    {
         if (isset($this->fields[$name])) {
             return $this->fields[$name];
         }
-        return $this->fields[$name] = (new InputChoice($name, $type, $this->getMethod()));
+        return $this->fields[$name] = (new InputChoice($name, $type,
+                        $this->getMethod()));
     }
 
     /**
@@ -457,7 +466,8 @@ class Form
      * @param string $type
      * @return Select
      */
-    protected function newSelect(string $name): Select {
+    protected function newSelect(string $name): Select
+    {
         if (isset($this->fields[$name])) {
             return $this->fields[$name];
         }
@@ -471,7 +481,8 @@ class Form
      * @param string $type
      * @return TextArea
      */
-    protected function newTextArea(string $name): TextArea {
+    protected function newTextArea(string $name): TextArea
+    {
         if (isset($this->fields[$name])) {
             return $this->fields[$name];
         }

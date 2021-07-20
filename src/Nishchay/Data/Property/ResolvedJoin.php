@@ -3,7 +3,7 @@
 namespace Nishchay\Data\Property;
 
 use Nishchay\Exception\ApplicationException;
-use Nishchay\Data\Annotation\Property\Relative;
+use Nishchay\Attributes\Entity\Property\Relative;
 use Nishchay\Data\Query;
 
 /**
@@ -188,7 +188,7 @@ class ResolvedJoin
      * Returns classes of properties of single class if property name is passed.
      * 
      * @param type $propertyName
-     * @return \Nishchay\Data\Annotation\EntityClass
+     * @return EntityClass
      */
     public function getPropertyClass($propertyName = null)
     {

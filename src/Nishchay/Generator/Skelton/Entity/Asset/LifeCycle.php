@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Asset;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Asset Life cycle entity class.
  *
@@ -13,23 +19,24 @@ namespace Nishchay\Generator\Skelton\Entity\Asset;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class LifeCycle
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Life cycle id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     private $lifeCycleId;
 
     /**
      * Asset id.
      * 
-     * @DataType(type=int, required=true) 
      */
+    #[DataType(type: 'int', required: true)]
     private $assetId;
 
     /**
@@ -37,27 +44,28 @@ class LifeCycle
      * 
      * @DataType(type=boolean) 
      */
+    #[DataType(type: 'boolean')]
     private $isExpired;
 
     /**
      * When was asset purchased or created.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     private $startAt;
 
     /**
      * Asset expiration time.
      * 
-     * @DataType(type=datetime)
      */
+    #[DataType(type: 'datetime')]
     private $endAt;
 
     /**
      * Value after expiration time.
      * 
-     * @DataType(type=float)
      */
+    #[DataType(type: 'float')]
     private $valueAfterCycle;
 
 }

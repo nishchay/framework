@@ -4,6 +4,11 @@ namespace Nishchay\Route\Pattern;
 
 use Nishchay\Exception\NotSupportedException;
 use Nishchay\Exception\ApplicationException;
+use Nishchay\Attributes\Controller\Method\{
+    Service,
+    Response,
+    NamedScope
+};
 
 /**
  * Abstract pattern.
@@ -17,22 +22,22 @@ abstract class AbstractPattern
 {
 
     /**
-     * Route annotation name.
+     * Route attribute name.
      */
     const ROUTE_NAME = 'route';
 
     /**
-     * Named scope annotation name.
+     * Named scope attribute name.
      */
     const NAMEDSCOPE_NAME = 'namedscope';
 
     /**
-     * Service annotation name.
+     * Service attribute name.
      */
     const SERVICE_NAME = 'service';
 
     /**
-     * Response annotation name.
+     * Response attribute name.
      */
     const RESPONSE_NAME = 'response';
 
@@ -44,39 +49,39 @@ abstract class AbstractPattern
     protected $patternName;
 
     /**
-     * Settings for route annotation.
+     * Settings for route attribute.
      * 
      * @var bool|null 
      */
     protected $route;
 
     /**
-     * Settings for route annotation.
+     * Settings for route attribute.
      * 
      * @var bool|null 
      */
     protected $namedscope;
 
     /**
-     * Settings for route annotation.
+     * Settings for route attribute.
      * 
      * @var bool|null 
      */
     protected $service;
 
     /**
-     * Settings for route annotation.
+     * Settings for route attribute.
      * 
      * @var bool|null 
      */
     protected $response;
 
     /**
-     * Settings for route annotation.
+     * Settings for route attribute.
      * 
      * @var bool|null 
      */
-    protected $annotations;
+    protected $attributes;
 
     /**
      * 
@@ -90,12 +95,12 @@ abstract class AbstractPattern
     /**
      * Processes route pattern config.
      * 
-     * @param array $annotations
+     * @param array $attribute
      * @return $this
      */
-    public function processConfig($annotations)
+    public function processConfig($attribute)
     {
-        $this->setAnnotations($annotations);
+        $this->setAttributes($attribute);
         return $this->processRoute()
                         ->processService()
                         ->processNamedScope()
@@ -103,7 +108,7 @@ abstract class AbstractPattern
     }
 
     /**
-     * Checks required validation for the annotation.
+     * Checks required validation for the attribute.
      * 
      * @param string $name
      * @return null
@@ -111,14 +116,15 @@ abstract class AbstractPattern
     protected function checkRequired($name)
     {
         if ($this->{$name} === true && $this->isSet($name) === false) {
-            throw new NotSupportedException('Route pattern [' . $this->patternName . '] requires [' . $name . '] annotation to be defined on method.', null, null, 926014);
+            throw new NotSupportedException('Route pattern [' . $this->patternName . '] requires [' . $name . '] attribute to be defined on method.',
+                            null, null, 926014);
         }
 
         return $this;
     }
 
     /**
-     * Checks override validation for the annotation.
+     * Checks override validation for the attribute.
      * 
      * @param type $name
      * @throws ApplicationException
@@ -127,19 +133,20 @@ abstract class AbstractPattern
     {
         $config = $this->{$name};
         if (($config === false || (isset($config['override']) && $config['override'] === false)) && $this->isSet($name)) {
-            throw new ApplicationException('Route pattern [' . $this->patternName . '] disallow [' . $name . '] annotation to be defined on method.', null, null, 926015);
+            throw new ApplicationException('Route pattern [' . $this->patternName . '] disallow [' . $name . '] attribute to be defined on method.',
+                            null, null, 926015);
         }
     }
 
     /**
-     * Returns TRUE if given annotation exists.
+     * Returns TRUE if given attribute exists.
      * 
      * @param string $name
      * @return bool
      */
     protected function isSet(string $name): bool
     {
-        return array_key_exists($name, $this->annotations);
+        return array_key_exists($name, $this->attributes);
     }
 
     /**
@@ -167,8 +174,8 @@ abstract class AbstractPattern
                 ->checkOverride(self::NAMEDSCOPE_NAME);
 
         $namedScopes = $this->getNamedscope();
-        if (is_array($namedScopes)) {
-            $this->annotations[self::NAMEDSCOPE_NAME]['name'] = array_merge($namedScopes['name'] ?? $namedScopes, $this->annotations[self::NAMEDSCOPE_NAME] ?? []);
+        if (is_array($namedScopes) && !isset($this->attributes[self::NAMEDSCOPE_NAME])) {
+            $this->attributes[self::NAMEDSCOPE_NAME]['name'] = new NamedScope($namedScopes['name'] ?? $namedScopes);
         }
 
         return $this;
@@ -184,8 +191,8 @@ abstract class AbstractPattern
         $this->checkRequired(self::SERVICE_NAME)
                 ->checkOverride(self::SERVICE_NAME);
 
-        if (is_string($this->service)) {
-            $this->annotations[self::SERVICE_NAME] = array_merge([], $this->annotations[self::NAMEDSCOPE_NAME] ?? []);
+        if (is_string($this->service) && !isset($this->service[self::SERVICE_NAME])) {
+            $this->attributes[self::SERVICE_NAME] = new Service();
         }
 
         return $this;
@@ -201,8 +208,8 @@ abstract class AbstractPattern
         $this->checkRequired(self::RESPONSE_NAME)
                 ->checkOverride(self::RESPONSE_NAME);
 
-        if (is_array($this->response)) {
-            $this->annotations[self::RESPONSE_NAME] = array_merge(['type' => $this->response['type']], $this->annotations[self::RESPONSE_NAME] ?? []);
+        if ((is_array($this->response) || is_string($this->response)) && !isset($this->attributes[self::RESPONSE_NAME])) {
+            $this->attributes[self::RESPONSE_NAME] = new Response(type: $this->response['type'] ?? $this->response);
         }
 
         return $this;
@@ -219,7 +226,7 @@ abstract class AbstractPattern
     }
 
     /**
-     * Returns settings for route annotation.
+     * Returns settings for route attribute.
      * 
      * @return type
      */
@@ -229,7 +236,7 @@ abstract class AbstractPattern
     }
 
     /**
-     * Returns settings for named scope annotation.
+     * Returns settings for named scope attribute.
      * 
      * @return mixed
      */
@@ -239,7 +246,7 @@ abstract class AbstractPattern
     }
 
     /**
-     * Returns settings for service annotation.
+     * Returns settings for service attribute.
      * 
      * @return bool|null
      */
@@ -249,7 +256,7 @@ abstract class AbstractPattern
     }
 
     /**
-     * Returns settings for service annotation.
+     * Returns settings for service attribute.
      * 
      * @return mixed
      */
@@ -259,13 +266,13 @@ abstract class AbstractPattern
     }
 
     /**
-     * Returns annotations.
+     * Returns attributes.
      * 
      * @return mixed
      */
-    public function getAnnotations()
+    public function getAttributes()
     {
-        return $this->annotations;
+        return $this->attributes;
     }
 
     /**
@@ -281,7 +288,7 @@ abstract class AbstractPattern
     }
 
     /**
-     * Sets route annotation setting.
+     * Sets route attribute setting.
      * 
      * @param type $route
      * @return $this
@@ -289,14 +296,15 @@ abstract class AbstractPattern
     public function setRoute($route)
     {
         if ($route !== true && $route !== null) {
-            throw new ApplicationException('Invalid value for [' . self::ROUTE_NAME . '] setting in pattern [' . $this->patternName . '].', null, null, 926016);
+            throw new ApplicationException('Invalid value for [' . self::ROUTE_NAME . '] setting in pattern [' . $this->patternName . '].',
+                            null, null, 926016);
         }
         $this->route = $route;
         return $this;
     }
 
     /**
-     * Sets named scope annotation setting.
+     * Sets named scope attribute setting.
      * 
      * @param type $namedscope
      * @return $this
@@ -311,7 +319,7 @@ abstract class AbstractPattern
     }
 
     /**
-     * Sets service annotation setting.
+     * Sets service attribute setting.
      * 
      * @param type $service
      * @return $this
@@ -319,14 +327,15 @@ abstract class AbstractPattern
     public function setService($service)
     {
         if (is_bool($service) === false && $service !== null && strtolower($service) !== 'all') {
-            throw new ApplicationException('Invalid value for [' . self::SERVICE_NAME . '] setting in pattern [' . $this->patternName . '].', null, null, 926017);
+            throw new ApplicationException('Invalid value for [' . self::SERVICE_NAME . '] setting in pattern [' . $this->patternName . '].',
+                            null, null, 926017);
         }
         $this->service = $service;
         return $this;
     }
 
     /**
-     * Sets response annotation setting.
+     * Sets response attribute setting.
      * 
      * @param type $response
      * @return $this
@@ -344,14 +353,14 @@ abstract class AbstractPattern
     }
 
     /**
-     * Sets annotation.
+     * Sets attribute.
      * 
-     * @param type $annotation
+     * @param type $attributes
      * @return $this
      */
-    public function setAnnotations($annotation)
+    public function setAttributes($attributes)
     {
-        $this->annotations = $annotation;
+        $this->attributes = $attributes;
         return $this;
     }
 

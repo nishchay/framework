@@ -2,6 +2,8 @@
 
 namespace Nishchay\Route\Pattern;
 
+use Nishchay\Attributes\Controller\Method\Route;
+
 /**
  * Route pattern collection.
  *
@@ -25,7 +27,7 @@ class Action extends AbstractPattern
         }
         $path = lcfirst(substr($method, 6));
 
-        return ['path' => $path === 'index' ? '/' : $path];
+        return new Route($path);
     }
 
 }

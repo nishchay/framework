@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Post;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Comment entity class.
  *
@@ -13,44 +19,45 @@ namespace Nishchay\Generator\Skelton\Entity\Post;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class Comment
 {
 
     /**
-     *
-     * @Identity
-     * @DataType(type=int, required=true)
+     * Comment id
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $commentId;
 
     /**
      * User id.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $userId;
 
     /**
      * On which this comment was added.
      * 
-     * @DataType(type=string, length=50)
      */
+    #[DataType(type: 'string', length: 50)]
     public $type;
 
     /**
      * Type id.
      * 
-     * @DataType(type=int)
      */
+    #[DataType(type: 'int')]
     public $typeId;
 
     /**
      * Content of comment.
      * 
-     * @DataType(type=string)
      */
+    #[DataType(type: 'string')]
     public $content;
 
 }

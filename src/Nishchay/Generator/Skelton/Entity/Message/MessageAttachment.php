@@ -2,6 +2,12 @@
 
 namespace Nishchay\Generator\Skelton\Entity\Message;
 
+use Nishchay\Attributes\Entity\Entity;
+use Nishchay\Attributes\Entity\Property\{
+    Identity,
+    DataType
+};
+
 /**
  * Message attachment entity class.
  *
@@ -13,36 +19,38 @@ namespace Nishchay\Generator\Skelton\Entity\Message;
  * #ANN_END
  * {authorName}
  * {versionNumber}
- * @Entity(name='this.base')
+ * 
  */
+#[Entity(name: 'this.base')]
 class MessageAttachment
 {
-    
+
     /**
-     *
-     * @Identity
-     * @DataType(type=int, readonly=true)
+     * Attachment id.
      */
+    #[Identity]
+    #[DataType(type: 'int', readOnly: true)]
     public $attachmentId;
 
     /**
      *  Message id.
      * 
-     * @DataType(type=int, required=true)
      */
+    #[DataType(type: 'int', required: true)]
     public $messageId;
 
     /**
      * Path to attachment.
      * 
-     * @DataType(type=string, required=true)
      */
+    #[DataType(type: 'string', required: true)]
     public $path;
 
     /**
      * Name of attachment.
      * 
-     * @DataType(type=string, length=200)
      */
+    #[DataType(type: 'string', length: 200)]
     public $name;
+
 }
