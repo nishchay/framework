@@ -2,6 +2,7 @@
 
 namespace Nishchay\Attributes\Controller\Method;
 
+use Nishchay;
 use Nishchay\Attributes\AttributeTrait;
 
 /**

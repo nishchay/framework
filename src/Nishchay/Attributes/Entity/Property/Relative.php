@@ -100,7 +100,7 @@ class Relative
      */
     protected function refactorType(): self
     {
-        $this->type = strtolower($this->type);
+        $this->type = strtolower($this->type !== null ? $this->type : self::LOOSE);
         $allowed = [
             self::LOOSE => Query::LEFT_JOIN,
             self::PERFECT => Query::INNER_JOIN
