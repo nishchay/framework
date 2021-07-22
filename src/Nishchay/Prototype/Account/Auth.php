@@ -246,7 +246,8 @@ class Auth extends AbstractAccountPrototype
         }
 
         if ((($user = $this->getUser($this->condition, $this->getEmailName()))) === false) {
-            throw new BadRequestException('User does not exists.');
+            throw new BadRequestException(message: 'User does not exists.',
+                            code: 935001);
         }
 
         $this->isUserActive($user)
@@ -260,10 +261,11 @@ class Auth extends AbstractAccountPrototype
         $identity = $this->getDataClass()->getIdentity();
 
         return $this->writeSession($user->{$identity})
-                        ->getInstance(AccountResponse::class, [[
-                        'userDetail' => $user,
-                        'accessToken' => $this->getAccessToken($user->{$identity}),
-                        'isSuccess' => true
+                        ->getInstance(AccountResponse::class,
+                                [[
+                                'userDetail' => $user,
+                                'accessToken' => $this->getAccessToken($user->{$identity}),
+                                'isSuccess' => true
         ]]);
     }
 
@@ -277,7 +279,8 @@ class Auth extends AbstractAccountPrototype
     private function isUserActive($user)
     {
         if (isset($user->isActive) && $user->isActive === false) {
-            throw new AuthorizationFailedException('User is not active');
+            throw new AuthorizationFailedException(message: 'User is not active.',
+                            code: 935002);
         }
 
         return $this;
@@ -293,7 +296,8 @@ class Auth extends AbstractAccountPrototype
     private function isUserVerified($user)
     {
         if (isset($user->isVerified) && $user->isVerified === false) {
-            throw new AuthorizationFailedException('User is not verified.');
+            throw new AuthorizationFailedException(message: 'User is not verified.',
+                            code: 935003);
         }
 
         return $this;
@@ -308,11 +312,14 @@ class Auth extends AbstractAccountPrototype
     private function processPasswordVerification($userPassword)
     {
         if ($this->getVerifyPassword() instanceof Closure) {
-            if (call_user_func_array($this->getVerifyPassword(), [$this->getPassword(), $userPassword]) !== true) {
-                throw new AuthorizationFailedException('Invalid password.');
+            if (call_user_func_array($this->getVerifyPassword(),
+                            [$this->getPassword(), $userPassword]) !== true) {
+                throw new AuthorizationFailedException(message: 'Invalid password.',
+                                code: 935004);
             }
         } else if (password_verify($this->getPassword(), $userPassword) === false) {
-            throw new AuthorizationFailedException('Invalid password.');
+            throw new AuthorizationFailedException(message: 'Invalid password.',
+                            code: 935004);
         }
     }
 

@@ -46,14 +46,15 @@ class Register extends AbstractAccountPrototype
         }
 
         if ($this->getForm() === null) {
-            throw new ApplicationException('Register prototype requires form to be set');
+            throw new ApplicationException(message: 'Register prototype requires form to be set.',
+                            code: 935005);
         }
 
         $email = $this->getForm()->getEmail();
 
         if ($this->getUser([], $email->getName()) !== false) {
-            throw new BadRequestException('Account already exists with'
-                    . ' provided email.');
+            throw new BadRequestException(message: 'Account already exists with'
+                            . ' provided email.', code: 935006);
         }
 
         $entity = $this->prepareEntity()
@@ -61,20 +62,22 @@ class Register extends AbstractAccountPrototype
 
         # Before registration callback
         $this->getPreRegister() instanceof Closure &&
-                call_user_func($this->getPreRegister(), [$this->getForm(), $entity]);
+                call_user_func($this->getPreRegister(),
+                        [$this->getForm(), $entity]);
 
         $userId = $this->saveEntity();
 
         # After registration callback.
         $this->getPostRegister() instanceof Closure &&
-                call_user_func($this->getPostRegister(), [$entity, $this->getForm()]);
-
+                call_user_func($this->getPostRegister(),
+                        [$entity, $this->getForm()]);
 
         return $this->writeSession($userId)
-                        ->getInstance(AccountResponse::class, [[
-                        'userDetail' => $entity,
-                        'accessToken' => $this->getAccessToken($userId),
-                        'isSuccess' => true
+                        ->getInstance(AccountResponse::class,
+                                [[
+                                'userDetail' => $entity,
+                                'accessToken' => $this->getAccessToken($userId),
+                                'isSuccess' => true
         ]]);
     }
 

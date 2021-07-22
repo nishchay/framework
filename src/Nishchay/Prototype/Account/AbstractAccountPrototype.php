@@ -175,7 +175,8 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
         $scope = Request::post('scope');
 
         if ($this->getScopeRequired() && $scope === false) {
-            throw new BadRequestException('Please pass scope.');
+            throw new BadRequestException(message: 'Please pass scope.',
+                            code: 935007);
         }
 
         if ($scope !== false) {
@@ -186,7 +187,8 @@ abstract class AbstractAccountPrototype extends AbstractPrototype
 
         if (($callback = $this->getVerifyScope()) !== null && $this->invokeMethod($callback,
                         [$scope]) !== true) {
-            throw new BadRequestException('Invalid scope.');
+            throw new BadRequestException(message: 'Invalid scope.',
+                            code: 935008);
         }
 
         return Nishchay::getOAuth2()->generateUserCredentialToken($userId,

@@ -232,7 +232,8 @@ class Crud extends AbstractPrototype
 
         if ($this->executeBefore() === false) {
             if (($response = $this->executeOnFailure(['code' => self::TERMINATED_BEFORE_SAVE])) === false) {
-                throw new ApplicationException('Before save returned failure.');
+                throw new ApplicationException(message: 'Before save returned failure.',
+                                code: 935009);
             }
 
             return $response;
@@ -250,9 +251,10 @@ class Crud extends AbstractPrototype
         }
 
         if (($response = $this->executeOnFailure(['code' => self::FAILED_TO_INSERT])) === false) {
-            throw new ApplicationException('Failed to insert record');
+            throw new ApplicationException(message: 'Failed to insert record.',
+                            code: 935010);
         }
-        
+
         return $response;
     }
 
@@ -265,7 +267,8 @@ class Crud extends AbstractPrototype
     {
 
         if ($this->getForm() === null) {
-            throw new ApplicationException('Form is required.', null, null);
+            throw new ApplicationException(message: 'Form is required.',
+                            code: 935011);
         }
 
         $this->id = $id;
@@ -284,7 +287,8 @@ class Crud extends AbstractPrototype
 
         if ($entity === false) {
             if (($response = $this->executeOnFailure(['code' => self::RECORD_NOT_FOUND])) === false) {
-                throw new BadRequestException('Record does not exists.');
+                throw new BadRequestException(message: 'Record does not exists.',
+                                code: 935012);
             }
 
             return $response;
@@ -294,7 +298,7 @@ class Crud extends AbstractPrototype
 
         if ($this->executeBefore() === false) {
             if (($response = $this->executeOnFailure(['code' => self::TERMINATED_BEFORE_SAVE])) === false) {
-                throw new ApplicationException('Before save returned failure.');
+                throw new ApplicationException(message: 'Before save returned failure.', code: 935013);
             }
 
             return $response;
@@ -333,7 +337,7 @@ class Crud extends AbstractPrototype
 
         if ($entity === false) {
             if (($response = $this->executeOnFailure(['code' => self::RECORD_NOT_FOUND])) === false) {
-                throw new BadRequestException('Record does not exists.');
+                throw new BadRequestException(message: 'Record does not exists.', code: 935014);
             }
 
             return $response;
@@ -370,7 +374,7 @@ class Crud extends AbstractPrototype
 
         if ($entity === false) {
             if (($response = $this->executeOnFailure(['code' => self::RECORD_NOT_FOUND])) === false) {
-                throw new BadRequestException('Record does not exists.');
+                throw new BadRequestException(message: 'Record does not exists.', code: 935015);
             }
 
             return $response;
