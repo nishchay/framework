@@ -28,6 +28,7 @@ use Nishchay\Persistent\System as SystemPersistent;
 use Nishchay\Processor\EnvironmentVariables;
 use Nishchay\Logger\Logger;
 use Nishchay\Lang\Lang;
+use Nishchay\OAuth2\OAuth2;
 
 /**
  * Core of the application
@@ -453,6 +454,16 @@ final class Application
     public function getCache($name = null)
     {
         return CacheCollection::getInstance()->get($name);
+    }
+
+    /**
+     * Returns instance of OAuth2 class.
+     * 
+     * @return OAuth2
+     */
+    public function getOAuth2(): OAuth2
+    {
+        return OAuth2::getInstance();
     }
 
     /**
