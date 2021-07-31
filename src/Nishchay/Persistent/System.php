@@ -4,7 +4,6 @@ namespace Nishchay\Persistent;
 
 use Nishchay;
 use Nishchay\Utility\SystemUtility;
-use Nishchay\FileManager\SimpleFile;
 
 /**
  * Persistent class used to store object and get persisted objects.
@@ -41,8 +40,7 @@ class System
      */
     public static function isPersisted($name)
     {
-        return Nishchay::isApplicationStageLive() &&
-                file_exists(self::getPath($name));
+        return false;
     }
 
     /**
@@ -65,11 +63,7 @@ class System
      */
     public static function setPersistent($name, $content = '')
     {
-        if (Nishchay::isApplicationStageLive()) {
-            $peristedName = self::getPath($name);
-            $file = new SimpleFile($peristedName, SimpleFile::TRUNCATE_WRITE);
-            $file->write(serialize($content));
-        }
+        return true;
     }
 
 }

@@ -73,6 +73,12 @@ class Validator extends AbstractValidator
     private $errors = [];
 
     /**
+     * 
+     * @var array
+     */
+    private array $data = [];
+
+    /**
      * Initialization.
      * 
      * @param string $method
@@ -88,13 +94,15 @@ class Validator extends AbstractValidator
         $this->requestMethod = strtoupper(Request::server('METHOD'));
 
         if (MixedRule::isExist('confirm') === false) {
-            MixedRule::addRule('confirm', function ($value, $fieldName) {
+            MixedRule::addRule('confirm',
+                    function ($value, $fieldName) {
                 return $value === $this->getRequest($fieldName);
             }, '{field} should be same as {0}');
         }
 
         if (MixedRule::isExist('depends') === false) {
-            MixedRule::addRule('depends', function ($value, $fieldName, $shouldBe = null) {
+            MixedRule::addRule('depends',
+                    function ($value, $fieldName, $shouldBe = null) {
                 $fieldValue = $this->getRequest($fieldName);
                 if ($shouldBe === null) {
                     return empty($fieldValue) ? true : !empty($value);
@@ -106,6 +114,29 @@ class Validator extends AbstractValidator
     }
 
     /**
+     * Returns custom data.
+     * 
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * Sets data to be used for validation.
+     * This is in case need to do validation on custom data rather than request.
+     * 
+     * @param array $data
+     * @return self
+     */
+    public function setData(array $data): self
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
      * Returns request value for the input field.
      * 
      * @param string $name
@@ -113,6 +144,10 @@ class Validator extends AbstractValidator
      */
     private function getRequest($name)
     {
+        if (!empty($this->data)) {
+            return $this->data[$name] ?? false;
+        }
+
         switch ($this->requestMethod) {
             case Request::POST:
             case Request::DELETE:
@@ -296,7 +331,7 @@ class Validator extends AbstractValidator
 
         if (!class_exists($class)) {
             throw new NotSupportedException('Validation rule type [' .
-                    $type . '] not supported.', null, null, 931004);
+                            $type . '] not supported.', null, null, 931004);
         }
 
         return $this->rules[$type] = new $class;
@@ -321,14 +356,16 @@ class Validator extends AbstractValidator
             if ($ruleInstance instanceof DateRule && $ruleName !== DateRule::FORMAT_NAME) {
                 if (empty($rules[DateRule::FORMAT_NAME])) {
                     throw new ApplicationException('Date format is required for each date'
-                            . ' validation.', null, null, 931005);
+                                    . ' validation.', null, null, 931005);
                 }
                 array_push($ruleParams, current($rules[DateRule::FORMAT_NAME]));
             }
 
             foreach ($value as $val) {
-                if (!$this->validateRule($ruleInstance, $rule['name'], $val, $ruleParams)) {
-                    $this->errors[$fieldName] = $this->parseMessage($ruleInstance, $rule['name'], $fieldName, $ruleParams);
+                if (!$this->validateRule($ruleInstance, $rule['name'], $val,
+                                $ruleParams)) {
+                    $this->errors[$fieldName] = $this->parseMessage($ruleInstance,
+                            $rule['name'], $fieldName, $ruleParams);
                     return false;
                 }
             }
@@ -372,7 +409,8 @@ class Validator extends AbstractValidator
      * @return bool
      * @throws Exception
      */
-    private function validateRule(AbstractRule $rule, $ruleName, $value, $params = [])
+    private function validateRule(AbstractRule $rule, $ruleName, $value,
+            $params = [])
     {
         array_unshift($params, $value);
 
@@ -380,7 +418,7 @@ class Validator extends AbstractValidator
         # that such rule does not exists.
         if (!$this->isRuleExist($rule, $ruleName) || !$rule->isMessageExists($ruleName)) {
             throw new ApplicationException('Validation [' . $rule->getName() . '::' . $ruleName
-                    . '] does not exist.', null, null, 931006);
+                            . '] does not exist.', null, null, 931006);
         }
 
         # Validation rule method does not throws excepion unless invalid value

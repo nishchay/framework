@@ -51,9 +51,9 @@ class BaseServiceProcess
      * 
      * @return $this
      */
-    protected function setService(Service $service)
+    protected function setService($service)
     {
-        $this->service = $service;
+        $this->service = $service ? $service : new Service();
         return $this;
     }
 

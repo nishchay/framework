@@ -89,6 +89,13 @@ class Form
     private $reflection;
 
     /**
+     * Custom data for the form.
+     * 
+     * @var array
+     */
+    private array $data = [];
+
+    /**
      * Initialization.
      * 
      * @param string $method
@@ -354,6 +361,29 @@ class Form
     }
 
     /**
+     * Returns custom data.
+     * 
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * Sets data to be used for validation.
+     * This is in case need to do validation on custom data rather than request.
+     * 
+     * @param array $data
+     * @return self
+     */
+    public function setData(array $data): self
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
      * Returns Validator instance.
      * 
      * @return \Nishchay\Validation\Validator
@@ -366,6 +396,10 @@ class Form
 
         $this->validator = new Validator($this->getMethod());
 
+        if (!empty($this->getData())) {
+            $this->validator->setData($this->getData());
+        }
+
         $validation = [];
 
         # We are here iterating over each method to find form field method.
@@ -377,6 +411,11 @@ class Form
                     empty($field->getValidation())) {
                 continue;
             }
+
+            if (isset($this->data[$field->getName()])) {
+                $field->setValue($this->data[$field->getName()]);
+            }
+
 
             $validation[$field->getName()] = $field->getValidation();
 

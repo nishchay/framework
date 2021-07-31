@@ -99,7 +99,8 @@ abstract class AbstractField
      * @param string $name
      * @param string $type
      */
-    public function __construct(string $name, ?string $type, string $requestMethod)
+    public function __construct(string $name, ?string $type,
+            string $requestMethod)
     {
         $this->init($name, $type, $requestMethod);
     }
@@ -259,6 +260,9 @@ abstract class AbstractField
      */
     public function getRequest()
     {
+        if ($this->value !== null) {
+            return $this->value;
+        }
         $name = $this->getName();
         switch ($this->requestMethod) {
             case Request::POST:
@@ -317,7 +321,7 @@ abstract class AbstractField
         foreach ($name as $attrName => $attrValue) {
             if (is_string($attrName) === false || is_scalar($attrValue) === false) {
                 throw new NotSupportedException('Attribute name and its value'
-                        . ' must be string.', 1, null, 918004);
+                                . ' must be string.', 1, null, 918004);
             }
 
             # Not allowing reserved attribute via this method.
