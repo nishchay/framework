@@ -80,10 +80,7 @@ class Container {
      * @return ReflectionClass
      */
     private function getReflection(): ReflectionClass {
-        if ($this->reflection !== null) {
-            return $this->reflection;
-        }
-        return $this->reflection = new ReflectionClass($this->containerClass);
+        return new ReflectionClass($this->containerClass);
     }
 
     /**

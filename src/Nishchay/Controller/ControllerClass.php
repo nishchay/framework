@@ -47,13 +47,6 @@ class ControllerClass
     private $methods = [];
 
     /**
-     * All attribute defined on controller.
-     *  
-     * @var array 
-     */
-    private $attributes;
-
-    /**
      * Controller attribute.
      * 
      * @var boolean 
@@ -123,8 +116,7 @@ class ControllerClass
     public function __construct(string $class, array $attributes, string $parent)
     {
         $this->setClass($class);
-        $this->attributes = $attributes;
-        $this->processAttributes($this->attributes);
+        $this->processAttributes($attributes);
         if ($this->controller === false) {
             throw new ApplicationException('[' . $class . '] must be controller.',
                             $class, null, 914042);
