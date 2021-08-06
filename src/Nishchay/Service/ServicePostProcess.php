@@ -32,7 +32,7 @@ class ServicePostProcess extends BaseServiceProcess
      * @param Service $service
      * @param type $render
      */
-    public function __construct(Service $service, $render)
+    public function __construct($service, $render)
     {
         $this->render = $render;
         $this->setService($service)
