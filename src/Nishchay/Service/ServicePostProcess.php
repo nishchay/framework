@@ -32,7 +32,7 @@ class ServicePostProcess extends BaseServiceProcess
      * @param Service $service
      * @param type $render
      */
-    public function __construct(Service $service, $render)
+    public function __construct($service, $render)
     {
         $this->render = $render;
         $this->setService($service)
@@ -66,7 +66,8 @@ class ServicePostProcess extends BaseServiceProcess
                     !in_array($fieldName, $supportedFields) &&
                     !in_array($fieldName, $this->service->getAlways())) {
                 throw new BadRequestException('Field [' . $fieldName . ']'
-                        . ' is not supported by this service.', null, null, 928003);
+                                . ' is not supported by this service.', null,
+                                null, 928003);
             }
         }
         return $this;

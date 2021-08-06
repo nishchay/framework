@@ -374,9 +374,10 @@ class OAuth2 extends AbstractSingleton
                     return true;
                 }
             }
+            throw new AuthorizationFailedException('Unautorized access to service.');
         }
-
-        throw new AuthorizationFailedException('Unautorized access to service.');
+        
+        return true;
     }
 
     /**
