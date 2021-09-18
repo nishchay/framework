@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://nishchay.io">
-      <img src="https://static.nishchay.io/resources/images/nishchay.png"/>
+      <img src="https://static.nilms.org/nishchay/resources/images/nishchay.png"/>
   </a>
 </p>
 
