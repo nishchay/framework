@@ -226,7 +226,7 @@ class Derived
      * 
      * @return DataType
      */
-    public function getDataType(string $propertyName = null)
+    public function getDataType(?string $propertyName = null)
     {
         return $propertyName === null ?
                 $this->dataType : $this->dataType[$propertyName];

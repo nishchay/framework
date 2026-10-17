@@ -27,7 +27,7 @@ class Scope extends BaseSession
     /**
      * Initialization
      */
-    public function __construct(string $scopeName = null)
+    public function __construct(?string $scopeName = null)
     {
         parent::__construct('scope');
         $this->scopeName = $scopeName;

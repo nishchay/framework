@@ -58,7 +58,7 @@ class FileHandler extends AbstractSaveHandler
      * 
      * @return boolean
      */
-    public function close()
+    public function close(): bool
     {
         return TRUE;
     }
@@ -69,7 +69,7 @@ class FileHandler extends AbstractSaveHandler
      * @param string $session_id
      * @return boolean
      */
-    public function destroy($session_id)
+    public function destroy(string $session_id): bool
     {
         $this->openFile($this->getPath($session_id));
         return $this->file->remove();
@@ -80,15 +80,17 @@ class FileHandler extends AbstractSaveHandler
      * @param type $maxlifetime
      * @return boolean
      */
-    public function gc($maxlifetime)
+    public function gc(int $maxlifetime): int|false
     {
+        $deleted = 0;
         foreach (glob($this->storagePath) as $file) {
             if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
                 unlink($file);
+                $deleted++;
             }
         }
 
-        return TRUE;
+        return $deleted;
     }
 
     /**
@@ -97,7 +99,7 @@ class FileHandler extends AbstractSaveHandler
      * @param type $name
      * @return boolean
      */
-    public function open($save_path, $session_name)
+    public function open(string $save_path, string $session_name): bool
     {
         return TRUE;
     }
@@ -118,7 +120,7 @@ class FileHandler extends AbstractSaveHandler
      * @param string $session_id
      * @return string
      */
-    public function read($session_id)
+    public function read(string $session_id): string|false
     {
         $this->openFile($this->getPath($session_id));
         $content = $this->file->read();
@@ -144,7 +146,7 @@ class FileHandler extends AbstractSaveHandler
      * @param string $session_data
      * @return boolean
      */
-    public function write($session_id, $session_data)
+    public function write(string $session_id, string $session_data): bool
     {
         $this->openFile($this->getPath($session_id));
         $this->file->truncateWrite($session_data);

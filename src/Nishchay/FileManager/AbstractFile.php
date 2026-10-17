@@ -256,7 +256,7 @@ abstract class AbstractFile
     /**
      * Return File content into array exploded by new line
      */
-    abstract function getLines($option = FILE_TEXT);
+    abstract function getLines($option = 0);
 
     /**
      * Move file from one location to another location

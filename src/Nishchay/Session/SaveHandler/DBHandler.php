@@ -52,7 +52,7 @@ class DBHandler extends AbstractSaveHandler
      * @param string $session_name
      * @return boolean
      */
-    public function open($save_path, $session_name)
+    public function open(string $save_path, string $session_name): bool
     {
         $config = Nishchay::getConfig('session.db');
         $this->table = isset($config->table) ? $config->table : 'Session';
@@ -82,7 +82,7 @@ class DBHandler extends AbstractSaveHandler
      * @param type $session_id
      * @return type
      */
-    public function read($session_id)
+    public function read(string $session_id): string|false
     {
         $this->sessionId = $session_id;
         return $this->getData($session_id);
@@ -95,7 +95,7 @@ class DBHandler extends AbstractSaveHandler
      * @param string $data
      * @return boolean
      */
-    public function write($session_id, $data)
+    public function write(string $session_id, string $data): bool
     {
 
         $this->query->setTable($this->table)
@@ -122,7 +122,7 @@ class DBHandler extends AbstractSaveHandler
      * 
      * @return boolean
      */
-    public function close()
+    public function close(): bool
     {
         return true;
     }
@@ -133,7 +133,7 @@ class DBHandler extends AbstractSaveHandler
      * @param type $session_id
      * @return boolean
      */
-    public function destroy($session_id)
+    public function destroy(string $session_id): bool
     {
         $this->query->setTable($this->table)
                 ->setCondition('sessionId', $session_id)
@@ -146,11 +146,11 @@ class DBHandler extends AbstractSaveHandler
      * 
      * @param int $maxlifetime
      */
-    public function gc($maxlifetime)
+    public function gc(int $maxlifetime): int|false
     {
         $this->query->setTable($this->table)
                 ->setCondition(['accessAt<' => time() - $maxlifetime]);
-        return true;
+        return 0;
     }
 
 }

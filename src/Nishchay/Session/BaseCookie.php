@@ -102,7 +102,7 @@ class BaseCookie extends BaseSession
      * @param   string  $offset
      * @param   mixed   $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (is_null($offset)) {
             throw new ApplicationException('Name is required to create cookie.', null, null, 929005);
@@ -117,7 +117,7 @@ class BaseCookie extends BaseSession
      * 
      * @param type $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         setcookie($offset, '', -1);
     }

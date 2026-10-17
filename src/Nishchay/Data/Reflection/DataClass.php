@@ -150,7 +150,6 @@ class DataClass extends AbstractEntityStore
         # fetch existing value to update it by adding extra property. 
         # At the end we will update object property with new value.
         $reflection = new ReflectionProperty($entity, Property::EXTRA_PROPERTY);
-        $reflection->setAccessible(TRUE);
         $value = $reflection->getValue($entity);
 
         # Adding property to entity with default value that's NULL.

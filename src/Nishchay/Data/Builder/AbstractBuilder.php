@@ -580,7 +580,6 @@ abstract class AbstractBuilder extends AbstractConnection
     private function updateCacheKeyInQuery($query, $cacheKey)
     {
         $reflection = new ReflectionProperty(Query::class, 'cacheKey');
-        $reflection->setAccessible(true);
         $reflection->setValue($query, $cacheKey);
     }
 

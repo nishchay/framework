@@ -542,11 +542,9 @@ class Processor
             # using INSTANCE_PROPERTY constant.
             $reflection = new ReflectionClass(Request::class);
             $instance = $reflection->getProperty(Request::INSTANCE_PROPERTY);
-            $instance->setAccessible(true);
 
             # Reflection of _GET property.
             $property = $reflection->getProperty('_GET');
-            $property->setAccessible(true);
             $property->setValue($instance->getValue(), $query);
         }
 

@@ -215,7 +215,6 @@ class ImageCaptcha
 
         Processor::setInternalSessionValue($this->name, $string);
         imagepng($this->image);
-        imagedestroy($this->image);
     }
 
     /**

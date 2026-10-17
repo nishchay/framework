@@ -47,5 +47,5 @@ abstract class AbstractCollection
      * 
      * @return int
      */
-    public abstract function count();
+    public abstract function count(): int;
 }

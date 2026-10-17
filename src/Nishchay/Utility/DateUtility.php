@@ -104,7 +104,7 @@ class DateUtility
      * @param DateTime $date
      * @return string
      */
-    public static function mysqlDate(DateTime $date = null): string
+    public static function mysqlDate(?DateTime $date = null): string
     {
         if ($date === null) {
             return self::formatNow(self::MYSQL_DATE_FORMAT);

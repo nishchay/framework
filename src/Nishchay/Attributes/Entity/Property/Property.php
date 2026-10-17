@@ -159,7 +159,6 @@ class Property
     public function getReflectionProperty()
     {
         $reflection = new ReflectionProperty($this->class, $this->propertyName);
-        $reflection->setAccessible(true);
         return $reflection;
     }
 
@@ -340,7 +339,7 @@ class Property
                 return (int) $value;
             case VariableType::DOUBLE:
             case VariableType::FLOAT:
-                return doubleval($value);
+                return floatval($value);
             case VariableType::STRING:
                 return (string) $value;
             case VariableType::BOOLEAN:

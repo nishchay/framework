@@ -212,7 +212,7 @@ class DataType
      */
     private function isLengthExceeded($length)
     {
-        if ($this->length !== null && $this->length !== doubleval(0) && $this->length < doubleval($length)) {
+        if ($this->length !== null && $this->length !== floatval(0) && $this->length < floatval($length)) {
             throw new ApplicationException('Value Length exceeded for'
                             . ' [' . $this->class . '::' . $this->propertyName . '].',
                             $this->class, null, 911010);
@@ -261,7 +261,7 @@ class DataType
      */
     private function isValidDouble($value)
     {
-        return is_int($value) || is_double($value);
+        return is_int($value) || is_float($value);
     }
 
     /**
@@ -447,7 +447,7 @@ class DataType
                 return filter_var($value, FILTER_VALIDATE_INT) ? (int) $value : $value;
             case VariableType::DOUBLE:
             case VariableType::FLOAT:
-                return filter_var($value, FILTER_VALIDATE_FLOAT) ? doubleval($value) : $value;
+                return filter_var($value, FILTER_VALIDATE_FLOAT) ? floatval($value) : $value;
             case VariableType::STRING:
                 return (string) $value;
             case VariableType::BOOLEAN:

@@ -106,7 +106,7 @@ class BaseSession extends SaveHandler implements ArrayAccess
      * @param   string  $offset
      * @return  mixed
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return array_key_exists($offset, $this->session);
     }
@@ -116,7 +116,7 @@ class BaseSession extends SaveHandler implements ArrayAccess
      * @param   string  $offset
      * @return  mixed
      */
-    public function &offsetGet($offset)
+    public function &offsetGet(mixed $offset): mixed
     {
         if ($this->offsetExists($offset)) {
             return $this->session[$offset];
@@ -142,7 +142,7 @@ class BaseSession extends SaveHandler implements ArrayAccess
      * @param   string  $offset
      * @param   mixed   $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (is_null($offset)) {
             $this->session[] = $value;
@@ -155,7 +155,7 @@ class BaseSession extends SaveHandler implements ArrayAccess
      * 
      * @param   string  $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->session[$offset]);
     }

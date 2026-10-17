@@ -468,7 +468,6 @@ abstract class AbstractGenerator
         $collections = $entityCollection->get();
         $collections[$class] = true;
 
-        $reflection->setAccessible(true);
         $reflection->setValue($entityCollection, $collections);
     }
 
