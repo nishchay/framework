@@ -2110,6 +2110,12 @@ class EntityManager extends AbstractEntityStore
             }
         }
 
+        # Entity manager reads extraProperty column on every query, so the
+        # table must have it. Same column is added by column refactoring.
+        if (!in_array(Property::EXTRA_PROPERTY, $columns)) {
+            $dbManager->setColumn(Property::EXTRA_PROPERTY, 'TEXT');
+        }
+
         # If table does not have primary key we will add identity property as
         # primary key of table.
         if ($meta->getPrimaryKey() === false && $identityPropertyName !== false) {
