@@ -93,7 +93,7 @@ class XML
                     }
 
 
-                case XMLReader::TEXT;
+                case XMLReader::TEXT:
                     if (trim($this->xmlReader->value) !== '') {
                         $element = trim($this->xmlReader->value);
                     }

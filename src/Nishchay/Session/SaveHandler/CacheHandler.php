@@ -51,7 +51,7 @@ class CacheHandler extends AbstractSaveHandler
      * 
      * @return type
      */
-    public function close()
+    public function close(): bool
     {
         return true;
     }
@@ -62,18 +62,18 @@ class CacheHandler extends AbstractSaveHandler
      * @param type $sessionId
      * @return type
      */
-    public function destroy($sessionId)
+    public function destroy(string $sessionId): bool
     {
-        return Nishchay::getCache($this->name)->remove('ses_' . $sessionId);
+        return (bool) Nishchay::getCache($this->name)->remove('ses_' . $sessionId);
     }
 
     /**
      * 
      * @param type $maxlifetime
      */
-    public function gc($maxlifetime)
+    public function gc(int $maxlifetime): int|false
     {
-        return true;
+        return 0;
     }
 
     /**
@@ -82,7 +82,7 @@ class CacheHandler extends AbstractSaveHandler
      * @param type $save_path
      * @param type $session_name
      */
-    public function open($save_path, $session_name)
+    public function open(string $save_path, string $session_name): bool
     {
         return true;
     }
@@ -92,7 +92,7 @@ class CacheHandler extends AbstractSaveHandler
      * 
      * @param type $sessionId
      */
-    public function read($sessionId)
+    public function read(string $sessionId): string|false
     {
         $data = Nishchay::getCache($this->name)->get('ses_' . $sessionId);
 
@@ -101,7 +101,7 @@ class CacheHandler extends AbstractSaveHandler
             Nishchay::getCache($this->name)->touch('ses_' . $sessionId, $this->expiryTime);
         }
 
-        return $data;
+        return is_string($data) ? $data : '';
     }
 
     /**
@@ -111,9 +111,9 @@ class CacheHandler extends AbstractSaveHandler
      * @param string $data
      * @return boolean
      */
-    public function write($sessionId, $data)
+    public function write(string $sessionId, string $data): bool
     {
-        return Nishchay::getCache($this->name)->set('ses_' . $sessionId, $data, $this->expiryTime);
+        return (bool) Nishchay::getCache($this->name)->set('ses_' . $sessionId, $data, $this->expiryTime);
     }
 
 }

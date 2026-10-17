@@ -118,7 +118,6 @@ class Container {
 
         if ($this->getReflection()->hasProperty('resolveList')) {
             $property = $this->getReflection()->getProperty('resolveList');
-            $property->setAccessible(true);
             $resolveList = $property->getValue($this->getContainerInstance());
 
             if (is_array($resolveList) === false) {

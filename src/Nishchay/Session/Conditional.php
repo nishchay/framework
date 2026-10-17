@@ -93,7 +93,7 @@ class Conditional extends BaseSession
      * @param   string  $offset
      * @param   mixed   $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $readCheck = $this->readCheck;
         $saveCheck = $this->saveCheck;
@@ -121,7 +121,7 @@ class Conditional extends BaseSession
      * @param   string  $offset
      * @return  mixed
      */
-    public function &offsetGet($offset)
+    public function &offsetGet(mixed $offset): mixed
     {
         $session = parent::offsetGet($offset);
         if (!is_array($session)) {

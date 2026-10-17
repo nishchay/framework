@@ -185,7 +185,7 @@ class Collection extends AbstractCollection
      * 
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->collection);
     }

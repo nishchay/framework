@@ -604,7 +604,6 @@ class EntityClass extends AbstractEntityStore
     public function callMethod($object, $name, $parameter = [])
     {
         $reflection = new ReflectionMethod($this->class, $name);
-        $reflection->setAccessible(true);
         return $reflection->invokeArgs($object, $parameter);
     }
 

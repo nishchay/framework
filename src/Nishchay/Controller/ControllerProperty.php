@@ -74,7 +74,6 @@ class ControllerProperty
     private function processProperty(ReflectionProperty $property)
     {
 
-        $property->setAccessible(true);
 
         $attributes = $property->getAttributes();
 

@@ -161,7 +161,6 @@ abstract class Resolver extends InstanceList
      */
     protected function resolvePropertyToValue($object, ReflectionProperty $reflection)
     {
-        $reflection->setAccessible(true);
         $reflection->setValue($object, $this->getValue($reflection->name, 'class property'));
     }
 

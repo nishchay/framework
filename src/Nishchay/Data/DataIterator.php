@@ -32,7 +32,7 @@ class DataIterator extends ArrayIterator
      * @param   mixed       $value
      * @throws  Exception
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new ApplicationException('Adding value to iterator not supported.', null, null, 911062);
     }

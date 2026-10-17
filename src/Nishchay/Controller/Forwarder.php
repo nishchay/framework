@@ -86,7 +86,6 @@ class Forwarder
         if ($this->requestForwarder->isForwardingWithFlushRequestStore()) {
             $reflection = new ReflectionClass(RequestStore::class);
             $property = $reflection->getProperty(RequestStore::STORE_PROPERTY);
-            $property->setAccessible(true);
             $property->setValue([]);
         }
 
@@ -95,7 +94,6 @@ class Forwarder
 
         $instanceProperty = $requestReflection
                 ->getProperty(Request::INSTANCE_PROPERTY);
-        $instanceProperty->setAccessible(true);
         $instance = $instanceProperty->getValue();
         $this->setParameter($requestReflection, $instance);
         $this->setMethodType($requestReflection, $instance);
@@ -117,7 +115,6 @@ class Forwarder
                 continue;
             }
             $property = $requestReflection->getProperty('_' . $type);
-            $property->setAccessible(true);
             $this->setValue($instance, $property, $this->getValue($type));
         }
     }
@@ -131,7 +128,6 @@ class Forwarder
     private function setMethodType($reflection, $instance)
     {
         $property = $reflection->getProperty('_SERVER');
-        $property->setAccessible(true);
         $existing = $property->getValue($instance);
         $existing['REQUEST_METHOD'] = $this->getValue('type');
         $this->setValue($instance, $property, $existing);

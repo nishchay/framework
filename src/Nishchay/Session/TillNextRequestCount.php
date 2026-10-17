@@ -38,7 +38,7 @@ class TillNextRequestCount extends BaseSession
      * @param   string  $offset
      * @param   mixed   $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $session_value = [
             'counter' => $this->toNumber,
@@ -54,7 +54,7 @@ class TillNextRequestCount extends BaseSession
      * @param   string  $offset
      * @return  mixed
      */
-    public function &offsetGet($offset)
+    public function &offsetGet(mixed $offset): mixed
     {
         if ($this->offsetExists($offset)) {
             $session = $this->session[$offset];

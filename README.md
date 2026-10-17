@@ -12,6 +12,10 @@
 
 Nishchay is open structure php framework which allows us to create web application, REST web services and more.
 
+## Requirements
+
+PHP 8.3 or newer. Releases of PHP that have reached end of life (8.2 and older) are not supported.
+
 ## Install
 
 This framework is installed using composer only. Use below command

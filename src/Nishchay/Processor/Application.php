@@ -598,7 +598,6 @@ final class Application
      */
     private function setClassProperty(ReflectionProperty $reflection, $value)
     {
-        $reflection->setAccessible(true);
         $reflection->setValue($value);
     }
 

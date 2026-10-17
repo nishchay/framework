@@ -37,7 +37,7 @@ class ReadLimit extends BaseSession
      * @param   string  $offset
      * @param   mixed   $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $session_value = [
             'limit' => $this->accessLimit,
@@ -53,7 +53,7 @@ class ReadLimit extends BaseSession
      * @param   string  $offset
      * @return  mixed
      */
-    public function &offsetGet($offset)
+    public function &offsetGet(mixed $offset): mixed
     {
         if ($this->offsetExists($offset)) {
             $session = $this->session[$offset];
@@ -73,7 +73,7 @@ class ReadLimit extends BaseSession
      * 
      * @param   string  $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->session[$offset]);
     }

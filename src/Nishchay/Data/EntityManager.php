@@ -282,7 +282,6 @@ class EntityManager extends AbstractEntityStore
             $instance = $this->getInstance();
         }
 
-        $method->setAccessible(true);
         return $method->invokeArgs($instance, $arguments);
     }
 

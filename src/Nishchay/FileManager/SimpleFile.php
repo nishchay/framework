@@ -101,7 +101,7 @@ class SimpleFile extends AbstractFile
      * @param type $option
      * @return type
      */
-    public function getLines($option = FILE_TEXT)
+    public function getLines($option = 0)
     {
         return $this->call('file', [$this->realPath, $option]);
     }

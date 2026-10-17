@@ -3,6 +3,7 @@
 namespace Nishchay\Session\SaveHandler;
 
 use Nishchay;
+use SessionHandlerInterface;
 use Nishchay\Processor\InternalSession;
 use Nishchay\Session\TillNextRequestCount;
 use Nishchay\Utility\Coding;
@@ -15,7 +16,7 @@ use Nishchay\Utility\Coding;
  * @version     1.0
  * @author      Bhavik Patel
  */
-class SaveHandler
+class SaveHandler implements SessionHandlerInterface
 {
 
     /**
@@ -75,9 +76,7 @@ class SaveHandler
             return;
         }
         self::$isHandlerSet = true;
-        session_set_save_handler(
-                [$this, 'open'], [$this, 'close'], [$this, 'read'],
-                [$this, 'write'], [$this, 'destroy'], [$this, 'gc']);
+        session_set_save_handler($this, true);
     }
 
     /**
@@ -87,7 +86,7 @@ class SaveHandler
      * @param string $name
      * @return boolean  TRUE on success otherwise FALSE.
      */
-    public function open($save_path, $session_name)
+    public function open(string $save_path, string $session_name): bool
     {
         return $this->handler
                         ->getHandler()
@@ -99,7 +98,7 @@ class SaveHandler
      * 
      * @return boolean TRUE on success otherwise FALSE.
      */
-    public function close()
+    public function close(): bool
     {
         return $this->handler
                         ->getHandler()
@@ -113,7 +112,7 @@ class SaveHandler
      * @param string $sessionId
      * @return string   Always returns empty string to make $_SESSION unusable.
      */
-    public function read($sessionId)
+    public function read(string $sessionId): string|false
     {
 
         $this->sessionId = $sessionId;
@@ -168,7 +167,7 @@ class SaveHandler
      * @param array $data   Session Data.
      * @return boolean  TRUE on success otherwise FALSE.
      */
-    public function write($sessionId, $data)
+    public function write(string $sessionId, string $data): bool
     {
         if ($this->sessionId !== $sessionId) {
             $this->destroy($this->sessionId, false);
@@ -188,7 +187,7 @@ class SaveHandler
      *                      empty else it leaves session data as it is.
      * @return boolean  TRUE on success otherwise FALSE
      */
-    public function destroy($sessionId, $empty = true)
+    public function destroy(string $sessionId, bool $empty = true): bool
     {
         if ($empty) {
             # We don't remove internal session data even if session destroy is
@@ -208,7 +207,7 @@ class SaveHandler
      * @param type $maxlifetime
      * @return type
      */
-    public function gc($maxlifetime)
+    public function gc(int $maxlifetime): int|false
     {
         return $this->handler
                         ->getHandler()
