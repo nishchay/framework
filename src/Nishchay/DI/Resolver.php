@@ -7,6 +7,7 @@ use Nishchay\Exception\ApplicationException;
 use ReflectionClass;
 use ReflectionObject;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionProperty;
 
 /**
@@ -121,13 +122,14 @@ abstract class Resolver extends InstanceList
                 if ($param->isOptional()) {
                     $value = $param->getDefaultValue();
                 } else {
-                    # Let's create new object if there is type hinting for 
-                    # parameter. $param->getClass() returns type hinted class 
-                    # name or it returns NULL if there is no type hint.
-                    if ($param->getType() === null) {
+                    # Let's create new object if parameter is type hinted with
+                    # a class. Without type hint or with built-in type
+                    # (string, int...) there is nothing to create.
+                    $type = $param->getType();
+                    if (!($type instanceof ReflectionNamedType) || $type->isBuiltin()) {
                         throw new ApplicationException($ex->getMessage(), null, null, 915015);
                     }
-                    $value = $this->getResolvedObject($class->name, $params);
+                    $value = $this->getResolvedObject($type->getName(), $params);
                 }
             }
 
