@@ -182,20 +182,21 @@ METHOD;
         $validation = [];
         $dataType = $property->getDatatype();
 
-        # Is property required.
-        if ($dataType->getRequired() === true) {
+        # Is property required. Boolean always has value, so required would
+        # reject false.
+        if ($dataType->getRequired() === true && $dataType->getType() !== VariableType::BOOLEAN) {
             $validation[] = <<<VALIDATION
                         ->isRequired()
 VALIDATION;
         }
 
-        if ($dataType->getLength() !== null) {
+        if ($dataType->getLength() !== null && $dataType->getType() === VariableType::STRING) {
             $validation[] = <<<VALIDATION
                         ->setValidation('string:max', {$this->getParameterCode([$dataType->getLength()])})
 VALIDATION;
         }
 
-        if (is_array($dataType->getValues())) {
+        if (!empty($dataType->getValues())) {
             $validation[] = <<<VALIDATION
                         ->setValidation('enum', {$this->getParameterCode($dataType->getValues())})
 VALIDATION;
@@ -270,7 +271,7 @@ VALIDATION;
         $formName = strtolower($name) . '-form';
         $formClass = RequestForm::class;
         $requestClass = Request::class;
-        $csrf = $csrf ? '' : (PHP_EOL . '$this->removeCSRF();');
+        $csrf = $csrf ? '' : (PHP_EOL . PHP_EOL . '        $this->removeCSRF();');
         return <<<CL
 <?php
 
@@ -278,12 +279,12 @@ namespace {$namespace};
 
 use {$formClass};
 use {$requestClass};
+use Nishchay\Attributes\Form\Form as FormAttribute;
 
 /**
  * {$name} form class.
- *
- * @Form
  */
+#[FormAttribute]
 class {$name} extends Form
 {
 
