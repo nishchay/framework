@@ -21,13 +21,16 @@ class InvalidStructureException extends Exception
      * Calls parent constructor.
      * 
      * @param string $message
+     * @param string|int|null $classOrTraceBack Not used, kept so that it accepts same arguments as other exceptions.
+     * @param string|null $method Not used.
      * @param int $code
      * @param Throwable $previous
      */
-    public function __construct($message, $code = null, $previous = null)
+    public function __construct($message, $classOrTraceBack = null,
+            $method = null, $code = 0, $previous = null)
     {
-        parent::__construct($message, $code, $previous);
-        $this->line = null;
+        parent::__construct($message, (int) $code, $previous);
+        $this->line = 0;
     }
 
 }
