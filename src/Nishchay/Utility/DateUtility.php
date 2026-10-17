@@ -37,7 +37,10 @@ class DateUtility
     {
         $date = DateTime::createFromFormat($format, $time);
         if ($date instanceof DateTime) {
-            if (array_sum($date->getLastErrors()) > 0 && $ignoreLastError === false) {
+            # From PHP 8.2 getLastErrors returns false when there is no error.
+            $errors = DateTime::getLastErrors();
+            $hasErrors = $errors !== false && ($errors['warning_count'] + $errors['error_count']) > 0;
+            if ($hasErrors && $ignoreLastError === false) {
                 return false;
             }
             return $date;

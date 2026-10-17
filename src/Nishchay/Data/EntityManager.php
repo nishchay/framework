@@ -1574,6 +1574,11 @@ class EntityManager extends AbstractEntityStore
 
         foreach ($data as $key => $value) {
             $property = $this->getThisEntity()->getProperty($key);
+            if ($value === null) {
+                # Null is stored as NULL, it should not be serialized.
+                $data[$key] = null;
+                continue;
+            }
             if (!is_scalar($value)) {
                 $value = $property ?
                         $property->getScalerValue($value) : Coding::serialize($value,

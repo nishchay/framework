@@ -9,6 +9,7 @@ use Nishchay\Exception\NotSupportedException;
 use Nishchay\Attributes\AttributeTrait;
 use Nishchay\Utility\MethodInvokerTrait;
 use Nishchay\Processor\VariableType;
+use Nishchay\Utility\DateUtility;
 
 /**
  * Description of DataType
@@ -442,6 +443,12 @@ class DataType
      */
     public function convertDataType($value)
     {
+        # Missing request value comes as false. It is a real value for boolean
+        # only, for other types it means value was not provided.
+        if ($value === false && !in_array($this->type, [VariableType::BOOLEAN, VariableType::BOOL])) {
+            return null;
+        }
+
         switch ($this->type) {
             case VariableType::INT:
                 return filter_var($value, FILTER_VALIDATE_INT) ? (int) $value : $value;
@@ -452,10 +459,19 @@ class DataType
                 return (string) $value;
             case VariableType::BOOLEAN:
             case VariableType::BOOL:
-                return is_bool($value) ? $value : null;
+                return is_bool($value) ? $value : filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
             case VariableType::DATE:
             case VariableType::DATETIME:
-                return $value;
+                if (!is_string($value)) {
+                    return $value;
+                }
+
+                # Request value is string, entity requires DateTime. Value which
+                # can not be parsed is returned as it is so that validation fails.
+                $format = $this->type === VariableType::DATE ?
+                        DateUtility::MYSQL_DATE_FORMAT : DateUtility::MYSQL_DATETIME_FORMAT;
+                $date = DateUtility::createFromFormat($format, $value);
+                return $date === false ? $value : $date;
             default:
                 return null;
         }

@@ -48,7 +48,12 @@ class DateRule extends AbstractRule
     public function format($value, $format): bool
     {
         $date = DateTime::createFromFormat($format, $value);
-        return $date !== false && array_sum($date->getLastErrors()) === 0 && $date->format($format) === $value;
+
+        # From PHP 8.2 getLastErrors returns false when there is no error.
+        $errors = DateTime::getLastErrors();
+        $hasErrors = $errors !== false && ($errors['warning_count'] + $errors['error_count']) > 0;
+
+        return $date !== false && $hasErrors === false && $date->format($format) === $value;
     }
 
     /**
