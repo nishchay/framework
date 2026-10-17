@@ -39,7 +39,7 @@ class Routing
         $callback = ['lower' => 'strtolower', 'upper' => 'strtoupper', 'camel' => 'lcfirst'];
         if ($this->prefix === 'this.base') {
             $this->prefix = StringUtility::getExplodeLast('\\', $this->class);
-        } else if (strpos($this->prefix, 'this.after') === 0) {
+        } else if ($this->prefix !== null && strpos($this->prefix, 'this.after') === 0) {
             $this->prefix = $this->replaceAfterName($this->prefix);
             if (array_key_exists($this->case, $callback)) {
                 $this->prefix = implode('/',
@@ -50,7 +50,7 @@ class Routing
             return;
         }
         $this->prefix = (array_key_exists($this->case, $callback) ?
-                call_user_func($callback[$this->case], $this->prefix) :
+                ($this->prefix === null ? null : call_user_func($callback[$this->case], $this->prefix)) :
                 $this->prefix);
     }
 

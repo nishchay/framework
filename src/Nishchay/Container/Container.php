@@ -130,10 +130,6 @@ class Container {
         }
 
 
-        if ($this->getReflection()->hasProperty('di') === false) {
-            $this->getContainerInstance()->di = $this->getDI();
-        }
-
         foreach ($this->getReflection()->getMethods() as $method) {
             if (Coding::isIgnorable($method, $this->containerClass)) {
                 continue;

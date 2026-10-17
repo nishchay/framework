@@ -86,7 +86,7 @@ class Forwarder
         if ($this->requestForwarder->isForwardingWithFlushRequestStore()) {
             $reflection = new ReflectionClass(RequestStore::class);
             $property = $reflection->getProperty(RequestStore::STORE_PROPERTY);
-            $property->setValue([]);
+            $property->setValue(null, []);
         }
 
         # Let's make it real request by giving all added get and post parameter.
