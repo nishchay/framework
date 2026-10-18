@@ -303,7 +303,15 @@ class Controller
     private function notRequestParameter($attribute)
     {
         if ($attribute->getRedirect() !== null) {
-            Request::redirect($attribute->getRedirect());
+            # Redirect value is either full URL or route of this application.
+            $redirect = $attribute->getRedirect();
+            if (preg_match('#^([a-z][a-z0-9+.-]*:)?//#i', $redirect) === 0) {
+                $redirect = Request::getBaseURL(ltrim($redirect, '/'));
+            }
+
+            # Request must end here, otherwise route would still be executed.
+            Request::redirect($redirect);
+            exit;
         } else {
             throw new BadRequestException('Request could not be satisfied.',
                             null, null, 914026);
