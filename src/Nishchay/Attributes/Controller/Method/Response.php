@@ -79,7 +79,7 @@ class Response
         }
         $supported = [self::VIEW_RESPONSE, self::JSON_RESPONSE, self::XML_RESPONSE, null];
 
-        if (!in_array(strtolower($this->type), $supported)) {
+        if (!in_array(strtolower((string) $this->type), $supported)) {
 
             throw new InvalidAttributeException('Response type [' . $this->type . ']' .
                             ' not supported.', $this->class, $this->method,
