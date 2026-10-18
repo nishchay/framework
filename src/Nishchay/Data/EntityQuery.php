@@ -344,7 +344,7 @@ class EntityQuery extends AbstractEntityStore
             }
 
             # Disallowing read only property to be updated
-            if ($property->getDatatype()->getReadonly()) {
+            if ($property->getDatatype()->getReadOnly()) {
                 throw new ApplicationException('Can not update read only'
                         . ' property[' . $this->mainEntity . '::' . $name . '].', 1, null, 911079);
             }
